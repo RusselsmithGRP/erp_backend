@@ -42,7 +42,7 @@ class Repository{
         this.__connect((err, client)=> {
             if(err) throw err
             let db = client.db(this._db);
-            db.collection(doc).update(param, {$set: newvalues}, (err, result)=>{
+            db.collection(doc).updateOne(param, {$set: newvalues}, (err, result)=>{
                 assert.equal(err, null);
                 return callback(result);
             });
