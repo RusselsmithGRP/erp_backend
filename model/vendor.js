@@ -1,8 +1,11 @@
 var mongoose = require( 'mongoose' );
 var Schema = mongoose.Schema;
 
-var vendorSchema = new mongoose.Schema({
-    _userId: Schema.Types.ObjectId,
+var vendorSchema = Schema({
+    user:  {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     general_info:{
         type: Object
     },
@@ -13,6 +16,9 @@ var vendorSchema = new mongoose.Schema({
         type:Object
     },
     work_reference:{
+        type:Object
+    },
+    bank_details:{
         type:Object
     },
     status:{

@@ -22,7 +22,7 @@ module.exports.register = function(req, res, next) {
     var token;
     token = user.generateJwt();
     if(user.role === "vendor"){
-      let vendor = new Vendor({_userId:user._id, general_info:{company_name:req.body.coy_name}});
+      let vendor = new Vendor({user:user._id, general_info:{company_name:req.body.coy_name}});
       vendor.save(function (err) {
         if(err) return next(err);
         send_user_registration_email(req, res, next);
@@ -32,11 +32,8 @@ module.exports.register = function(req, res, next) {
         });
       });
     }else{
-      send_user_registration_email(req, res, next);
-      res.status(200);
-      res.json({
-        "token" : token
-      });
+     /// send_user_registration_email(req, res, next);
+    
     }
   });
 
@@ -47,11 +44,11 @@ let send_user_registration_email = function(req, res, next ){
   // setup email data with unicode symbols
   let mailOptions = {
       from: 'kolawole.abobade@gmail.com', // sender address
-      to: 'kabobade@russelsmithgroup.com',//req.body.email, // list of receivers
-      /* bcc: "eokwong@russelsmithgroup.com, kadeleke@russelsmithgroup.com", */
+      to: req.body.email,//req.body.email, // list of receivers
+      bcc: process.env.IAC_GROUP_EMAIL, 
       subject: 'New Vendor Account Confirmation', // Subject line
-      text: 'Dear **Company Name**\nThank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.\n To continue the vendor registration, please click the link below: Confirmation Link: confirm\n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.', // plain text body
-      html: '<p>Dear **Company Name**, </p><p>Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.</p><p> To continue the vendor registration, please click the link below: Confirmation Link: confirm</p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>', // plain text body
+      text: 'Dear '+req.body.coy_name+'\n Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.\n To continue the vendor registration, please click the link below: Confirmation Link: '+process.env.ABSOLUTE+'/login \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.', // plain text body
+      html: '<p>Dear '+req.body.coy_name+', </p><p>Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.</p><p> To continue the vendor registration, please click the link below: Confirmation Link: <a href="'+process.env.ABSOLUTE+'/login">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>', // plain text body
     };
   mailer.sendMail(mailOptions, res, next);
 
