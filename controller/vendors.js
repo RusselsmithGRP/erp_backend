@@ -50,6 +50,16 @@ exports.update = (req, res, next)=>{
     const data = req.body;
     const key = data.key;
     const value = data.value;
+    if("business_info" in data.payload){
+        if(data.payload.business_info.product_related && data.payload.business_info.service_related){
+            data.payload['classes'] = 3;
+        }else if(data.payload.business_info.product_related){
+            data.payload['classes'] = 1;
+        }
+        else if(data.payload.business_info.service_related){
+            data.payload['classes'] = 2;
+        }
+    }
     Vendor.updateOne({[key]:value}, req.body.payload, (err,result)=>{
         if (err) return next(err);
         res.send(result);
@@ -68,9 +78,9 @@ exports.updateStatus = (req, res, next)=>{
             //console.log(doc);
             //console.log(doc[0].user._doc.email);
             if(value === "APPROVED"){
-                send_approval_email(req, res, next, doc[0].user._doc.email);
+                send_approval_email(req, res, next, doc[0]);
             }else if(value === "UPDATE"){
-                send_unapproval_email(req, res, next, doc[0].user._doc.email);
+                send_unapproval_email(req, res, next, doc[0]);
             }
         });
         res.send(result);
@@ -87,29 +97,29 @@ exports.create = (req, res, next)=>{
       });
 }
 
-let send_approval_email = function(req, res, next, email ){
+let send_approval_email = function(req, res, next, doc ){
     // setup email data with unicode symbols
     let mailOptions = {
-        from: 'kolawole.abobade@gmail.com', // sender address
-        to: email,//req.body.email, // list of receivers
+        from: process.env.EMAIL_FROM, // sender address
+        to: doc.user._doc.email,//req.body.email, // list of receivers
         bcc: process.env.IAC_GROUP_EMAIL+','+process.env.PROCUREMENT_GROUP_EMAIL, 
         subject: 'Vendor Application Approved', // Subject line
-        text: 'Dear '+req.coy_name+'\nYour Vendor Application on the RusselSmith Vendor Management System has been approved. You can login to your account and use the full features of the system.\n For help, check out our Frequently Asked Questions page. \nRegards \nThe Russelsmith Team.', // plain text body
-        html: '<p>Dear '+req.coy_name+'</p><br /><p>Your Vendor Application on the RusselSmith Vendor Management System has been approved. You can login to your account and use the full features of the system.</p><p>For help, check out our <u>Frequently Asked Questions page</u>.</p><br /><br /><p>Regards</p><p>The Russelsmith Team</p>'// html body
+        text: 'Dear '+doc.general_info.company_name+'\nYour Vendor Application on the RusselSmith Vendor Management System has been approved. You can login to your account and use the full features of the system.\n For help, check out our Frequently Asked Questions page. \nRegards \nThe Russelsmith Team.', // plain text body
+        html: '<p>Dear '+doc.general_info.company_name+'</p><br /><p>Your Vendor Application on the RusselSmith Vendor Management System has been approved. You can login to your account and use the full features of the system.</p><p>For help, check out our <u>Frequently Asked Questions page</u>.</p><br /><br /><p>Regards</p><p>The Russelsmith Team</p>'// html body
     };
     mailer.sendMail(mailOptions, res, next);
   
   }
 
-  let send_unapproval_email = function(req, res, next , email){
+  let send_unapproval_email = function(req, res, next , doc){
     // setup email data with unicode symbols
     let mailOptions = {
-        from: 'kolawole.abobade@gmail.com', // sender address
-        to: email,//req.body.email, // list of receivers
+        from: process.env.EMAIL_FROM, // sender address
+        to: doc.user._doc.email,//req.body.email, // list of receivers
         bcc: process.env.IAC_GROUP_EMAIL,
         subject: 'Vendor Application Modification Required', // Subject line
-        text: 'Dear '+req.coy_name+'\nYour Vendor Application was not accepted. Please see the comments below: "\n'+req.body.message+'". \nRegards \nThe Russelsmith Team.', // plain text body
-        html: '<p>Dear '+req.coy_name+'</p><br /><p>Your Vendor Application was not accepted. Please see the comments below:</p><p> <b>"'+req.body.message+'"</p>.</p><br /><br /><p>Regards</p><p>The Russelsmith Team</p>'// html body
+        text: 'Dear '+doc.general_info.company_name+'\nYour Vendor Application was not accepted. Please see the comments below: "\n'+req.body.message+'". \nRegards \nThe Russelsmith Team.', // plain text body
+        html: '<p>Dear '+doc.general_info.company_name+'</p><br /><p>Your Vendor Application was not accepted. Please see the comments below:</p><p> <b>"'+req.body.message+'"</p>.</p><br /><br /><p>Regards</p><p>The Russelsmith Team</p>'// html body
     };
     mailer.sendMail(mailOptions, res, next);
   
