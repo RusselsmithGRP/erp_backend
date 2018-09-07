@@ -18,11 +18,14 @@ var vendorSchema = Schema({
     work_reference:{
         type:Object
     },
-    bank_details:{
+    bank_detail:{
         type:Object
     },
     status:{
         type:String
+    },
+    classes:{
+        type:Number
     },
     updated: { type: Date, default: Date.now },
 })
