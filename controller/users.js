@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var Vendor = mongoose.model('Vendor');
 var mailer = require('../model/mailer');
+var crypto = require('crypto');
 
 var sendJSONresponse = function(res, status, content) {
   res.status(status);
@@ -54,6 +55,30 @@ let send_user_registration_email = function(req, res, next ){
 
 }
 
+let send_email_reset_token = function(resetToken, req, res, next ){
+  // setup email data with unicode symbols
+  let mailOptions = {
+      from: process.env.EMAIL_FROM, // sender address
+      to: req.body.email,//req.body.email, // list of receivers
+      bcc: process.env.IAC_GROUP_EMAIL, 
+      subject: 'Reset Your Password', // Subject line
+      text: 'A password request has just been initaited on your account! \n Please click the link below to reset your password. \n<a href="'+process.env.ABSOLUTE_LINK+'/resetpassword/'+resetToken+'">RS Edge</a>  \n If this is not you, please kindly ignore this email.', // plain text body
+      html: '<p>A password request has just been initaited on your account!</p><p> Please click the link below to reset your password. </p> <p> <a href="'+process.env.ABSOLUTE_LINK+'/resetpassword/'+resetToken+'">RS Edge</a></p><p>If this is not you, please kindly ignore this email</p>', // plain text body
+    };
+  mailer.sendMail(mailOptions, res, next);
+
+}
+
+let generateToken = function() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (var i = 0; i < 12; i++)
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+  return text;
+}
+
 module.exports.login = function(req, res) {
 
   passport.authenticate('local', function(err, user, info){
@@ -100,3 +125,76 @@ module.exports.view = function(req, res) {
     }
   
   };
+  module.exports.requestResetToken = function(req, res, next){
+    User.findOne({email:req.body.email}).select().exec(function(err, user){
+      if(err){
+        console.log("error");
+        res.json({success:false, message: "error here" + err})
+      }else {
+        if(!user) {
+          res.json({success:false, message: "Password reset email has been sent to the email provided"})
+      }
+      else {
+        let resetToken = generateToken();
+        User.findOneAndUpdate(
+          {email: req.body.email},
+          {$set:{token: resetToken}},
+          {new: true},
+          (err, user) =>{
+            if(err){
+              res.send(err);
+            }
+            //res.json(user)
+            send_email_reset_token(resetToken, req, res, next);
+            res.status(200);
+            res.json({
+            success:true, message: "Password reset email has been sent to the email provided!"
+        }) 
+          });
+      }
+    }     
+    })
+
+  }
+  module.exports.resetThePassword = function(req, res){
+   let password = req.body.password;
+   let confirmPassword = req.body.confirmPassword;
+   User.findOne({token:req.params.token}).select().exec(function(err, user){
+    if(err){
+      res.json({success:false, message: err})
+    }else {
+      if(!user) {
+        res.json({success:false, message: "wrong token"})
+    }
+    else {
+
+      if(password === confirmPassword && confirmPassword !== "")  {
+        user.setPassword(confirmPassword);
+        user.save(function(err) {
+          if(err) return next(err);
+          res.json({success:true, message: "password has been reset"})
+        })
+        }
+        else {
+          res.json({success:false, message: "passwords does not match"})
+
+        }
+    }
+  }     
+  })
+  }
+  module.exports.confirmtoken = function(req, res){
+    console.log(req.params.token);
+    User.findOne({token:req.params.token}).select().exec(function(err, user){
+     if(err){
+       res.json({tokenState:false, message: err})
+     }else {
+       if(!user) {
+         res.json({tokenState:false})
+     }
+     else {
+      res.json({tokenState:true})
+     }
+   }     
+   })
+   }
