@@ -22,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(passport.initialize());
 var vendor = require('./route/vendor');
 var user = require('./route/user');
+var department = require('./route/department');
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -40,6 +41,7 @@ app.use(function(req, res, next){
 
 app.use('/vendors', vendor);
 app.use('/users', user);
+app.use('/departments', department);
 
 
 app.use(function (err, req, res, next) {
