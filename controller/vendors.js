@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Vendor = mongoose.model('Vendor');
 var mailer = require('../model/mailer');
+var user_controller = require('./users');
 
 exports.index = (req, res, next)=>{
     Vendor.find().exec((err, docs)=>{
@@ -122,5 +123,11 @@ let send_approval_email = function(req, res, next, doc ){
         html: '<p>Dear '+doc.general_info.company_name+'</p><br /><p>Your Vendor Application was not accepted. Please see the comments below:</p><p> <b>"'+req.body.message+'"</p>.</p><br /><br /><p>Regards</p><p>The Russelsmith Team</p>'// html body
     };
     mailer.sendMail(mailOptions, res, next);
-  
   }
+
+  exports.deleteVendor = (req, res)=>{
+      Vendor.deleteOne({user:req.body.user}).select().exec(function(err, vendor){
+      userId = req.body.user;
+      user_controller.deleteUser(userId);
+      })
+}

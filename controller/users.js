@@ -198,3 +198,8 @@ module.exports.view = function(req, res) {
    }     
    })
    }
+   
+   module.exports.deleteUser = function(userId){
+    User.deleteOne({_id: userId}).select().exec(function(err, user){
+    })   
+  }
