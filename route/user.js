@@ -8,6 +8,9 @@ router.get('/', jwt , userController.index);
 router.post('/login', userController.login);
 router.post('/register', userController.register);
 router.get('/view/:id', jwt , userController.view);
+router.put('/requestResetToken' , userController.requestResetToken);
+router.put('/resetthepassword/:token' , userController.resetThePassword);
+router.get('/confirmtoken/:token' , userController.confirmtoken);
 
 
 module.exports = router;
