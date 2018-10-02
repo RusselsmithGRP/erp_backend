@@ -183,6 +183,35 @@ module.exports.view = function(req, res) {
   }     
   })
   }
+
+  module.exports.changeYourPassword = function(req, res){
+    let oldPassword = req.body.oldPassword;
+    let password = req.body.password;
+    let confirmPassword = req.body.confirmPassword;
+
+    User.findOne({ _id: req.body.id }, function (err, user) {
+      if (user.validPassword(oldPassword)) {
+        if (password === confirmPassword && confirmPassword !== "") {
+          user.setPassword(confirmPassword);
+          user.save(function(err) {
+           // if(err) return next(err);
+            res.json({success:true, message: "password has been reset"})
+          })
+        }
+        else {
+          res.json({success:false, message: "new passwords do not match"})
+
+        }
+      }
+      else{
+        res.json({success:false, message: "old password does not match"})
+
+      }
+      
+    });
+   }
+   
+
   module.exports.confirmtoken = function(req, res){
     console.log(req.params.token);
     User.findOne({token:req.params.token}).select().exec(function(err, user){
