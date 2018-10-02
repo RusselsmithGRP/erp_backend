@@ -11,6 +11,7 @@ router.get('/view/:id', jwt , userController.view);
 router.put('/requestResetToken' , userController.requestResetToken);
 router.put('/resetthepassword/:token' , userController.resetThePassword);
 router.get('/confirmtoken/:token' , userController.confirmtoken);
+router.delete('/deleteuser/:data' , userController.deleteUser);
 
 
 module.exports = router;
