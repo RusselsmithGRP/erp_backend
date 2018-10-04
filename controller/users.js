@@ -54,28 +54,39 @@ let send_user_registration_email = function(req, res, next ){
 
 }
 
-module.exports.login = function(req, res) {
+let isRsEmail = (email)=>{
+  return email.search("russelsmithgroup.com");
+}
 
-  passport.authenticate('local', function(err, user, info){
-    var token;
-    // If Passport throws/catches an error
-    if (err) {
-      res.status(404).json(err);
-      return;
-    }
-    // If a user is found
-    if(user){
-      token = user.generateJwt();
-      res.status(200);
-      res.json({
-        "token" : token,
-        user : user,
-      });
-    } else {
-      // If user is not found
-      res.status(401).json(info);
-    }
+module.exports.login = function(req, res) {
+  let passportMode;
+  if(isRsEmail(req.body.email)){
+    passportMode = "custom";
+  }else{
+    passportMode = "local";
+  }
+  passport.authenticate(passportMode, function(err, user, info){
+      var token;
+      // If Passport throws/catches an error
+      if (err) {
+        res.status(404).json(err);
+        return;
+      }
+      // If a user is found
+      if(user){
+        token = user.generateJwt();
+        res.status(200);
+        res.json({
+          "token" : token,
+          user : user,
+        });
+      } else {
+        // If user is not found
+        res.status(401).json(info);
+      }
   })(req, res);
+  
+
 
 };
 
