@@ -6,4 +6,6 @@ dist
 lib
 es
 coverage
+config/secret.js
 package-lock.json
+model/mailer.js
