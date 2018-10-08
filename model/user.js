@@ -20,6 +20,7 @@ var userSchema = new mongoose.Schema({
   phone: String,
   city: String,
   eid: String,
+  department: String,
   updatedAt: Date
 });
 

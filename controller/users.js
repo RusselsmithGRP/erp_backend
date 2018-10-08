@@ -122,7 +122,6 @@ module.exports.view = function(req, res) {
     eid: req.body.eid,
     updatedAt: Date.now(),
   };
-  {{debugger}}
   User.findByIdAndUpdate(req.body.id, data, function(err, profileData){
   if(err) { res.send(err);}
   res.json({ success:true, message: "Your profile has been updated!", profile: profileData});
