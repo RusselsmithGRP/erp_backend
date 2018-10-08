@@ -111,3 +111,20 @@ module.exports.view = function(req, res) {
     }
   
   };
+
+  module.exports.updateProfileData = function(req, res){
+   let data = {
+    email: req.body.email,
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    phone: req.body.phone,
+    city: req.body.city,
+    eid: req.body.eid,
+    updatedAt: Date.now(),
+  };
+  {{debugger}}
+  User.findByIdAndUpdate(req.body.id, data, function(err, profileData){
+  if(err) { res.send(err);}
+  res.json({ success:true, message: "Your profile has been updated!", profile: profileData});
+});
+  }
