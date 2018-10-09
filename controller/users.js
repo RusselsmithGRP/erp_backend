@@ -213,7 +213,6 @@ module.exports.view = function(req, res) {
    
 
   module.exports.confirmtoken = function(req, res){
-    console.log(req.params.token);
     User.findOne({token:req.params.token}).select().exec(function(err, user){
      if(err){
        res.json({tokenState:false, message: err})
@@ -232,3 +231,30 @@ module.exports.view = function(req, res) {
     User.deleteOne({_id: userId}).select().exec(function(err, user){
     })   
   }
+
+  module.exports.findAllStaff = function(req, res){
+    User.find({ role:"staff"}).exec(function(err, users){
+     if(err){
+       res.json({message: err})
+     }
+     else {
+      res.status(200).json(users);
+      console.log(users)
+   }     
+   })
+   }
+
+  module.exports.createNewUser = function(req, res){
+  var user = new User();
+  user.email = req.body.email;
+  user.eid = req.body.eid;
+  user.role = req.body.role;
+  user.department = req.body.department;
+  user.save(function(err) {
+    if(err) return next(err);
+    else {
+      res.json({success:true, message: "New User Created"})
+    }
+  })
+}
+ 
