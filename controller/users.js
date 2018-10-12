@@ -33,12 +33,11 @@ module.exports.register = function(req, res, next) {
         });
       });
     }else{
-     /// send_user_registration_email(req, res, next);
-    
+     send_user_registration_email(req, res, next);
     }
   });
 
-};
+}
 
 
 let send_user_registration_email = function(req, res, next ){
@@ -79,30 +78,41 @@ let generateToken = function() {
   return text;
 }
 
+let isRsEmail = (email)=>{
+  return email.search("russelsmithgroup.com");
+}
+
 module.exports.login = function(req, res) {
-
-  passport.authenticate('local', function(err, user, info){
-    var token;
-    // If Passport throws/catches an error
-    if (err) {
-      res.status(404).json(err);
-      return;
-    }
-    // If a user is found
-    if(user){
-      token = user.generateJwt();
-      res.status(200);
-      res.json({
-        "token" : token,
-        user : user,
-      });
-    } else {
-      // If user is not found
-      res.status(401).json(info);
-    }
+  let passportMode;
+  if(isRsEmail(req.body.email) >= 0 ){
+    passportMode = "custom";
+  }else{
+    passportMode = "local";
+  }
+  passport.authenticate(passportMode, function(err, user, info){
+      var token;
+      // If Passport throws/catches an error
+      if (err) {
+        res.status(404).json(err);
+        return;
+      }
+      // If a user is found
+      if(user){
+        token = user.generateJwt();
+        res.status(200);
+        res.json({
+          "token" : token,
+          user : user,
+        });
+      } else {
+        // If user is not found
+        res.status(401).json(info);
+      }
   })(req, res);
+  
 
-};
+
+}
 
 module.exports.index = function(req, res){
 
@@ -124,7 +134,8 @@ module.exports.view = function(req, res) {
         });
     }
   
-  };
+  }
+
   module.exports.requestResetToken = function(req, res, next){
     User.findOne({email:req.body.email}).select().exec(function(err, user){
       if(err){
@@ -133,56 +144,54 @@ module.exports.view = function(req, res) {
       }else {
         if(!user) {
           res.json({success:false, message: "Password reset email has been sent to the email provided"})
-      }
-      else {
-        let resetToken = generateToken();
-        User.findOneAndUpdate(
-          {email: req.body.email},
-          {$set:{token: resetToken}},
-          {new: true},
-          (err, user) =>{
-            if(err){
-              res.send(err);
-            }
-            //res.json(user)
-            send_email_reset_token(resetToken, req, res, next);
-            res.status(200);
-            res.json({
-            success:true, message: "Password reset email has been sent to the email provided!"
-        }) 
-          });
-      }
+        }
+        else {
+          let resetToken = generateToken();
+          User.findOneAndUpdate(
+              {email: req.body.email},
+              {$set:{token: resetToken}},
+              {new: true},
+              (err, user) =>{
+                  if(err){
+                    res.send(err);
+                  }
+                  //res.json(user)
+                  send_email_reset_token(resetToken, req, res, next);
+                  res.status(200);
+                  res.json({
+                    success:true, message: "Password reset email has been sent to the email provided!"
+                  }) 
+              });
+        }
     }     
     })
 
   }
+  
   module.exports.resetThePassword = function(req, res){
-   let password = req.body.password;
-   let confirmPassword = req.body.confirmPassword;
-   User.findOne({token:req.params.token}).select().exec(function(err, user){
-    if(err){
-      res.json({success:false, message: err})
-    }else {
-      if(!user) {
-        res.json({success:false, message: "wrong token"})
-    }
-    else {
-
-      if(password === confirmPassword && confirmPassword !== "")  {
-        user.setPassword(confirmPassword);
-        user.save(function(err) {
-          if(err) return next(err);
-          res.json({success:true, message: "password has been reset"})
-        })
-        }
-        else {
-          res.json({success:false, message: "passwords does not match"})
-
-        }
-    }
-  }     
-  })
-  }
+    let password = req.body.password;
+    let confirmPassword = req.body.confirmPassword;
+    User.findOne({token:req.params.token}).select().exec(function(err, user){
+       if(err){
+         res.json({success:false, message: err})
+       }else {
+         if(!user) {
+           res.json({success:false, message: "wrong token"})
+         }
+         if(password === confirmPassword && confirmPassword !== "")  {
+             user.setPassword(confirmPassword);
+             user.save(function(err) {
+               if(err) return next(err);
+               res.json({success:true, message: "password has been reset"})
+             })
+           }
+           else {
+             res.json({success:false, message: "passwords does not match"})
+ 
+           }
+       }     
+     })
+   }
 
   module.exports.changeYourPassword = function(req, res){
     let oldPassword = req.body.oldPassword;
@@ -200,31 +209,28 @@ module.exports.view = function(req, res) {
         }
         else {
           res.json({success:false, message: "new passwords do not match"})
-
         }
       }
       else{
         res.json({success:false, message: "old password does not match"})
-
       }
-      
     });
    }
    
 
   module.exports.confirmtoken = function(req, res){
     User.findOne({token:req.params.token}).select().exec(function(err, user){
-     if(err){
-       res.json({tokenState:false, message: err})
-     }else {
-       if(!user) {
-         res.json({tokenState:false})
-     }
-     else {
-      res.json({tokenState:true})
-     }
-   }     
-   })
+        if(err){
+          res.json({tokenState:false, message: err})
+        }else {
+          if(!user) {
+            res.json({tokenState:false})
+        }
+        else {
+          res.json({tokenState:true})
+        }
+      }     
+    })
    }
    
    module.exports.deleteUser = function(userId){
@@ -234,27 +240,24 @@ module.exports.view = function(req, res) {
 
   module.exports.findAllStaff = function(req, res){
     User.find({ role:"staff"}).exec(function(err, users){
-     if(err){
-       res.json({message: err})
-     }
-     else {
-      res.status(200).json(users);
-      console.log(users)
-   }     
-   })
+      if(err){
+        res.json({message: err})
+      }
+        res.status(200).json(users);
+        console.log(users)    
+    });
    }
 
   module.exports.createNewUser = function(req, res){
-  var user = new User();
-  user.email = req.body.email;
-  user.eid = req.body.eid;
-  user.role = req.body.role;
-  user.department = req.body.department;
-  user.save(function(err) {
-    if(err) return next(err);
-    else {
-      res.json({success:true, message: "New User Created"})
-    }
-  })
-}
- 
+    var user = new User();
+    user.email = req.body.email;
+    user.eid = req.body.eid;
+    user.role = req.body.role;
+    user.department = req.body.department;
+    user.save(function(err) {
+      if(err) {
+        return next(err)
+      }
+      res.json({success:true, message: "New User Created"});
+    })
+  }
