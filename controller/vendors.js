@@ -43,7 +43,7 @@ exports.viewOne = (req, res, next)=>{
     Vendor.find({_id: req.params.id}).exec((err, doc)=>{
         if (err) return next(err);
         res.send(doc);
-    })
+    });
 }
 
 exports.update = (req, res, next)=>{

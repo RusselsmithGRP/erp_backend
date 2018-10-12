@@ -60,7 +60,7 @@ let isRsEmail = (email)=>{
 
 module.exports.login = function(req, res) {
   let passportMode;
-  if(isRsEmail(req.body.email)){
+  if(isRsEmail(req.body.email) >= 0 ){
     passportMode = "custom";
   }else{
     passportMode = "local";
