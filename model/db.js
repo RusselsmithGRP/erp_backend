@@ -51,3 +51,4 @@ require('./user');
 require('./vendor');
 require('./department');
 require('./role');
+require('./purchaserequisition');

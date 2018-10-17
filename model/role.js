@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 var roleSchema = Schema({
     name: String,
-    
+    slug: String,
     permission: Object,
 });
 

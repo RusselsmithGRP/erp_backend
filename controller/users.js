@@ -51,7 +51,6 @@ let send_user_registration_email = function(req, res, next ){
       html: '<p>Dear '+req.body.coy_name+', </p><p>Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.</p><p> To continue the vendor registration, please click the link below: Confirmation Link: <a href="'+process.env.ABSOLUTE_LINK+'/login">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>', // plain text body
     };
   mailer.sendMail(mailOptions, res, next);
-
 }
 
 let send_email_reset_token = function(resetToken, req, res, next ){
@@ -156,7 +155,6 @@ module.exports.view = function(req, res) {
   module.exports.requestResetToken = function(req, res, next){
     User.findOne({email:req.body.email}).select().exec(function(err, user){
       if(err){
-        console.log("error");
         res.json({success:false, message: "error here" + err})
       }else {
         if(!user) {
@@ -199,12 +197,11 @@ module.exports.view = function(req, res) {
              user.setPassword(confirmPassword);
              user.save(function(err) {
                if(err) return next(err);
-               res.json({success:true, message: "password has been reset"})
+               res.json({success:true, message: "password has been reset"});
              })
            }
            else {
-             res.json({success:false, message: "passwords does not match"})
- 
+             res.json({success:false, message: "passwords does not match"});
            }
        }     
      })
@@ -214,13 +211,12 @@ module.exports.view = function(req, res) {
     let oldPassword = req.body.oldPassword;
     let password = req.body.password;
     let confirmPassword = req.body.confirmPassword;
-
     User.findOne({ _id: req.body.id }, function (err, user) {
       if (user.validPassword(oldPassword)) {
         if (password === confirmPassword && confirmPassword !== "") {
           user.setPassword(confirmPassword);
           user.save(function(err) {
-           // if(err) return next(err);
+            if(err) return next(err);
             res.json({success:true, message: "password has been reset"})
           })
         }
@@ -238,34 +234,38 @@ module.exports.view = function(req, res) {
   module.exports.confirmtoken = function(req, res){
     User.findOne({token:req.params.token}).select().exec(function(err, user){
         if(err){
-          res.json({tokenState:false, message: err})
+          res.json({tokenState:false, message: err});
+          return;
         }else {
           if(!user) {
-            res.json({tokenState:false})
-        }
-        else {
-          res.json({tokenState:true})
-        }
-      }     
+            res.json({tokenState:false});
+            return;
+          }
+          else {
+            res.json({tokenState:true});
+            return;
+          }
+        }     
     })
-   }
+  }
    
-   module.exports.deleteUser = function(userId){
+  module.exports.deleteUser = function(userId){
     User.deleteOne({_id: userId}).select().exec(function(err, user){
+
     })   
   }
 
   module.exports.findAllStaff = function(req, res){
-    User.find({ role:"staff"}).exec(function(err, users){
+    User.find({ role:({$ne: 'admin', $ne:'vendor'})}).exec(function(err, users){
       if(err){
         res.json({message: err})
+        return;
       }
-        res.status(200).json(users);
-        console.log(users)    
+      res.status(200).json(users);   
     });
-   }
+  }
 
-  module.exports.createNewUser = function(req, res){
+  module.exports.createNewUser = function(req, res, next){
     var user = new User();
     user.firstname = req.body.firstname;
     user.lastname = req.body.lastname;
@@ -278,5 +278,6 @@ module.exports.view = function(req, res) {
       res.json({success:false, message: "An error occured. Plese check your inputs."});
       }
       res.json({success:true, message: "New User Created!"});
+      send_staff_registration_email(req, res, next);
     })
   }
