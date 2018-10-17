@@ -267,14 +267,16 @@ module.exports.view = function(req, res) {
 
   module.exports.createNewUser = function(req, res){
     var user = new User();
+    user.firstname = req.body.firstname;
+    user.lastname = req.body.lastname;
     user.email = req.body.email;
     user.eid = req.body.eid;
     user.role = req.body.role;
     user.department = req.body.department;
     user.save(function(err) {
       if(err) {
-        return next(err)
+      res.json({success:false, message: "An error occured. Plese check your inputs."});
       }
-      res.json({success:true, message: "New User Created"});
+      res.json({success:true, message: "New User Created!"});
     })
   }

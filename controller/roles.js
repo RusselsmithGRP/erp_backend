@@ -38,3 +38,9 @@ exports.save_permission = (req, res, next)=>{
         res.send(result);
     });
 }
+exports.resolve_permission = (req, res, next)=>{
+    Role.find({slug: req.body.role}).exec((err, path)=>{
+        if (err) return next(err);
+        res.send(path);
+    });
+}
