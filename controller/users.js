@@ -133,7 +133,24 @@ module.exports.view = function(req, res) {
         });
     }
   
+  };
+
+  module.exports.updateProfileData = function(req, res){
+   let data = {
+    email: req.body.email,
+    lastname: req.body.lastname,
+    firstname: req.body.firstname,
+    phone: req.body.phone,
+    city: req.body.city,
+    eid: req.body.eid,
+    updatedAt: Date.now(),
+  };
+  User.findByIdAndUpdate(req.body.id, data, function(err, profileData){
+  if(err) { res.send(err);}
+  res.json({ success:true, message: "Your profile has been updated!", profile: profileData});
+});
   }
+  
 
   module.exports.requestResetToken = function(req, res, next){
     User.findOne({email:req.body.email}).select().exec(function(err, user){
@@ -262,6 +279,7 @@ module.exports.view = function(req, res) {
       send_staff_registration_email(req, res, next);
     })
   }
+<<<<<<< HEAD
 
   let send_staff_registration_email = function(req, res, next ){
     // setup email data with unicode symbols
@@ -274,3 +292,5 @@ module.exports.view = function(req, res) {
       };
     mailer.sendMail(mailOptions, res, next);
   }
+=======
+>>>>>>> 27334926d3bf15b142eeaa0b065e66549946e98d
