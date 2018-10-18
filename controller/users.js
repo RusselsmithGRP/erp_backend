@@ -140,14 +140,14 @@ module.exports.view = function(req, res) {
     email: req.body.email,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
-    phone: req.body.phone,
-    city: req.body.city,
     eid: req.body.eid,
+    department: req.body.department,
+    role: req.body.role,
     updatedAt: Date.now(),
   };
-  User.findByIdAndUpdate(req.body.id, data, function(err, profileData){
+  User.findByIdAndUpdate(req.body._id, data, function(err, profileData){
   if(err) { res.send(err);}
-  res.json({ success:true, message: "Your profile has been updated!", profile: profileData});
+  res.json({ success:true, message: "profile has been updated!", profile: profileData});
 });
   }
   
@@ -273,11 +273,35 @@ module.exports.view = function(req, res) {
     user.eid = req.body.eid;
     user.role = req.body.role;
     user.department = req.body.department;
+    user.type = req.body.type;
+
     user.save(function(err) {
       if(err) {
       res.json({success:false, message: "An error occured. Plese check your inputs."});
       }
       res.json({success:true, message: "New User Created!"});
+      res.json({success:true, message: "New User Created"});
       send_staff_registration_email(req, res, next);
+    })
+  }
+
+  let send_staff_registration_email = function(req, res, next ){
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: process.env.EMAIL_FROM, // sender address
+        to: req.body.email,//req.body.email, // list of receivers
+        subject: 'New User Account Confirmation', // Subject line
+        text: 'Dear User\n An account has just been created for you on RS Edge.\n Kindly Logon unto the platform to access your account.\nRegards \nThe Russelsmith Team.', // plain text body
+        html: '<p>Dear User, </p><p>An account has just been created for you on RS Edge.</p><p> Kindly Logon unto the platform to access your account..</p><br /><p>Regards </p><p>The Russelsmith Team.</p>', // plain text body
+      };
+    mailer.sendMail(mailOptions, res, next);
+  }
+  module.exports.getProfileDetails = function(req, res){
+    User.findOne({_id:req.params.id}).select().exec(function(err, user){
+        if(err){
+          res.json({message: err});
+          return;
+        } 
+        res.status(200).json(user); 
     })
   }

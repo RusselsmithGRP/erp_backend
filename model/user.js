@@ -22,6 +22,7 @@ var userSchema = new mongoose.Schema({
   lastname: String,
   phone: String,
   city: String,
+  type: String,
   updatedAt: Date
 });
 
