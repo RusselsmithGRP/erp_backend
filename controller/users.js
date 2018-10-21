@@ -279,7 +279,6 @@ module.exports.view = function(req, res) {
       send_staff_registration_email(req, res, next);
     })
   }
-<<<<<<< HEAD
 
   let send_staff_registration_email = function(req, res, next ){
     // setup email data with unicode symbols
@@ -292,5 +291,3 @@ module.exports.view = function(req, res) {
       };
     mailer.sendMail(mailOptions, res, next);
   }
-=======
->>>>>>> 27334926d3bf15b142eeaa0b065e66549946e98d

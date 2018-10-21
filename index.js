@@ -24,6 +24,8 @@ var vendor = require('./route/vendor');
 var user = require('./route/user');
 var department = require('./route/department');
 var role = require('./route/role');
+var purchaserequisition = require('./route/purchaserequisition');
+var requestquotation = require('./route/requestquotation');
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -44,6 +46,8 @@ app.use('/vendors', vendor);
 app.use('/users', user);
 app.use('/departments', department);
 app.use('/roles', role);
+app.use('/purchase/requisition', purchaserequisition);
+app.use('/purchase/quotation', requestquotation);
 
 
 app.use(function (err, req, res, next) {

@@ -1,11 +1,11 @@
 var mongoose = require('mongoose');
-var PurchaseRequisition = mongoose.model('purchaserequisition');
+var RequestQuotation = mongoose.model('requestquotation');
 
 var Department = require('./departments');
 
 
 exports.index = (req, res, next)=>{
-    PurchaseRequisition.find().populate('requestor department').exec((err, docs)=>{
+    RequestQuotation.find().populate('vendor requisition').exec((err, docs)=>{
         if (err) return next(err);
         else res.send(docs);
     });
@@ -14,13 +14,13 @@ exports.index = (req, res, next)=>{
 
 exports.save = (req, res, next)=>{
     const data = req.body;
-    let purchaserequisition = new PurchaseRequistion(data);
-    purchaserequisition.permission = [];
-    purchaserequisition.save(function (err,result) {
+    let requestquotation = new PurchaseRequistion(data);
+    requestquotation.permission = [];
+    requestquotation.save(function (err,result) {
         if (err) return next(err);
         // saved!
         res.send(result);
-      });
+    });
 }
 
 let generateReqNo = (departmentId, eid, id, callback)=>{
@@ -34,13 +34,13 @@ let generateReqNo = (departmentId, eid, id, callback)=>{
 
  exports.submit = (req, res, next)=>{
     const data = req.body;
-    let purchaserequisition = new PurchaseRequisition(data);
-    purchaserequisition.permission = [];
-    purchaserequisition.save(function (err,result) {
+    let requestquotation = new RequestQuotation(data);
+    requestquotation.permission = [];
+    requestquotation.save(function (err,result) {
         if (err) return next(err);
         // saved!
         generateReqNo(data.department, data.eid, result.id, (requisitionNo)=>{
-            PurchaseRequisition.updateOne({_id:result.id}, {requisitionno: requisitionNo}, (err,result)=>{
+            RequestQuotation.updateOne({_id:result.id}, {requisitionno: requisitionNo}, (err,result)=>{
                 if (err) return next(err);
                 res.send(result);
             });
@@ -50,14 +50,14 @@ let generateReqNo = (departmentId, eid, id, callback)=>{
 }
 
 exports.view = (req, res, next)=>{
-    PurchaseRequisition.find({_id: req.params.id}).populate('requestor department').exec((err, doc)=>{
+    RequestQuotation.find({_id: req.params.id}).populate('vendor requisition').exec((err, doc)=>{
         if (err) return next(err);
         res.send(doc);
     });
 }
 
 exports.update = (req, res, next)=>{
-    PurchaseRequisition.updateOne({_id:req.params.id}, req.body, (err,result)=>{
+    RequestQuotation.updateOne({_id:req.params.id}, req.body, (err,result)=>{
         if (err) return next(err);
         res.send(result);
     });
