@@ -5,9 +5,8 @@ var requestQuotationController = require('../controller/requestquotation');
 var jwt = require('../config/jwt');
 
 router.get('/', jwt, requestQuotationController.index);
-router.post('/save', jwt, requestQuotationController.save);
 router.post('/submit', jwt, requestQuotationController.submit);
-router.get('/index/:req', jwt, requestQuotationController.view);
+router.get('/index/:req', jwt, requestQuotationController.list);
 router.get('/view/:id', jwt, requestQuotationController.view);
 router.post('/update/:id', jwt, requestQuotationController.update);
 /* router.delete('/delete', jwt, requestQuotationController.delete);

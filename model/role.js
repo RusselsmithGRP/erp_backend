@@ -8,4 +8,4 @@ var roleSchema = Schema({
 });
 
 
-mongoose.model('role', roleSchema);
+mongoose.model('Role', roleSchema);

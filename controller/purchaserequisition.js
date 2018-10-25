@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var PurchaseRequisition = mongoose.model('purchaserequisition');
+var PurchaseRequisition = mongoose.model('PurchaseRequisition');
 
 var Department = require('./departments');
 
@@ -14,6 +14,7 @@ exports.index = (req, res, next)=>{
 
 exports.save = (req, res, next)=>{
     const data = req.body;
+    data.created = new Date();
     let purchaserequisition = new PurchaseRequistion(data);
     purchaserequisition.permission = [];
     purchaserequisition.save(function (err,result) {
@@ -27,13 +28,14 @@ let generateReqNo = (departmentId, eid, id, callback)=>{
     Department.findDeparmentDetails(departmentId, (doc)=>{
         const eidsubstr = eid.substring(eid.length - 4);
         const idsubstr = id.substring(id.length - 6);
-        callback(doc['0'].code+"/"+eidsubstr+"/"+idsubstr);
+        callback("/"+eidsubstr+"/"+idsubstr);
     });
 
 }
 
  exports.submit = (req, res, next)=>{
     const data = req.body;
+    data.created = new Date();
     let purchaserequisition = new PurchaseRequisition(data);
     purchaserequisition.permission = [];
     purchaserequisition.save(function (err,result) {

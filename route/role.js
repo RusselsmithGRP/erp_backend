@@ -9,5 +9,6 @@ router.post('/add', jwt,roleController.add);
 router.delete('/delete', jwt, roleController.delete);
 router.get('/permission/:id', jwt, roleController.get_permission);
 router.post('/permission/save/:id', jwt, roleController.save_permission);
+router.post('/resolvepermission', jwt, roleController.resolve_permission);
 
 module.exports = router;

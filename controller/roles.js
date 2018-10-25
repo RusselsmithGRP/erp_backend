@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Role = mongoose.model('role');
+var Role = mongoose.model('Role');
 
 exports.index = (req, res, next)=>{
     Role.find().exec((err, docs)=>{
@@ -36,5 +36,11 @@ exports.save_permission = (req, res, next)=>{
     Role.updateOne({_id:req.params.id}, req.body.payload, (err,result)=>{
         if (err) return next(err);
         res.send(result);
+    });
+}
+exports.resolve_permission = (req, res, next)=>{
+    Role.find({slug: req.body.role}).exec((err, path)=>{
+        if (err) return next(err);
+        res.send(path);
     });
 }

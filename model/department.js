@@ -8,4 +8,4 @@ var departmentSchema = Schema({
 });
 
 
-mongoose.model('department', departmentSchema);
+mongoose.model('Department', departmentSchema);

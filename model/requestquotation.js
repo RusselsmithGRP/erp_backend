@@ -4,11 +4,11 @@ var Schema = mongoose.Schema;
 var requestQuotationSchema = Schema({
     vendor:{
         type: Schema.Types.ObjectId,
-        ref: 'vendor'
+        ref: 'Vendor'
     },
     requisition: {
         type: Schema.Types.ObjectId,
-        ref: 'purchaserequisition'
+        ref: 'PurchaseRequisition'
     },
     lineitems: Object,
     updated: { type: Date, default: Date.now },
@@ -17,4 +17,4 @@ var requestQuotationSchema = Schema({
 });
 
 
-mongoose.model('requestquotation', requestQuotationSchema);
+mongoose.model('RequestQuotation', requestQuotationSchema);

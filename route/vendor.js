@@ -11,9 +11,9 @@ router.get('/approved', vendorController.approved);
 router.get('/pending', vendorController.pending);
 router.get('/blacklisted', vendorController.blacklisted);
 router.put('/updatestatus', vendorController.updateStatus);
+router.get('/search' , vendorController.search);
 router.get('/:user_id', vendorController.view);
 router.get('/one/:id', vendorController.viewOne);
-router.get('/search/:text', vendorController.search);
 router.delete('/deletevendor', jwt , vendorController.deleteVendor);
 
 module.exports = router;

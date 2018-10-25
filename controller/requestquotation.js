@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var RequestQuotation = mongoose.model('requestquotation');
+var RequestQuotation = mongoose.model('RequestQuotation');
 
 var Department = require('./departments');
 
@@ -12,14 +12,10 @@ exports.index = (req, res, next)=>{
 }
 
 
-exports.save = (req, res, next)=>{
-    const data = req.body;
-    let requestquotation = new PurchaseRequistion(data);
-    requestquotation.permission = [];
-    requestquotation.save(function (err,result) {
+exports.list = (req, res, next)=>{
+    RequestQuotation.find({requisition: req.params.req}).populate('vendor requisition').exec((err, docs)=>{
         if (err) return next(err);
-        // saved!
-        res.send(result);
+        else res.send(docs);
     });
 }
 
@@ -33,20 +29,19 @@ let generateReqNo = (departmentId, eid, id, callback)=>{
 }
 
  exports.submit = (req, res, next)=>{
-    const data = req.body;
-    let requestquotation = new RequestQuotation(data);
-    requestquotation.permission = [];
-    requestquotation.save(function (err,result) {
-        if (err) return next(err);
-        // saved!
-        generateReqNo(data.department, data.eid, result.id, (requisitionNo)=>{
-            RequestQuotation.updateOne({_id:result.id}, {requisitionno: requisitionNo}, (err,result)=>{
-                if (err) return next(err);
-                res.send(result);
-            });
-        });
-
-      });
+    let data = {}
+    req.body.vendors.forEach((vendor, i)=>{
+        data.vendor = vendor.value;
+        data.requisition = req.body.prId;
+        data.lineitems = req.body.items;
+        data.created = new Date();
+        let requestquotation = new RequestQuotation(data);
+        requestquotation.permission = [];
+        requestquotation.save(function (err,result) {
+            if (err) return next(err);
+          });
+    });
+    res.send({isOk:true});
 }
 
 exports.view = (req, res, next)=>{

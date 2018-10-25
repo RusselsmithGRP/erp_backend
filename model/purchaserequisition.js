@@ -11,7 +11,7 @@ var purchaseRequisitionSchema = Schema({
     chargeto: String,
     department: {
         type: Schema.Types.ObjectId,
-        ref: 'department'
+        ref: 'Department'
     },
     shipvia: String,
     status: String,
@@ -19,9 +19,10 @@ var purchaseRequisitionSchema = Schema({
     lineitems: Object,
     type: String,
     isextrabudget: Boolean,
+    deliverymode: String,
     updated: { type: Date, default: Date.now },
     created: { type: Date},
 });
 
 
-mongoose.model('purchaserequisition', purchaseRequisitionSchema);
+mongoose.model('PurchaseRequisition', purchaseRequisitionSchema);

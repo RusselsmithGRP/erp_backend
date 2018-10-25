@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Department = mongoose.model('department');
+var Department = mongoose.model('Department');
 
 exports.index = (req, res, next)=>{
     Department.find().exec((err, docs)=>{

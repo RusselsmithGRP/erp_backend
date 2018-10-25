@@ -48,13 +48,13 @@ exports.viewOne = (req, res, next)=>{
 }
 
 exports.search = (req, res, next)=>{
-    const regexValue = '^' + req.params.text;
-    var queryOptions = {
+    const regexValue = '^' + req.body.text;
+    var queryOptions = (req.body.text)? {
         'general_info.company_name': {
                 '$regex': regexValue,
                 '$options': 'i'
         }
-    }
+    } : {};
     Vendor.find(queryOptions).exec((err, doc)=>{
         if (err) return next(err);
         res.send(doc);
@@ -104,6 +104,7 @@ exports.updateStatus = (req, res, next)=>{
 
 exports.create = (req, res, next)=>{
     const data = req.body;
+    data.created = new Date();
     let vendor = new Vendor(data);
     vendor.save(function (err,result) {
         if (err) return next(err);
