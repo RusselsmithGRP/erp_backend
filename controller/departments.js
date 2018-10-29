@@ -14,7 +14,9 @@ exports.add = (req, res, next)=>{
     department.save(function (err,result) {
         if (err) return next(err);
         // saved!
-        res.send(result);
+        res.json({ 
+            success:true, message: "New department created!", result: result});
+
       });
 }
 

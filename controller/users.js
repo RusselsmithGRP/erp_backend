@@ -155,10 +155,10 @@ module.exports.view = function(req, res) {
   module.exports.requestResetToken = function(req, res, next){
     User.findOne({email:req.body.email}).select().exec(function(err, user){
       if(err){
-        res.json({success:false, message: "error here" + err})
+        return res.json({success:false, message: "error here" + err})
       }else {
         if(!user) {
-          res.json({success:false, message: "Password reset email has been sent to the email provided"})
+          return res.json({success:false, message: "Password reset email has been sent to the email provided"})
         }
         else {
           let resetToken = generateToken();
@@ -188,20 +188,20 @@ module.exports.view = function(req, res) {
     let confirmPassword = req.body.confirmPassword;
     User.findOne({token:req.params.token}).select().exec(function(err, user){
        if(err){
-         res.json({success:false, message: err})
+        return res.json({success:false, message: err})
        }else {
          if(!user) {
-           res.json({success:false, message: "wrong token"})
+          return  res.json({success:false, message: "wrong token"})
          }
          if(password === confirmPassword && confirmPassword !== "")  {
              user.setPassword(confirmPassword);
              user.save(function(err) {
                if(err) return next(err);
-               res.json({success:true, message: "password has been reset"});
+              return res.json({success:true, message: "password has been reset"});
              })
            }
            else {
-             res.json({success:false, message: "passwords does not match"});
+            return res.json({success:false, message: "passwords does not match"});
            }
        }     
      })
@@ -217,15 +217,15 @@ module.exports.view = function(req, res) {
           user.setPassword(confirmPassword);
           user.save(function(err) {
             if(err) return next(err);
-            res.json({success:true, message: "password has been reset"})
+           return res.json({success:true, message: "password has been reset"})
           })
         }
         else {
-          res.json({success:false, message: "new passwords do not match"})
+          return res.json({success:false, message: "new passwords do not match"})
         }
       }
       else{
-        res.json({success:false, message: "old password does not match"})
+        return res.json({success:false, message: "old password does not match"})
       }
     });
    }
@@ -277,10 +277,9 @@ module.exports.view = function(req, res) {
 
     user.save(function(err) {
       if(err) {
-      res.json({success:false, message: "An error occured. Plese check your inputs."});
+       return res.json({success:false, message: "An error occured. Plese check your inputs."});
       }
       res.json({success:true, message: "New User Created!"});
-      res.json({success:true, message: "New User Created"});
       send_staff_registration_email(req, res, next);
     })
   }
