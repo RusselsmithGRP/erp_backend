@@ -9,6 +9,8 @@ router.post('/submit', jwt, requestQuotationController.submit);
 router.get('/index/:req', jwt, requestQuotationController.list);
 router.get('/view/:id', jwt, requestQuotationController.view);
 router.post('/update/:id', jwt, requestQuotationController.update);
+router.post('/submitvendorquote', jwt, requestQuotationController.submitVendorQuote);
+router.get('/vendor/:vendorId', jwt, requestQuotationController.vendorsQuoteList);
 /* router.delete('/delete', jwt, requestQuotationController.delete);
 router.get('/permission/:id', jwt, requestQuotationController.get_permission);
 router.post('/permission/save/:id', jwt, requestQuotationController.save_permission);

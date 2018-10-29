@@ -18,8 +18,24 @@ exports.approved = (req, res, next)=>{
     });
 }
 
+exports.unapproved = (req, res, next)=>{
+    const query = { status: "UNAPPROVED" };
+    Vendor.find(query).exec((err, docs)=>{
+        if (err) return next(err);
+        res.send(docs);
+    });
+}
+
 exports.pending = (req, res, next)=>{
     const query = { status: "PENDING" };
+    Vendor.find(query).exec((err, docs)=>{
+        if (err)return next(err);
+        res.send(docs);
+    });
+}
+
+exports.new = (req, res, next)=>{
+    const query = { status: "" };
     Vendor.find(query).exec((err, docs)=>{
         if (err)return next(err);
         res.send(docs);

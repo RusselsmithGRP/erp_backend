@@ -11,9 +11,16 @@ var requestQuotationSchema = Schema({
         ref: 'PurchaseRequisition'
     },
     lineitems: Object,
+    no: String,
     updated: { type: Date, default: Date.now },
     created: { type: Date},
-    status: String
+    status: String,
+    price: Number, 
+    currency:{
+        type: Schema.Types.ObjectId,
+        ref: 'Currency'
+    },
+    creditterms:Number
 });
 
 
