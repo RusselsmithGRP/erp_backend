@@ -18,8 +18,24 @@ exports.approved = (req, res, next)=>{
     });
 }
 
+exports.unapproved = (req, res, next)=>{
+    const query = { status: "UNAPPROVED" };
+    Vendor.find(query).exec((err, docs)=>{
+        if (err) return next(err);
+        res.send(docs);
+    });
+}
+
 exports.pending = (req, res, next)=>{
     const query = { status: "PENDING" };
+    Vendor.find(query).exec((err, docs)=>{
+        if (err)return next(err);
+        res.send(docs);
+    });
+}
+
+exports.new = (req, res, next)=>{
+    const query = { status: "" };
     Vendor.find(query).exec((err, docs)=>{
         if (err)return next(err);
         res.send(docs);
@@ -44,7 +60,21 @@ exports.viewOne = (req, res, next)=>{
     Vendor.find({_id: req.params.id}).exec((err, doc)=>{
         if (err) return next(err);
         res.send(doc);
-    })
+    });
+}
+
+exports.search = (req, res, next)=>{
+    const regexValue = '^' + req.body.text;
+    var queryOptions = (req.body.text)? {
+        'general_info.company_name': {
+                '$regex': regexValue,
+                '$options': 'i'
+        }
+    } : {};
+    Vendor.find(queryOptions).exec((err, doc)=>{
+        if (err) return next(err);
+        res.send(doc);
+    });  
 }
 
 exports.update = (req, res, next)=>{
@@ -90,6 +120,7 @@ exports.updateStatus = (req, res, next)=>{
 
 exports.create = (req, res, next)=>{
     const data = req.body;
+    data.created = new Date();
     let vendor = new Vendor(data);
     vendor.save(function (err,result) {
         if (err) return next(err);
