@@ -23,7 +23,8 @@ var userSchema = new mongoose.Schema({
   phone: String,
   city: String,
   type: String,
-  updatedAt: Date
+  updatedAt: Date,
+  updated: { type: Date, default: Date.now },
 });
 
 userSchema.methods.setPassword = function(password){

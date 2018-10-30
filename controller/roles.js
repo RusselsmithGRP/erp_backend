@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var Role = mongoose.model('role');
+var Role = mongoose.model('Role');
 
 exports.index = (req, res, next)=>{
     Role.find().exec((err, docs)=>{

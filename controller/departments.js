@@ -20,6 +20,19 @@ exports.add = (req, res, next)=>{
       });
 }
 
+exports.viewOne = (req, res, next)=>{
+    this.findDeparmentDetails(req.params.id, (err, doc)=>{
+        res.send(doc);
+    });
+}
+
+exports.findDeparmentDetails = (id, callback)=>{
+    Department.find({_id: id}).exec((err, doc)=>{
+        if (err) return next(err);
+        callback(doc);
+    });
+}
+
 exports.delete = (req, res, next)=>{
     Department.deleteOne({_id: req.body.id}, function (err) {
         if (err) return handleError(err);
