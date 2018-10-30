@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var PurchaseRequisition = mongoose.model('PurchaseRequisition');
-
 var Department = require('./departments');
+var Utility = require("../commons/utility");
 
 
 exports.index = (req, res, next)=>{
@@ -24,14 +24,6 @@ exports.save = (req, res, next)=>{
       });
 }
 
-let generateReqNo = (departmentId, eid, id, callback)=>{
-    Department.findDeparmentDetails(departmentId, (doc)=>{
-        const eidsubstr = eid.substring(eid.length - 4);
-        const idsubstr = id.substring(id.length - 6);
-        callback("/"+eidsubstr+"/"+idsubstr);
-    });
-
-}
 
  exports.submit = (req, res, next)=>{
     const data = req.body;
@@ -40,9 +32,10 @@ let generateReqNo = (departmentId, eid, id, callback)=>{
     purchaserequisition.permission = [];
     purchaserequisition.save(function (err,result) {
         if (err) return next(err);
+        const prefix = "REQ";
         // saved!
-        generateReqNo(data.department, data.eid, result.id, (requisitionNo)=>{
-            PurchaseRequisition.updateOne({_id:result.id}, {requisitionno: requisitionNo}, (err,result)=>{
+        Utility.generateReqNo(prefix, data.departmentslug, result.id, (requisitionNo)=>{
+            PurchaseRequisition.updateOne({_id:result.id}, {requisitionno: requisitionNo.toUpperCase()}, (err,result)=>{
                 if (err) return next(err);
                 res.send(result);
             });
