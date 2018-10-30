@@ -15,6 +15,7 @@ router.put('/changeyourpassword/' , userController.changeYourPassword);
 router.get('/confirmtoken/:token' , userController.confirmtoken);
 router.delete('/deleteuser/:data' , userController.deleteUser);
 router.get('/findallstaff' , userController.findAllStaff);
+router.get('/findonlystaff' , userController.findOnlyStaff);
 router.post('/createnewuser' , userController.createNewUser);
 router.get('/getprofiledetails/:id' , userController.getProfileDetails);
 

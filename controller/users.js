@@ -264,7 +264,15 @@ module.exports.view = function(req, res) {
       res.status(200).json(users);   
     });
   }
-
+  module.exports.findOnlyStaff = function(req, res){
+    User.find({type: 'staff'}).exec(function(err, users){
+      if(err){
+        res.json({message: err})
+        return;
+      }
+      res.status(200).json(users);   
+    });
+  }
   module.exports.createNewUser = function(req, res, next){
     var user = new User();
     user.firstname = req.body.firstname;

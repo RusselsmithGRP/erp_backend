@@ -27,3 +27,13 @@ exports.delete = (req, res, next)=>{
         res.send(true);
       });
 }
+
+module.exports.getDepartmentDetails = function(req, res){
+    Department.find({_id: req.params.id}).exec(function(err, department){
+      if(err){
+        res.json({message: err})
+        return;
+      }
+      res.status(200).json(department);   
+    });
+  }
