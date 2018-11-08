@@ -11,13 +11,16 @@ exports.index = (req, res, next)=>{
 exports.add = (req, res, next)=>{
     const data = req.body;
     let department = new Department(data);
-    department.save(function (err,result) {
-        if (err) return next(err);
+    if (department.name && department.slug && department.code) {
+    department.save(function (err) {
+        if (err) return res.json({ success:false, message: "An error occured!"});
         // saved!
-        res.json({ 
-            success:true, message: "New department created!", result: result});
-
-      });
+        return res.json({ success:true, message: "New Department Created!"});
+    });
+}
+else {
+    return res.json({ success:false, message: "An error occured!"});
+}
 }
 
 exports.edit = (req, res, next)=>{
@@ -65,3 +68,15 @@ module.exports.getDepartmentDetails = function(req, res){
       res.status(200).json(department);   
     });
   }
+
+  module.exports.update = function(req, res){
+    let data = {
+     name: req.body.name,
+     slug: req.body.slug,
+     code: req.body.code
+   };
+   Department.findByIdAndUpdate(req.body._id, data, function(err, data){
+   if(err) return res.send(err);
+   return res.json({ success:true, message: "department details has been updated!", data: data});
+ });
+   }

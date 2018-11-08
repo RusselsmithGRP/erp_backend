@@ -139,13 +139,13 @@ module.exports.view = function(req, res) {
     lastname: req.body.lastname,
     firstname: req.body.firstname,
     eid: req.body.eid,
-    department: req.body.department,
     role: req.body.role,
+
     updatedAt: Date.now(),
   };
-  User.findByIdAndUpdate(req.body._id, data, function(err, profileData){
+  User.findByIdAndUpdate(req.body.id, data, function(err, profileData){
   if(err) { res.send(err);}
-  res.json({ success:true, message: "profile has been updated!", profile: profileData});
+  res.json({ success:true, message: "profile has been updated!"});
 });
   }
   
@@ -285,7 +285,7 @@ module.exports.view = function(req, res) {
       if(err) {
        return res.json({success:false, message: "An error occured. Plese check your inputs."});
       }
-      res.json({success:true, message: "New User Created!"});
+      res.json({success:true, message: "New User Created!", user:{type: "staff"}});
       send_staff_registration_email(req, res, next);
     })
   }

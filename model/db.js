@@ -56,3 +56,4 @@ require('./purchaseorder');
 require('./purchasingitems');
 require('./requestquotation');
 require('./currency');
+require('./expenseheader');
