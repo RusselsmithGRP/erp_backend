@@ -9,5 +9,6 @@ router.get('/', departmentController.index);
 router.post('/add', departmentController.add);
 router.delete('/delete', departmentController.delete);
 router.get('/edit/:id' ,jwt,  departmentController.getDepartmentDetails);
+router.put('/update' ,jwt,  departmentController.update);
 
 module.exports = router;

@@ -106,8 +106,6 @@ exports.updateStatus = (req, res, next)=>{
         if (err)return next(err);
 
         Vendor.find({_id: key}).populate('user').exec((err, doc)=>{
-            //console.log(doc);
-            //console.log(doc[0].user._doc.email);
             if(value === "APPROVED"){
                 send_approval_email(req, res, next, doc[0]);
             }else if(value === "UPDATE"){

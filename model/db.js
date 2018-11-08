@@ -54,3 +54,4 @@ require('./role');
 require('./purchaserequisition');
 require('./requestquotation');
 require('./currency');
+require('./expenseheader');
