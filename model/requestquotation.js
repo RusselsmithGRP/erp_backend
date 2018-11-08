@@ -20,7 +20,8 @@ var requestQuotationSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'Currency'
     },
-    creditterms:Number
+    creditterms:Number,
+    reason: String,
 });
 
 

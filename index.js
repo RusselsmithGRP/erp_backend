@@ -3,7 +3,7 @@ require('dotenv').config()
 const express = require('express');
 const cors = require('cors')
 const app = express();
-;
+
 app.options('*', cors());
 var bodyParser = require('body-parser');
 
@@ -26,6 +26,7 @@ var department = require('./route/department');
 var role = require('./route/role');
 var purchaserequisition = require('./route/purchaserequisition');
 var requestquotation = require('./route/requestquotation');
+var purchaseorder = require('./route/purchaseorder');
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -48,6 +49,7 @@ app.use('/departments', department);
 app.use('/roles', role);
 app.use('/purchase/requisition', purchaserequisition);
 app.use('/purchase/quotation', requestquotation);
+app.use('/purchase/order', purchaseorder);
 
 
 app.use(function (err, req, res, next) {

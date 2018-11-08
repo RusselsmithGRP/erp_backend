@@ -2,6 +2,7 @@ var mongoose = require( 'mongoose' );
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 const auth_secret = require('../config/secret');
+var Schema = mongoose.Schema;
 
 var userSchema = new mongoose.Schema({
   email: {
@@ -17,7 +18,10 @@ var userSchema = new mongoose.Schema({
   salt: String,
   token: String,
   eid: String,
-  department: String,
+  department: {
+    type: Schema.Types.ObjectId,
+    ref: 'Department'
+  },
   firstname: String,
   lastname: String,
   phone: String,
@@ -45,8 +49,15 @@ userSchema.methods.generateJwt = function() {
     _id: this._id,
     email: this.email,
     role: this.role,
+    fullname: this.firstname+" "+this.lastname,
+    department: this.department,
     exp: parseInt(expiry.getTime() / 1000),
   }, auth_secret); // DO NOT KEEP YOUR SECRET IN THE CODE!
 };
+
+userSchema.methods.getUser = function(token){
+  const striped_token = token.replace('Bearer ',''); 
+  return jwt.decode(striped_token, auth_secret);
+}
 
 mongoose.model('User', userSchema);

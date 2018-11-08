@@ -20,6 +20,21 @@ exports.add = (req, res, next)=>{
       });
 }
 
+exports.edit = (req, res, next)=>{
+    const body = req.body;
+    Department.updateOne({_id: req.params.id}, body, (err,result)=>{
+        if (err)return next(err);
+        res.send(result);
+    });
+}
+
+exports.getHod = (req, res, next)=>{
+    Department.findOne({_id:  req.params.id}).exec((err, doc)=>{
+        if (err) return next(err);
+        res.send(doc);
+    });
+}
+
 exports.viewOne = (req, res, next)=>{
     this.findDeparmentDetails(req.params.id, (err, doc)=>{
         res.send(doc);

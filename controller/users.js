@@ -5,10 +5,7 @@ var Vendor = mongoose.model('Vendor');
 var mailer = require('../model/mailer');
 var crypto = require('crypto');
 
-var sendJSONresponse = function(res, status, content) {
-  res.status(status);
-  res.json(content);
-};
+
 
 module.exports.register = function(req, res, next) {
   var user = new User();

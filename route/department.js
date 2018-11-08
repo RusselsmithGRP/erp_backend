@@ -9,5 +9,7 @@ router.get('/', departmentController.index);
 router.post('/add', departmentController.add);
 router.delete('/delete', departmentController.delete);
 router.get('/edit/:id' ,jwt,  departmentController.getDepartmentDetails);
+router.post('/edit/:id' ,jwt,  departmentController.edit);
+router.get('/gethod/:id' ,jwt,  departmentController.getHod);
 
 module.exports = router;

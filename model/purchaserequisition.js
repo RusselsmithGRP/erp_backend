@@ -7,7 +7,7 @@ var purchaseRequisitionSchema = Schema({
         ref: 'User'
     },
     requisitionno: String,
-    dateneeded: String,
+    dateneeded: { type: Date},
     chargeto: String,
     department: {
         type: Schema.Types.ObjectId,
@@ -19,9 +19,11 @@ var purchaseRequisitionSchema = Schema({
     lineitems: Object,
     type: String,
     isextrabudget: Boolean,
+    eid: String,
     deliverymode: String,
     updated: { type: Date, default: Date.now },
     created: { type: Date},
+    reason: String,
 });
 
 
