@@ -51,6 +51,7 @@ userSchema.methods.generateJwt = function() {
     role: this.role,
     fullname: this.firstname+" "+this.lastname,
     department: this.department,
+    type: this.type,
     exp: parseInt(expiry.getTime() / 1000),
   }, auth_secret); // DO NOT KEEP YOUR SECRET IN THE CODE!
 };

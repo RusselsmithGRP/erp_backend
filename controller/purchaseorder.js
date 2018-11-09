@@ -20,7 +20,7 @@ exports.submit = (req, res, next)=>{
     const tokenz = user.getUser(token);
     data.created = new Date();
     data.requestor = tokenz._id
-    data.status = "PO01";
+    data.status = "POX0";
     let requestquotation = new PurchaseOrder(data);
     requestquotation.save(function (err,result) {
         if (err) return next(err);
@@ -45,7 +45,7 @@ exports.save = (req, res, next)=>{
     let data = {}
     data.requisition = req.body;
     data.created = new Date();
-    data.status = "PO01";
+    data.status = "PO00";
     let requestquotation = new PurchaseOrder(data);
     requestquotation.save(function (err,result) {
         if (err) return next(err);
@@ -70,7 +70,36 @@ exports.view = (req, res, next)=>{
 }
 
 exports.update = (req, res, next)=>{
-    PurchaseOrder.updateOne({_id:req.params.id}, req.body, (err,result)=>{
+    let data = req.body;
+    const token = req.headers.authorization
+    var user = new User();
+    const tokenz = user.getUser(token);
+    if(req.body.type == "approve"){
+        switch(tokenz.type){
+            case "hod":
+                data.status = "PO02";
+                break;
+            case "ceo":
+                data.status = "PO03";
+                break;
+            case "manager":
+                data.status = "PO01";
+                break;
+        }
+    }else{
+        switch(tokenz.type){
+            case "hod":
+                data.status = "POX2";
+                break;
+            case "ceo":
+                data.status = "POX3";
+                break;
+            case "manager":
+                data.status = "POX1";
+                break;
+        }
+    }
+    PurchaseOrder.updateOne({_id:req.params.id}, data, (err,result)=>{
         if (err) return next(err);
         res.send(result);
     });
