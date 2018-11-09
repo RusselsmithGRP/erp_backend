@@ -7,7 +7,6 @@ var userController = require('../controller/users');
 router.get('/', jwt , userController.index);
 router.post('/login', userController.login);
 router.post('/register', userController.register);
-router.post('/import', userController.import);
 router.put('/updateprofiledata', userController.updateProfileData);
 router.get('/view/:id', jwt , userController.view);
 router.put('/requestresettoken' , userController.requestResetToken);

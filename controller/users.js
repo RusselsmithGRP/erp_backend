@@ -40,36 +40,6 @@ module.exports.register = function(req, res, next) {
 
 }
 
-module.exports.import = function(req, res, next) {
-  var user = new User();
-
-  user.email = req.body.email;
-  user.role = req.body.role;
-  user.created = new Date();
-
-  user.setPassword(req.body.password);
-
-  user.save(function(err) {
-    if(err) return next(err);
-    var token;
-    token = user.generateJwt();
-    if(user.role === "vendor"){
-      let vendor = new Vendor({user:user._id, general_info:{company_name:req.body.coy_name}});
-      vendor.save(function (err) {
-        if(err) return next(err);
-        send_user_registration_email(req, res, next);
-        res.status(200);
-        res.json({
-          "token" : token
-        });
-      });
-    }else{
-     send_user_registration_email(req, res, next);
-    }
-  });
-
-}
-
 
 let send_user_registration_email = function(req, res, next ){
   // setup email data with unicode symbols
