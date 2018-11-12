@@ -12,9 +12,8 @@ passport.use(new CustomStrategy({
     office365Auth(username, password, "RS Edge", (err, info)=>{
       if (err) { return done(err); }
       if(info.messageId){
-        User.findOne({ email: username }, function (err, user) {
+        User.findOne({ email: username }).populate('department').exec(function (err, user) {
           if (err) { return done(err); }
-            
           // Return if user not found in database
           if (!user) {
             createStaff(username);
@@ -29,9 +28,8 @@ passport.use(new CustomStrategy({
 
 let createStaff = (email)=>{
   let user = new User;
-
   user.email = email;
-  user.role = 'staff'
+  user.type = 'staff'
 
   user.save(function(err) {
     if(err) return next(err);
@@ -40,25 +38,25 @@ let createStaff = (email)=>{
 }
 
 passport.use(new LocalStrategy({
-  usernameField: 'email'
-},
-function(username, password, done) {
-  User.findOne({ email: username }, function (err, user) {
-    if (err) { return done(err); }
-    // Return if user not found in database
-    if (!user) {
-      return done(null, false, {
-        message: 'User not found'
-      });
-    }
-    // Return if password is wrong
-    if (!user.validPassword(password)) {
-      return done(null, false, {
-        message: 'Password is wrong'
-      });
-    }
-    // If credentials are correct, return the user object
-    return done(null, user);
-  });
-}
+    usernameField: 'email'
+  },
+  function(username, password, done) {
+    User.findOne({ email: username }).populate('department').exec(function (err, user) {
+      if (err) { return done(err); }
+      // Return if user not found in database
+      if (!user) {
+        return done(null, false, {
+          message: 'User not found'
+        });
+      }
+      // Return if password is wrong
+      if (!user.validPassword(password)) {
+        return done(null, false, {
+          message: 'Password is wrong'
+        });
+      }
+      // If credentials are correct, return the user object
+      return done(null, user);
+    });
+  }
 ));

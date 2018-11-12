@@ -6,4 +6,5 @@ dist
 lib
 es
 coverage
+backup
 package-lock.json

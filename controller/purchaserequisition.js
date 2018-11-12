@@ -2,13 +2,25 @@ var mongoose = require('mongoose');
 var PurchaseRequisition = mongoose.model('PurchaseRequisition');
 var Department = require('./departments');
 var Utility = require("../commons/utility");
+var User = mongoose.model('User');
 
 
 exports.index = (req, res, next)=>{
-    PurchaseRequisition.find().populate('requestor department').exec((err, docs)=>{
-        if (err) return next(err);
-        else res.send(docs);
-    });
+    const token = req.headers.authorization
+    var user = new User();
+    const tokenz = user.getUser(token);
+    if(tokenz.role === "procurement"){
+        PurchaseRequisition.find().populate('requestor department').exec((err, docs)=>{
+            if (err) return next(err);
+            else res.send(docs);
+        });
+    }else{
+        PurchaseRequisition.find({department: tokenz.department._id}).populate('requestor department').exec((err, docs)=>{
+            if (err) return next(err);
+            else res.send(docs);
+        });
+    }
+
 }
 
 
@@ -16,7 +28,6 @@ exports.save = (req, res, next)=>{
     const data = req.body;
     data.created = new Date();
     let purchaserequisition = new PurchaseRequistion(data);
-    purchaserequisition.permission = [];
     purchaserequisition.save(function (err,result) {
         if (err) return next(err);
         // saved!
@@ -27,9 +38,9 @@ exports.save = (req, res, next)=>{
 
  exports.submit = (req, res, next)=>{
     const data = req.body;
+    data.dateneeded = data.dateneeded;
     data.created = new Date();
     let purchaserequisition = new PurchaseRequisition(data);
-    purchaserequisition.permission = [];
     purchaserequisition.save(function (err,result) {
         if (err) return next(err);
         const prefix = "REQ";
@@ -45,7 +56,7 @@ exports.save = (req, res, next)=>{
 }
 
 exports.view = (req, res, next)=>{
-    PurchaseRequisition.find({_id: req.params.id}).populate('requestor department').exec((err, doc)=>{
+    PurchaseRequisition.findOne({_id: req.params.id}).populate('requestor department').exec((err, doc)=>{
         if (err) return next(err);
         res.send(doc);
     });

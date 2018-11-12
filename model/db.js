@@ -52,6 +52,8 @@ require('./vendor');
 require('./department');
 require('./role');
 require('./purchaserequisition');
+require('./purchaseorder');
+require('./purchasingitems');
 require('./requestquotation');
 require('./currency');
 require('./expenseheader');
