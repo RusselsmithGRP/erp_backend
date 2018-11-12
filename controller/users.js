@@ -40,6 +40,37 @@ module.exports.register = function(req, res, next) {
 
 }
 
+module.exports.import = function(req, res, next) {
+  var user = new User();
+
+  user.email = req.body.email;
+  user.role = req.body.role;
+  user.created = new Date();
+  user.setPassword(req.body.password);
+  user.save(function(err) {
+    if(err) return next(err);
+    var token;
+    token = user.generateJwt();
+    if(user.role === "vendor"){
+      let vendor = new Vendor({user:user._id, 
+        classes:req.body.classes,
+        general_info:{company_name:req.body.coy_name, contact_name:req.body.contact_name, contact_phone:req.body.contact_phone, office_address:req.body.office_address, state:req.body.state, country:req.body.country, website:req.body.website, supplier_id: req.body.supplier_id},
+         business_info:{ product_related:req.body.product_related}});
+      vendor.save(function (err) {
+        if(err) return next(err);
+        send_user_registration_email(req, res, next);
+        res.status(200);
+        res.json({
+          "token" : token
+        });
+      });
+    }else{
+     send_user_registration_email(req, res, next);
+    }
+  });
+
+}
+
 
 let send_user_registration_email = function(req, res, next ){
   // setup email data with unicode symbols
