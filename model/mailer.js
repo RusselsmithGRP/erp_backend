@@ -9,7 +9,7 @@ let transporter = nodemailer.createTransport({
     requireTLS: true,
     auth: {
         user: 'rssmtp@russelsmithgroup.com',
-        pass: 'Nigeria*1'
+        pass: 'Nigeria*2'
     },
     tls: { ciphers: 'SSLv3' }
 });

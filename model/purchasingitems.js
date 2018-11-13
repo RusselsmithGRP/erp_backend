@@ -10,7 +10,10 @@ var purchasingItemSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'PurchaseOrder'
     },
-    category: Number,
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'Expenseheader'
+    },
     uom: String,
     description: String,
     quantity: Number,

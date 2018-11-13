@@ -4,7 +4,10 @@ var Schema = mongoose.Schema;
 var expenseHeaderSchema = Schema({
     name: String,
     slug: String, 
-    department: String
+    department: {
+        type: Schema.Types.ObjectId,
+        ref: 'Department'
+    }
 });
 
 

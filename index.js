@@ -62,6 +62,6 @@ app.use(function (err, req, res, next) {
         res.status(500).send(err.message);
       }
   })
-  app.listen(8000, function(){
-    console.log("Web server listening on port 8000");
+  app.listen(3000, function(){
+    console.log("Web server listening on port 3000");
   });
