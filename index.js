@@ -24,6 +24,7 @@ var vendor = require('./route/vendor');
 var user = require('./route/user');
 var department = require('./route/department');
 var role = require('./route/role');
+var location = require('./route/location');
 var purchaserequisition = require('./route/purchaserequisition');
 var requestquotation = require('./route/requestquotation');
 var purchaseorder = require('./route/purchaseorder');
@@ -48,6 +49,7 @@ app.use('/vendors', vendor);
 app.use('/users', user);
 app.use('/departments', department);
 app.use('/roles', role);
+app.use('/locations', location);
 app.use('/expenseheader', expenseheader);
 app.use('/purchase/requisition', purchaserequisition);
 app.use('/purchase/quotation', requestquotation);
@@ -62,6 +64,6 @@ app.use(function (err, req, res, next) {
         res.status(500).send(err.message);
       }
   })
-  app.listen(8000, function(){
-    console.log("Web server listening on port 8000");
+  app.listen(3000, function(){
+    console.log("Web server listening on port 3000");
   });
