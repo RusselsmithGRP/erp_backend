@@ -54,14 +54,14 @@ exports.allRepliedQuoteFomVendor = (req, res, next)=>{
 }
 
 exports.list = (req, res, next)=>{
-    RequestQuotation.find({requisition: req.params.req}).populate('vendor requisition').exec((err, docs)=>{
+    RequestQuotation.find({requisition: req.params.req}).populate('vendor requisition').sort("-created").exec((err, docs)=>{
         if (err) return next(err);
         else res.send(docs);
     });
 }
 
 exports.vendorsQuoteList = (req, res, next)=>{
-    RequestQuotation.find({vendor: req.params.vendorId}).populate('vendor requisition').exec((err, docs)=>{
+    RequestQuotation.find({vendor: req.params.vendorId}).populate('vendor requisition').sort("-created").exec((err, docs)=>{
         if (err) return next(err);
         else res.send(docs);
     });

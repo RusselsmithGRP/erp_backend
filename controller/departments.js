@@ -31,10 +31,10 @@ exports.edit = (req, res, next)=>{
     });
 }
 
-exports.getHod = (req, res, next)=>{
-    Department.findOne({_id:  req.params.id}).exec((err, doc)=>{
+exports.getHod = (id, next, callback)=>{
+    Department.findOne({_id:  id}).populate("hod").exec((err, doc)=>{
         if (err) return next(err);
-        res.send(doc);
+        callback(doc);
     });
 }
 

@@ -20,7 +20,6 @@
     "nano": "^6.3.0",
     "nodemailer": "^4.0.1",
     "nodemon": "^1.18.4",
-    "office365-nodejs-authentication": "^1.0.0",
     "passport": "^0.4.0",
     "passport-custom": "^1.0.5",
     "passport-local": "^1.0.0"

@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var ExpenseHeader = mongoose.model('Expenseheader');
 
 exports.index = (req, res, next)=>{
-  ExpenseHeader.find().exec((err, docs)=>{
+  ExpenseHeader.find().sort("-created").exec((err, docs)=>{
       if (err) return next(err);
       else res.send(docs);
   });

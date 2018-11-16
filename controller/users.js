@@ -81,11 +81,13 @@ let isRsEmail = (email)=>{
 
 module.exports.login = function(req, res) {
   let passportMode;
-  if(isRsEmail(req.body.email) >= 0 ){
+  if((isRsEmail(req.body.email) >= 0  ) && req.body.email != "procurement@russelsmithgroup.com" && req.body.email != "iac@russelsmithgroup.com"){
     passportMode = "custom";
   }else{
     passportMode = "local";
   }
+
+  
   passport.authenticate(passportMode, function(err, user, info){
       var token;
       // If Passport throws/catches an error
@@ -134,19 +136,11 @@ module.exports.view = function(req, res) {
   };
 
   module.exports.updateProfileData = function(req, res){
-   let data = {
-    email: req.body.email,
-    lastname: req.body.lastname,
-    firstname: req.body.firstname,
-    eid: req.body.eid,
-    role: req.body.role,
-
-    updatedAt: Date.now(),
-  };
-  User.findByIdAndUpdate(req.body.id, data, function(err, profileData){
-  if(err) { res.send(err);}
-  res.json({ success:true, message: "profile has been updated!"});
-});
+    let data = req.body;
+    User.findByIdAndUpdate({_id:req.body._id}, data, function(err, profileData){
+      if(err) { res.send(err);}
+      res.json({ success:true, message: "profile has been updated!"});
+    });
   }
   
 
@@ -254,7 +248,7 @@ module.exports.view = function(req, res) {
   }
 
   module.exports.findAllStaff = function(req, res){
-    User.find({ role:({$ne: 'admin', $ne:'vendor'})}).exec(function(err, users){
+    User.find({ role:({$ne: 'admin', $ne:'vendor'})}).sort("-created").exec(function(err, users){
       if(err){
         res.json({message: err})
         return;
@@ -263,7 +257,7 @@ module.exports.view = function(req, res) {
     });
   }
   module.exports.findOnlyStaff = function(req, res){
-    User.find({type: 'staff'}).exec(function(err, users){
+    User.find({type: 'staff'}).sort("-created").exec(function(err, users){
       if(err){
         res.json({message: err})
         return;
@@ -271,6 +265,17 @@ module.exports.view = function(req, res) {
       res.status(200).json(users);   
     });
   }
+
+  module.exports.findManagers = (req, res)=>{
+    User.find({type: 'manager'}).sort("-created").exec(function(err, users){
+      if(err){
+        res.json({message: err})
+        return;
+      }
+      res.status(200).json(users);   
+    });
+  }
+
   module.exports.createNewUser = function(req, res, next){
     var user = new User();
     user.firstname = req.body.firstname;

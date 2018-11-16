@@ -5,18 +5,19 @@ var office365Auth = require('office365-nodejs-authentication');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 
-passport.use(new CustomStrategy({
-    usernameField: 'email'
-  },
-  function(username, password, done) {
-    office365Auth(username, password, "RS Edge", (err, info)=>{
+passport.use(new CustomStrategy(
+  function(req, done) {
+    office365Auth(req.body.email, req.body.password, "RS Edge", (err, info)=>{
       if (err) { return done(err); }
       if(info.messageId){
-        User.findOne({ email: username }).populate('department').exec(function (err, user) {
+        console.log(info);
+        User.findOne({ email: req.body.email}).populate('department').exec(function (err, user) {
           if (err) { return done(err); }
           // Return if user not found in database
           if (!user) {
-            createStaff(username);
+            return done(null, false, {
+              message: 'User not found'
+            });
           }
           // If credentials are correct, return the user object
           return done(null, user);
