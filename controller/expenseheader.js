@@ -20,3 +20,18 @@ exports.add = (req, res) => {
 }
 else return res.json({ success:false, message: "An error occured!"});
 }
+
+exports.edit = (req,res) =>{
+  const data = req.body;
+  ExpenseHeader.updateOne({_id:req.params.id}, data, (err,result)=>{
+    if (err) return next(err);
+    res.send(result);
+  });
+}
+
+exports.view = (req,res) =>{
+  ExpenseHeader.findOne({_id:req.params.id}, (err,doc)=>{
+    if (err) return next(err);
+    res.send(doc);
+  });
+}

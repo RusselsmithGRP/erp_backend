@@ -30,6 +30,12 @@ exports.edit = (req, res, next)=>{
         res.send(result);
     });
 }
+exports.view = (req, res, next)=>{
+    Department.findOne({_id: req.params.id}).exec((err, doc)=>{
+        if (err) return next(err);
+        res.send(doc);
+    });
+}
 
 exports.getHod = (id, next, callback)=>{
     Department.findOne({_id:  id}).populate("hod").exec((err, doc)=>{
