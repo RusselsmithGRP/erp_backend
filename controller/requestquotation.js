@@ -127,3 +127,9 @@ exports.update = (req, res, next)=>{
         res.send(result);
     });
 }
+exports.acceptQoute= (req, res, next)=>{
+    RequestQuotation.updateOne({_id:req.body.id}, req.body, (err,result)=>{
+        if (err) return next(err);
+       console.log(result);
+    });
+}
