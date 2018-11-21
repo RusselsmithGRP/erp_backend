@@ -22,6 +22,8 @@ var requestQuotationSchema = Schema({
     },
     creditterms:Number,
     reason: String,
+    accepted: Boolean,
+    rejection_reason: String
 });
 
 

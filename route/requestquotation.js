@@ -10,6 +10,7 @@ router.get('/index/:req', jwt, requestQuotationController.list);
 router.get('/view/:id', jwt, requestQuotationController.view);
 router.post('/update/:id', jwt, requestQuotationController.update);
 router.post('/submitvendorquote', jwt, requestQuotationController.submitVendorQuote);
+router.post('/accept_qoute', jwt, requestQuotationController.acceptQoute);
 router.get('/vendor/:vendorId', jwt, requestQuotationController.vendorsQuoteList);
 router.get('/unique_vendor', jwt , requestQuotationController.uniqueVendorListFromRespondedQuotes)
 router.get('/quotes_for_vendor/:vendorId', jwt, requestQuotationController.allRepliedQuoteFomVendor);
