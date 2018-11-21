@@ -252,7 +252,7 @@ module.exports.view = function(req, res) {
     });
   }
   module.exports.findOnlyStaff = function(req, res){
-    User.find({type: 'staff'}).sort("created").exec(function(err, users){
+    User.find({type: 'staff'}).sort({created:-1}).exec(function(err, users){
       if(err){
         res.json({message: err})
         return;
@@ -262,7 +262,7 @@ module.exports.view = function(req, res) {
   }
 
   module.exports.findManagers = (req, res)=>{
-    User.find({type: 'manager'}).sort("created").exec(function(err, users){
+    User.find({type: 'manager'}).sort({created:-1}).exec(function(err, users){
       if(err){
         res.json({message: err})
         return;

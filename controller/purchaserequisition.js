@@ -12,12 +12,12 @@ exports.index = (req, res, next)=>{
     var user = new User();
     const tokenz = user.getUser(token);
     if(tokenz.role === "procurement"){
-        PurchaseRequisition.find().populate('requestor department').sort("-created").exec((err, docs)=>{
+        PurchaseRequisition.find().populate('requestor department').sort({created:-1}).exec((err, docs)=>{
             if (err) return next(err);
             else res.send(docs);
         });
     }else{
-        PurchaseRequisition.find({department: tokenz.department._id}).populate('requestor department').sort("-date").exec((err, docs)=>{
+        PurchaseRequisition.find({department: tokenz.department._id}).populate('requestor department').sort({created:-1}).exec((err, docs)=>{
             if (err) return next(err);
             else res.send(docs);
         });

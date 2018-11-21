@@ -8,7 +8,7 @@ var Status = require("../commons/Status");
 var mailer = require('../model/mailer');
 
 exports.index = (req, res, next)=>{
-    PurchaseOrder.find().populate('vendor').sort("-created").exec((err, docs)=>{
+    PurchaseOrder.find().populate('vendor').sort({created:-1}).exec((err, docs)=>{
         if (err) return next(err);
         else res.send(docs);
     });

@@ -9,14 +9,14 @@ var PurchasingItem = mongoose.model('PurchasingItem');
 
 exports.index = (req, res, next)=>{
     let param = {};
-    RequestQuotation.find(param).populate('vendor requisition').exec((err, docs)=>{
+    RequestQuotation.find(param).populate('vendor requisition').sort({created:-1}).exec((err, docs)=>{
         if (err) return next(err);
         else res.send(docs);
     });
 }
 
 let fetchVendorRespondedQuotes = (callback)=>{
-    RequestQuotation.find({status: "RFQ02"}).populate('vendor').exec((err, docs)=>{
+    RequestQuotation.find({status: "RFQ02"}).populate('vendor').sort({created:-1}).exec((err, docs)=>{
         if(err) return next(err);
         callback(docs);
     })
@@ -54,14 +54,14 @@ exports.allRepliedQuoteFomVendor = (req, res, next)=>{
 }
 
 exports.list = (req, res, next)=>{
-    RequestQuotation.find({requisition: req.params.req}).populate('vendor requisition').sort("-created").exec((err, docs)=>{
+    RequestQuotation.find({requisition: req.params.req}).populate('vendor requisition').sort({created:-1}).exec((err, docs)=>{
         if (err) return next(err);
         else res.send(docs);
     });
 }
 
 exports.vendorsQuoteList = (req, res, next)=>{
-    RequestQuotation.find({vendor: req.params.vendorId}).populate('vendor requisition').sort("-created").exec((err, docs)=>{
+    RequestQuotation.find({vendor: req.params.vendorId}).populate('vendor requisition').sort({created:-1}).exec((err, docs)=>{
         if (err) return next(err);
         else res.send(docs);
     });
