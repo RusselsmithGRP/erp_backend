@@ -4,7 +4,7 @@ var mailer = require('../model/mailer');
 var user_controller = require('./users');
 
 exports.index = (req, res, next)=>{
-    Vendor.find().exec((err, docs)=>{
+    Vendor.find().sort("-created").exec((err, docs)=>{
         if (err) return next(err);
         else res.send(docs);
     });
@@ -12,7 +12,7 @@ exports.index = (req, res, next)=>{
 
 exports.approved = (req, res, next)=>{
     const query = { status: "APPROVED" };
-    Vendor.find(query).exec((err, docs)=>{
+    Vendor.find(query).sort("-created").exec((err, docs)=>{
         if (err) return next(err);
         res.send(docs);
     });
@@ -20,7 +20,7 @@ exports.approved = (req, res, next)=>{
 
 exports.unapproved = (req, res, next)=>{
     const query = { status: "UNAPPROVED" };
-    Vendor.find(query).exec((err, docs)=>{
+    Vendor.find(query).sort("-created").exec((err, docs)=>{
         if (err) return next(err);
         res.send(docs);
     });
@@ -28,7 +28,7 @@ exports.unapproved = (req, res, next)=>{
 
 exports.pending = (req, res, next)=>{
     const query = { status: "PENDING" };
-    Vendor.find(query).exec((err, docs)=>{
+    Vendor.find(query).sort("-created").exec((err, docs)=>{
         if (err)return next(err);
         res.send(docs);
     });
@@ -36,14 +36,14 @@ exports.pending = (req, res, next)=>{
 
 exports.new = (req, res, next)=>{
     const query = { status: "" };
-    Vendor.find(query).exec((err, docs)=>{
+    Vendor.find(query).sort("-created").exec((err, docs)=>{
         if (err)return next(err);
         res.send(docs);
     });
 }
 exports.blacklisted = (req, res, next)=>{
     const query = { status: "BLACKLISTED" };
-    Vendor.find(query).exec((err, docs)=>{
+    Vendor.find(query).sort("-created").exec((err, docs)=>{
         if (err) return next(err);
         res.send(docs);
     });

@@ -22,12 +22,16 @@ var userSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'Department'
   },
+  line_manager:{
+    type: Schema.Types.ObjectId,
+    ref: 'User'   
+  },
   firstname: String,
   lastname: String,
   phone: String,
   city: String,
   type: String,
-  updatedAt: Date,
+  created: Date,
   updated: { type: Date, default: Date.now },
 });
 
