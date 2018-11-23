@@ -128,6 +128,7 @@ exports.update = (req, res, next)=>{
     });
 }
 exports.acceptQoute= (req, res, next)=>{
+    console.log(req.body);
     RequestQuotation.updateOne({_id:req.body.id}, req.body, (err,result)=>{
         if (err) return next(err);
        console.log(result);
