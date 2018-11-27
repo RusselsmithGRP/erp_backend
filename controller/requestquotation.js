@@ -96,7 +96,6 @@ exports.submitVendorQuote = (req, res,next)=>{
         if (err) return next(err);
         const mappedItems = data.items.map((e, i)=>{
             let purchasingItem  = new PurchasingItem (e);
-            purchasingItem.description = e.itemdescription;
             purchasingItem.quote = data.id;
             purchasingItem.save();
             return e;
