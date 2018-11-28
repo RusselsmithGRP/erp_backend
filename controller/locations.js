@@ -34,7 +34,7 @@ module.exports.getLocation = function(req, res) {
 };
 
 module.exports.getAddress = function(req, res) {
-  Location.findOne({ name: req.body.location }, function(err, location) {
+  Location.findOne({ slug: req.body.location }, function(err, location) {
     if (err) {
       res.json({ message: err });
       return;

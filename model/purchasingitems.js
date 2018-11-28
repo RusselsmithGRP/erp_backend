@@ -21,6 +21,9 @@ var purchasingItemSchema = Schema({
     vatable: Boolean,
     price:{type: Number, get: getPrice, set: setPrice },
     total:{type: Number, get: getPrice, set: setPrice },
+    availability: Boolean,
+    availableDate: Date,
+    currency: String,
     updated: { type: Date, default: Date.now },
     created: { type: Date},
 });
