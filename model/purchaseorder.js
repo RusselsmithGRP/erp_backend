@@ -20,6 +20,7 @@ var purchaseOrderSchema = Schema({
     updated: { type: Date, default: Date.now },
     created: { type: Date},
     reason: String,
+    additional_terms: String,
     requestor:{
         type: Schema.Types.ObjectId,
         ref: 'User'
