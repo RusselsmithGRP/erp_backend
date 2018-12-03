@@ -58,3 +58,4 @@ require('./purchasingitems');
 require('./requestquotation');
 require('./currency');
 require('./expenseheader');
+require('./vendorevaluation');

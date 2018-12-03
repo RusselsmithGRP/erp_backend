@@ -5,7 +5,7 @@ var Department = require('./departments');
 var Utility = require("../commons/utility");
 var User = mongoose.model('User');
 var PurchasingItem = mongoose.model('PurchasingItem');
-
+var VendorEvaluation = mongoose.model('VendorEvaluation');
 
 exports.index = (req, res, next)=>{
     let param = {};
@@ -126,6 +126,21 @@ exports.update = (req, res, next)=>{
 }
 
 exports.acceptQoute= (req, res, next)=>{
+    if(req.body.meetRfqResponseTime && req.body.meetDefineSpecification && req.body.meetQuality && req.body.onTimeDelivery){
+        RequestQuotation.findOne({_id: req.body.id}).exec((err, doc)=>{
+            if (err) return next(err);
+            const totalScore = parseInt(req.body.meetRfqResponseTime)+ parseInt(req.body.meetQuality)+parseInt(req.body.meetDefineSpecification)
+            + parseInt(req.body.adaptiveness)+parseInt(req.body.onTimeDelivery);
+            const avg = totalScore/5;
+            let data = {vendor:doc.vendor, meetQuality: req.body.meetQuality, meetDefineSpecification: req.body.meetDefineSpecification,
+            meetRfqResponseTime:req.body.meetRfqResponseTime, adaptiveness:req.body.adaptiveness, onTimeDelivery:req.body.onTimeDelivery,
+            avg : avg}
+            let vendorEvaluation = new VendorEvaluation(data);
+            vendorEvaluation.save(function (err,result) {
+                if (err) return next(err);
+            });
+        });
+    }
     RequestQuotation.updateOne({_id:req.body.id}, req.body, (err,result)=>{
         if (err) return next(err);
         res.send(result);

@@ -24,10 +24,6 @@ var requestQuotationSchema = Schema({
     reason: String,
     accepted: Boolean,
     rejection_reason: String,
-    meetQuality: Boolean,
-    meetSpec: Boolean,
-    onTime: Boolean,
-    rfqTime: Boolean
 });
 
 

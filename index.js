@@ -29,6 +29,7 @@ var purchaserequisition = require('./route/purchaserequisition');
 var requestquotation = require('./route/requestquotation');
 var purchaseorder = require('./route/purchaseorder');
 var expenseheader = require('./route/expenseheader');
+var vendorevaluation = require('./route/vendorevaluation');
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -54,6 +55,7 @@ app.use('/expenseheader', expenseheader);
 app.use('/purchase/requisition', purchaserequisition);
 app.use('/purchase/quotation', requestquotation);
 app.use('/purchase/order', purchaseorder);
+app.use('/vendorevaluation', vendorevaluation);
 
 
 app.use(function (err, req, res, next) {

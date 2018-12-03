@@ -300,13 +300,13 @@ module.exports.changeYourPassword = function(req, res) {
   });
 };
 
-  module.exports.findAllStaff = function(req, res){
-    User.find({ role:({$ne: 'admin', $ne:'vendor'})}).sort("created").exec(function(err, users){
-      if(err){
-        res.json({message: err})
-      }
-    });
-  }
+module.exports.findAllStaff = function(req, res){
+  User.find({ role:({$ne: 'admin', $ne:'vendor'})}).sort("created").exec(function(err, users){
+    if(err){
+      res.json({message: err})
+    }
+  });
+}
     
 module.exports.confirmtoken = function(req, res) {
   User.findOne({ token: req.params.token }).select().exec(function(err, user) {
@@ -323,8 +323,9 @@ module.exports.confirmtoken = function(req, res) {
         }
       }
     });
-  }
-  module.exports.findOnlyStaff = function(req, res){
+}
+
+module.exports.findOnlyStaff = function(req, res){
     User.find({type: 'staff'}).sort({created:-1}).exec(function(err, users){
       if(err){
         res.json({message: err})
@@ -332,9 +333,9 @@ module.exports.confirmtoken = function(req, res) {
       }
       res.status(200).json(users);   
     });
-  }
+}
 
-  module.exports.findManagers = (req, res)=>{
+module.exports.findManagers = (req, res)=>{
     User.find({type: 'manager'}).sort({created:-1}).exec(function(err, users){
       if(err){
         res.json({message: err})
@@ -410,6 +411,7 @@ module.exports.findAllStaff = function(req, res) {
     res.status(200).json(users);
   });
 };
+
 module.exports.findOnlyStaff = function(req, res) {
   User.find({ type: "staff" }).exec(function(err, users) {
     if (err) {
@@ -419,6 +421,7 @@ module.exports.findOnlyStaff = function(req, res) {
     res.status(200).json(users);
   });
 };
+
 module.exports.createNewUser = function(req, res, next) {
   var user = new User();
   user.firstname = req.body.firstname;
@@ -451,17 +454,13 @@ let send_staff_registration_email = function(req, res, next) {
     from: process.env.EMAIL_FROM, // sender address
     to: req.body.email, //req.body.email, // list of receivers
     subject: "New User Account Confirmation", // Subject line
-    text:
-      "Dear User\n An account has just been created for you on RS Edge.\n Kindly Logon unto the platform to access your account.\nRegards \nThe Russelsmith Team.", // plain text body
-    html:
-      "<p>Dear User, </p><p>An account has just been created for you on RS Edge.</p><p> Kindly Logon unto the platform to access your account..</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
+    text:"Dear User\n An account has just been created for you on RS Edge.\n Kindly Logon unto the platform to access your account.\nRegards \nThe Russelsmith Team.", // plain text body
+    html:"<p>Dear User, </p><p>An account has just been created for you on RS Edge.</p><p> Kindly Logon unto the platform to access your account..</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
   };
   mailer.sendMail(mailOptions, res, next);
 };
 module.exports.getProfileDetails = function(req, res) {
-  User.findOne({ _id: req.params.id })
-    .select()
-    .exec(function(err, user) {
+  User.findOne({ _id: req.params.id }).select().exec(function(err, user) {
       if (err) {
         res.json({ message: err });
         return;
