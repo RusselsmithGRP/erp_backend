@@ -26,5 +26,4 @@ var requestQuotationSchema = Schema({
     rejection_reason: String,
 });
 
-
 mongoose.model('RequestQuotation', requestQuotationSchema);

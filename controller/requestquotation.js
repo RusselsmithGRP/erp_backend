@@ -181,7 +181,7 @@ let send_po_accepted_email = function(req, res, next) {
   let mailOptions = {
     from: process.env.EMAIL_FROM, // sender address
     to: req.body.vendorEmail, //req.body.email, // list of receivers
-    subject: "Your PO Has Been Accepted", // Subject line
+    subject: "Your PO Has Been Accepted",  // Subject line
     text:
       "Dear Vendor\n Your PO has been approved.\n Kindly Logon unto the platform for more information.\nRegards \nThe Russelsmith Team.", // plain text body
     html:
