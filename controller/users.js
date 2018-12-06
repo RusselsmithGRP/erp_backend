@@ -111,15 +111,11 @@ let send_email_reset_token = function(resetToken, req, res, next) {
     text:
       'A password request has just been initaited on your account! \n Please click the link below to reset your password. \n<a href="' +
       process.env.PUBLIC_URL +
-      "/resetpassword/" +
-      resetToken +
-      '">RS Edge</a>  \n If this is not you, please kindly ignore this email.', // plain text body
+      "/resetpassword/" +resetToken +'">RS Edge</a>  \n If this is not you, please kindly ignore this email.', // plain text body
     html:
       '<p>A password request has just been initaited on your account!</p><p> Please click the link below to reset your password. </p> <p> <a href="' +
       process.env.PUBLIC_URL +
-      "/resetpassword/" +
-      resetToken +
-      '">RS Edge</a></p><p>If this is not you, please kindly ignore this email</p>' // plain text body
+      "/resetpassword/"+resetToken +'">RS Edge</a></p><p>If this is not you, please kindly ignore this email</p>' // plain text body
   };
   mailer.sendMail(mailOptions, res, next);
 };
@@ -146,8 +142,6 @@ module.exports.login = function(req, res) {
   } else {
     passportMode = "local";
   }
-
-  
   passport.authenticate(passportMode, function(err, user, info){
       var token;
       // If Passport throws/catches an error
