@@ -62,9 +62,7 @@ let sendPOEmail = (req, res, next) => {
 };
 
 let send_mail_to_line_manager = (req, res, next) => {
-  User.findOne({ _id: req.requestor })
-    .populate("line_manager")
-    .exec((err, doc) => {
+  User.findOne({ _id: req.requestor }).populate("line_manager").exec((err, doc) => {
       const request_link = Utility.generateLink("/order/view/", req.id);
       const status = Status.getStatus(req.status);
       const reason = req.reason ? req.reason : "";

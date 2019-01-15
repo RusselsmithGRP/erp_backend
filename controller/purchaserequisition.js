@@ -17,7 +17,8 @@ exports.index = (req, res, next)=>{
             else res.send(docs);
         });
     }else{
-        PurchaseRequisition.find({department: tokenz.department._id}).populate('requestor department').sort({created:-1}).exec((err, docs)=>{
+        const option = (tokenz.department)? {department: tokenz.department._id} :{};
+        PurchaseRequisition.find(option).populate('requestor department').sort({created:-1}).exec((err, docs)=>{
             if (err) return next(err);
             else res.send(docs);
         });
@@ -101,7 +102,8 @@ exports.updateStatus = (req, res, next)=>{
     update(req, res, next,(result)=>{
         PurchaseRequisition.findOne({_id: req.params.id}).populate('requestor').exec((err, doc)=>{
             sendApprovalEmail(doc, res,next);
-        })
+        });
+        res.send(result);
     });
 }
 
