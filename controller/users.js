@@ -5,8 +5,6 @@ var Vendor = mongoose.model("Vendor");
 var mailer = require("../model/mailer");
 var crypto = require("crypto");
 
-
-
 module.exports.register = function(req, res, next) {
   var user = new User();
 
@@ -17,24 +15,30 @@ module.exports.register = function(req, res, next) {
   user.setPassword(req.body.password);
 
   user.save(function(err) {
-    if (err) return next(err);
-    var token;
-    token = user.generateJwt();
-    if (user.role === "vendor") {
-      let vendor = new Vendor({
-        user: user._id,
-        general_info: { company_name: req.body.coy_name }
+    if (err)
+      return res.json({
+        errorMsg: "An error occured while trying to register",
+        errCode: err.code
       });
-      vendor.save(function(err) {
-        if (err) return next(err);
-        send_user_registration_email(req, res, next);
-        res.status(200);
-        res.json({
-          token: token
+    else {
+      var token;
+      token = user.generateJwt();
+      if (user.role === "vendor") {
+        let vendor = new Vendor({
+          user: user._id,
+          general_info: { company_name: req.body.coy_name }
         });
-      });
-    } else {
-      send_user_registration_email(req, res, next);
+        vendor.save(function(err) {
+          if (err) return next(err);
+          send_user_registration_email(req, res, next);
+          res.status(200);
+          res.json({
+            token: token
+          });
+        });
+      } else {
+        send_user_registration_email(req, res, next);
+      }
     }
   });
 };
@@ -141,34 +145,37 @@ let isRsEmail = email => {
 
 module.exports.login = function(req, res) {
   let passportMode;
-  if((isRsEmail(req.body.email) >= 0  ) && req.body.email != "procurement@russelsmithgroup.com" && req.body.email != "iac@russelsmithgroup.com"){
+  if (
+    isRsEmail(req.body.email) >= 0 &&
+    req.body.email != "procurement@russelsmithgroup.com" &&
+    req.body.email != "iac@russelsmithgroup.com"
+  ) {
     passportMode = "custom";
   } else {
     passportMode = "local";
   }
 
-  
-  passport.authenticate(passportMode, function(err, user, info){
-      var token;
-      // If Passport throws/catches an error
-      if (err) {
-        res.status(404).json(err);
-        return;
-      }
-      // If a user is found
-      if(user){
-        token = user.generateJwt();
-        res.status(200);
-        res.json({
-          "token" : token,
-          user : user,
-        });
-      } else {
-        // If user is not found
-        res.status(401).json(info);
-      }
+  passport.authenticate(passportMode, function(err, user, info) {
+    var token;
+    // If Passport throws/catches an error
+    if (err) {
+      res.status(404).json(err);
+      return;
+    }
+    // If a user is found
+    if (user) {
+      token = user.generateJwt();
+      res.status(200);
+      res.json({
+        token: token,
+        user: user
+      });
+    } else {
+      // If user is not found
+      res.status(401).json(info);
+    }
   })(req, res);
-}
+};
 
 module.exports.index = function(req, res) {};
 
@@ -205,7 +212,9 @@ module.exports.updateProfileData = function(req, res, next) {
 };
 
 module.exports.requestResetToken = function(req, res, next) {
-  User.findOne({ email: req.body.email }).select().exec(function(err, user) {
+  User.findOne({ email: req.body.email })
+    .select()
+    .exec(function(err, user) {
       if (err) {
         return res.json({ success: false, message: "error here" + err });
       } else {
@@ -300,16 +309,20 @@ module.exports.changeYourPassword = function(req, res) {
   });
 };
 
-module.exports.findAllStaff = function(req, res){
-  User.find({ role:({$ne: 'admin', $ne:'vendor'})}).sort("created").exec(function(err, users){
-    if(err){
-      res.json({message: err})
-    }
-  });
-}
-    
+module.exports.findAllStaff = function(req, res) {
+  User.find({ role: { $ne: "admin", $ne: "vendor" } })
+    .sort("created")
+    .exec(function(err, users) {
+      if (err) {
+        res.json({ message: err });
+      }
+    });
+};
+
 module.exports.confirmtoken = function(req, res) {
-  User.findOne({ token: req.params.token }).select().exec(function(err, user) {
+  User.findOne({ token: req.params.token })
+    .select()
+    .exec(function(err, user) {
       if (err) {
         res.json({ tokenState: false, message: err });
         return;
@@ -323,27 +336,31 @@ module.exports.confirmtoken = function(req, res) {
         }
       }
     });
-}
+};
 
-module.exports.findOnlyStaff = function(req, res){
-    User.find({type: 'staff'}).sort({created:-1}).exec(function(err, users){
-      if(err){
-        res.json({message: err})
+module.exports.findOnlyStaff = function(req, res) {
+  User.find({ type: "staff" })
+    .sort({ created: -1 })
+    .exec(function(err, users) {
+      if (err) {
+        res.json({ message: err });
         return;
       }
-      res.status(200).json(users);   
+      res.status(200).json(users);
     });
-}
+};
 
-module.exports.findManagers = (req, res)=>{
-    User.find({type: 'manager'}).sort({created:-1}).exec(function(err, users){
-      if(err){
-        res.json({message: err})
+module.exports.findManagers = (req, res) => {
+  User.find({ type: "manager" })
+    .sort({ created: -1 })
+    .exec(function(err, users) {
+      if (err) {
+        res.json({ message: err });
         return;
       }
-      res.status(200).json(users);   
+      res.status(200).json(users);
     });
-  }
+};
 /* 
   module.exports.createNewUser = function(req, res, next){
     var user = new User();
@@ -384,13 +401,13 @@ module.exports.findManagers = (req, res)=>{
       };
     mailer.sendMail(mailOptions, res, next);
   } */
-module.exports.getProfileDetails = function(req, res){
-    User.findOne({_id:req.params.id}).exec(function(err, user){
-        if(err){
-          next(err);
-        } 
-        res.status(200).json(user); 
-    })
+module.exports.getProfileDetails = function(req, res) {
+  User.findOne({ _id: req.params.id }).exec(function(err, user) {
+    if (err) {
+      next(err);
+    }
+    res.status(200).json(user);
+  });
 };
 
 module.exports.deleteUser = function(userId) {
@@ -454,13 +471,17 @@ let send_staff_registration_email = function(req, res, next) {
     from: process.env.EMAIL_FROM, // sender address
     to: req.body.email, //req.body.email, // list of receivers
     subject: "New User Account Confirmation", // Subject line
-    text:"Dear User\n An account has just been created for you on RS Edge.\n Kindly Logon unto the platform to access your account.\nRegards \nThe Russelsmith Team.", // plain text body
-    html:"<p>Dear User, </p><p>An account has just been created for you on RS Edge.</p><p> Kindly Logon unto the platform to access your account..</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
+    text:
+      "Dear User\n An account has just been created for you on RS Edge.\n Kindly Logon unto the platform to access your account.\nRegards \nThe Russelsmith Team.", // plain text body
+    html:
+      "<p>Dear User, </p><p>An account has just been created for you on RS Edge.</p><p> Kindly Logon unto the platform to access your account..</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
   };
   mailer.sendMail(mailOptions, res, next);
 };
 module.exports.getProfileDetails = function(req, res) {
-  User.findOne({ _id: req.params.id }).select().exec(function(err, user) {
+  User.findOne({ _id: req.params.id })
+    .select()
+    .exec(function(err, user) {
       if (err) {
         res.json({ message: err });
         return;
