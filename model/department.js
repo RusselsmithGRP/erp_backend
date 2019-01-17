@@ -11,5 +11,4 @@ var departmentSchema = Schema({
     },
 });
 
-
 mongoose.model('Department', departmentSchema);

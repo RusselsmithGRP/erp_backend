@@ -90,7 +90,7 @@ let send_user_registration_email = function(req, res, next) {
     bcc: process.env.IAC_GROUP_EMAIL,
     subject: "New Vendor Account Confirmation", // Subject line
     text:
-      "Dear " +
+      "Dear "  +
       req.body.coy_name +
       "\n Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.\n To continue the vendor registration, please click the link below: Confirmation Link: " +
       process.env.PUBLIC_URL +
