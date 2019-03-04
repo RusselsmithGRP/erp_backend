@@ -14,6 +14,7 @@ router.put('/requestresettoken' , userController.requestResetToken);
 router.put('/resetthepassword/:token' , userController.resetThePassword);
 router.put('/changeyourpassword/' , userController.changeYourPassword);
 router.get('/confirmtoken/:token' , userController.confirmtoken);
+router.get('/confirmregistration/:token' , userController.confirmRegistration);
 router.delete('/deleteuser/:data' , userController.deleteUser);
 router.get('/findallstaff' , userController.findAllStaff);
 router.get('/findonlystaff' , userController.findOnlyStaff);

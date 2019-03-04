@@ -18,6 +18,11 @@ var userSchema = new mongoose.Schema({
   salt: String,
   token: String,
   eid: String,
+  confirmationId: String,
+  emailVerified: {
+    type : Boolean,
+    default : false
+  },
   department: {
     type: Schema.Types.ObjectId,
     ref: 'Department'

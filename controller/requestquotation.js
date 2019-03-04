@@ -3,15 +3,18 @@ var RequestQuotation = mongoose.model("RequestQuotation");
 var mailer = require("../model/mailer");
 var Department = require("./departments");
 var Utility = require("../commons/utility");
-var User = mongoose.model('User');
-var PurchasingItem = mongoose.model('PurchasingItem');
-var VendorEvaluation = mongoose.model('VendorEvaluation');
+var User = mongoose.model("User");
+var PurchasingItem = mongoose.model("PurchasingItem");
+var VendorEvaluation = mongoose.model("VendorEvaluation");
 
-exports.index = (req, res, next)=>{
-    let param = {};
-    RequestQuotation.find(param).populate('vendor requisition').sort({created:-1}).exec((err, docs)=>{
-        if (err) return next(err);
-        res.send(docs);
+exports.index = (req, res, next) => {
+  let param = {};
+  RequestQuotation.find(param)
+    .populate("vendor requisition")
+    .sort({ created: -1 })
+    .exec((err, docs) => {
+      if (err) return next(err);
+      res.send(docs);
     });
 };
 
@@ -80,9 +83,12 @@ exports.submit = (req, res, next) => {
   req.body.vendors.forEach((vendor, i) => {
     data.vendor = vendor.value;
     data.requisition = req.body.pr;
+    data.requester =
+      req.body.pr.requestor.lastname + " " + req.body.pr.requestor.firstname;
     data.lineitems = req.body.items;
     data.created = new Date();
     data.status = "RFQ01";
+    data.service_type = req.body.pr.type;
     let requestquotation = new RequestQuotation(data);
     requestquotation.save(function(err, result) {
       if (err) return next(err);
@@ -112,6 +118,8 @@ exports.submitVendorQuote = (req, res, next) => {
     const mappedItems = data.items.map((e, i) => {
       let purchasingItem = new PurchasingItem(e);
       purchasingItem.quote = data.id;
+      purchasingItem.service_type = result.service_type;
+      purchasingItem.requester = result.requester;
       purchasingItem.save();
       return e;
     });
@@ -122,15 +130,17 @@ exports.submitVendorQuote = (req, res, next) => {
       if (err) return next(err);
       res.send(result);
     });
-    })
-}
+  });
+};
 
 exports.view = (req, res, next) => {
-  RequestQuotation.find({ _id: req.params.id }).populate("vendor requisition").exec((err, doc) => {
+  RequestQuotation.find({ _id: req.params.id })
+    .populate("vendor requisition")
+    .exec((err, doc) => {
       if (err) return next(err);
       res.send(doc);
     });
-}
+};
 
 exports.update = (req, res, next) => {
   RequestQuotation.updateOne(
@@ -141,24 +151,39 @@ exports.update = (req, res, next) => {
       res.send(result);
     }
   );
-}
+};
 
 exports.acceptQoute = (req, res, next) => {
-    if(req.body.meetRfqResponseTime && req.body.meetDefineSpecification && req.body.meetQuality && req.body.onTimeDelivery){
-        RequestQuotation.findOne({_id: req.body.id}).exec((err, doc)=>{
-            if (err) return next(err);
-            const totalScore = parseInt(req.body.meetRfqResponseTime)+ parseInt(req.body.meetQuality)+parseInt(req.body.meetDefineSpecification)
-            + parseInt(req.body.adaptiveness)+parseInt(req.body.onTimeDelivery);
-            const avg = totalScore/5;
-            let data = {vendor:doc.vendor, meetQuality: req.body.meetQuality, meetDefineSpecification: req.body.meetDefineSpecification,
-            meetRfqResponseTime:req.body.meetRfqResponseTime, adaptiveness:req.body.adaptiveness, onTimeDelivery:req.body.onTimeDelivery,
-            avg : avg}
-            let vendorEvaluation = new VendorEvaluation(data);
-            vendorEvaluation.save(function (err,result) {
-                if (err) return next(err);
-            });
-        });
-    }
+  if (
+    req.body.meetRfqResponseTime &&
+    req.body.meetDefineSpecification &&
+    req.body.meetQuality &&
+    req.body.onTimeDelivery
+  ) {
+    RequestQuotation.findOne({ _id: req.body.id }).exec((err, doc) => {
+      if (err) return next(err);
+      const totalScore =
+        parseInt(req.body.meetRfqResponseTime) +
+        parseInt(req.body.meetQuality) +
+        parseInt(req.body.meetDefineSpecification) +
+        parseInt(req.body.adaptiveness) +
+        parseInt(req.body.onTimeDelivery);
+      const avg = totalScore / 5;
+      let data = {
+        vendor: doc.vendor,
+        meetQuality: req.body.meetQuality,
+        meetDefineSpecification: req.body.meetDefineSpecification,
+        meetRfqResponseTime: req.body.meetRfqResponseTime,
+        adaptiveness: req.body.adaptiveness,
+        onTimeDelivery: req.body.onTimeDelivery,
+        avg: avg
+      };
+      let vendorEvaluation = new VendorEvaluation(data);
+      vendorEvaluation.save(function(err, result) {
+        if (err) return next(err);
+      });
+    });
+  }
   RequestQuotation.updateOne({ _id: req.body.id }, req.body, (err, result) => {
     if (err) return next(err);
     if (req.body.accepted == "true") {
@@ -174,7 +199,7 @@ let send_po_accepted_email = function(req, res, next) {
   let mailOptions = {
     from: process.env.EMAIL_FROM, // sender address
     to: req.body.vendorEmail, //req.body.email, // list of receivers
-    subject: "Your PO Has Been Accepted",  // Subject line
+    subject: "Your PO Has Been Accepted", // Subject line
     text:
       "Dear Vendor\n Your PO has been approved.\n Kindly Logon unto the platform for more information.\nRegards \nThe Russelsmith Team.", // plain text body
     html:
@@ -201,5 +226,3 @@ let send_po_rejected_email = function(req, res, next) {
   };
   mailer.sendMail(mailOptions, res, next);
 };
-
-

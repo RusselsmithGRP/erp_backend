@@ -7,11 +7,11 @@ var crypto = require("crypto");
 
 module.exports.register = function(req, res, next) {
   var user = new User();
-
+  let confirmationId = generateToken();
   user.email = req.body.email;
   user.role = req.body.role;
   user.created = new Date();
-
+  user.confirmationId = confirmationId;
   user.setPassword(req.body.password);
 
   user.save(function(err) {
@@ -30,14 +30,14 @@ module.exports.register = function(req, res, next) {
         });
         vendor.save(function(err) {
           if (err) return next(err);
-          send_user_registration_email(req, res, next);
+          send_user_registration_email(confirmationId, req, res, next);
           res.status(200);
           res.json({
             token: token
           });
         });
       } else {
-        send_user_registration_email(req, res, next);
+        send_user_registration_email(confirmationId, req, res, next);
       }
     }
   });
@@ -45,9 +45,12 @@ module.exports.register = function(req, res, next) {
 
 module.exports.importuser = function(req, res, next) {
   var user = new User();
+  let confirmationId = generateToken();
+  user.email = req.body.email;
   user.email = req.body.email;
   user.role = req.body.role;
   user.created = new Date();
+  user.confirmationId = confirmationId;
   user.setPassword(req.body.password);
   user.save(function(err) {
     if (err) return res.json({ success: false, message: err.message });
@@ -73,16 +76,16 @@ module.exports.importuser = function(req, res, next) {
       });
       vendor.save(function(err, vendor) {
         if (err) return res.json({ success: false, message: err.message });
-        send_user_registration_email(req, res, next);
+        send_user_registration_email(confirmationId, req, res, next);
         res.json({ success: true, message: "New Vendor Created" });
       });
     } else {
-      send_user_registration_email(req, res, next);
+      send_user_registration_email(confirmationId, req, res, next);
     }
   });
 };
 
-let send_user_registration_email = function(req, res, next) {
+let send_user_registration_email = function(confirmationId, req, res, next) {
   // setup email data with unicode symbols
   let mailOptions = {
     from: process.env.EMAIL_FROM, // sender address
@@ -90,17 +93,21 @@ let send_user_registration_email = function(req, res, next) {
     bcc: process.env.IAC_GROUP_EMAIL,
     subject: "New Vendor Account Confirmation", // Subject line
     text:
-      "Dear "  +
+      "Dear " +
       req.body.coy_name +
-      "\n Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.\n To continue the vendor registration, please click the link below: Confirmation Link: " +
+      '\n Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.\n To continue the vendor registration, please click the link below: Confirmation Link: \n<a href="' +
       process.env.PUBLIC_URL +
-      "/login \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
+      "/confirm/" +
+      confirmationId +
+      '">\n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.', // plain text body
     html:
       "<p>Dear " +
       req.body.coy_name +
       ', </p><p>Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.</p><p> To continue the vendor registration, please click the link below: Confirmation Link: <a href="' +
       process.env.PUBLIC_URL +
-      '/login">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+      "/confirm/" +
+      confirmationId +
+      '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
   };
   mailer.sendMail(mailOptions, res, next);
 };
@@ -115,11 +122,15 @@ let send_email_reset_token = function(resetToken, req, res, next) {
     text:
       'A password request has just been initaited on your account! \n Please click the link below to reset your password. \n<a href="' +
       process.env.PUBLIC_URL +
-      "/resetpassword/" +resetToken +'">RS Edge</a>  \n If this is not you, please kindly ignore this email.', // plain text body
+      "/resetpassword/" +
+      resetToken +
+      '">RS Edge</a>  \n If this is not you, please kindly ignore this email.', // plain text body
     html:
       '<p>A password request has just been initaited on your account!</p><p> Please click the link below to reset your password. </p> <p> <a href="' +
       process.env.PUBLIC_URL +
-      "/resetpassword/"+resetToken +'">RS Edge</a></p><p>If this is not you, please kindly ignore this email</p>' // plain text body
+      "/resetpassword/" +
+      resetToken +
+      '">RS Edge</a></p><p>If this is not you, please kindly ignore this email</p>' // plain text body
   };
   mailer.sendMail(mailOptions, res, next);
 };
@@ -150,25 +161,33 @@ module.exports.login = function(req, res) {
   } else {
     passportMode = "local";
   }
-  passport.authenticate(passportMode, function(err, user, info){
-      var token;
-      // If Passport throws/catches an error
-      if (err) {
-        res.status(404).json(err);
-        return;
-      }
-      // If a user is found
-      if(user){
-        token = user.generateJwt();
-        res.status(200);
-        res.json({
-          "token" : token,
-          user : user,
-        });
-      } else {
-        // If user is not found
-        res.status(401).json(info);
-      }
+  passport.authenticate(passportMode, function(err, user, info) {
+    var token;
+    // If Passport throws/catches an error
+    if (err) {
+      res.status(404).json(err);
+      return;
+    }
+    // If a vendor is not verified
+    if (user.role == "vendor" && user.emailVerified === false) {
+      res.status(406);
+      res.json({
+        message:
+          "your account is not verified! please log into your email and follow the link sent to you."
+      });
+      return;
+    }
+    if (user) {
+      token = user.generateJwt();
+      res.status(200);
+      res.json({
+        token: token,
+        user: user
+      });
+    } else {
+      // If user is not found
+      res.status(401).json(info);
+    }
   })(req, res);
 };
 
@@ -327,6 +346,35 @@ module.exports.confirmtoken = function(req, res) {
           return;
         } else {
           res.json({ tokenState: true });
+          return;
+        }
+      }
+    });
+};
+
+module.exports.confirmRegistration = function(req, res) {
+  console.log(req.params.token);
+  User.findOne({ confirmationId: req.params.token })
+    .select()
+    .exec(function(err, user) {
+      if (err) {
+        res.json({ success: false, message: err.message });
+        return;
+      } else {
+        if (user && user.emailVerified === false) {
+          user.emailVerified = true;
+          user.save(function(err) {
+            if (err) return next(err);
+            return res.json({
+              success: true,
+              message: "Thank you, registration is now complete"
+            });
+          });
+        } else {
+          res.json({
+            success: false,
+            message: "The confirmation link is invalid or expired."
+          });
           return;
         }
       }

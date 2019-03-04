@@ -26,6 +26,8 @@ var purchasingItemSchema = Schema({
     currency: String,
     updated: { type: Date, default: Date.now },
     created: { type: Date},
+    service_type: String,
+    requester: String
 });
 
 function getPrice(num){

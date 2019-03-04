@@ -25,6 +25,7 @@ var purchaseOrderSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    types: Array
 });
 
 function getPrice(num){
