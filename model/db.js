@@ -59,3 +59,7 @@ require('./requestquotation');
 require('./currency');
 require('./expenseheader');
 require('./vendorevaluation');
+require('./receiveditems');
+require('./receivingandinspection');
+require('./rejectionlog');
+require('./workcompletion');

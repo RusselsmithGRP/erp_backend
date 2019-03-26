@@ -23,6 +23,7 @@ var userSchema = new mongoose.Schema({
     type : Boolean,
     default : false
   },
+  delegate:{type:Schema.ObjectId, ref: 'User'},
   department: {
     type: Schema.Types.ObjectId,
     ref: 'Department'
