@@ -88,7 +88,7 @@ module.exports.importuser = function(req, res, next) {
 let send_user_registration_email = function(confirmationId, req, res, next) {
   // setup email data with unicode symbols
   let mailOptions = {
-    from: process.env.EMAIL_FROM, // sender address
+    from: process.env.EMAIL_FROM,  // sender address
     to: req.body.email, //req.body.email, // list of receivers
     bcc: process.env.IAC_GROUP_EMAIL,
     subject: "New Vendor Account Confirmation", // Subject line
