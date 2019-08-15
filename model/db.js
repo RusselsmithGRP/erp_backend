@@ -2,6 +2,8 @@ var mongoose = require("mongoose");
 var gracefulShutdown;
 // var dbURI =
 //   "mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp?authSource=admin&retryWrites=true";
+var dbURI = "mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp";
+
 var dbURI = "mongodb://localhost:27017/erpdemo";
 if (process.env.NODE_ENV === "production") {
   dbURI = process.env.MONGOLAB_URI;
@@ -10,10 +12,10 @@ if (process.env.NODE_ENV === "production") {
 mongoose
   .connect(dbURI, {
     useNewUrlParser: true,
-    useCreateIndex: true,
-    reconnectTries: 100,
-    reconnectInterval: 500,
-    autoReconnect: true
+    useCreateIndex: true
+    // reconnectTries: 100,
+    // reconnectInterval: 500,
+    // autoReconnect: true
   })
   .then(() => {
     console.log(`[MongoDB]: Connection to server successful`);
