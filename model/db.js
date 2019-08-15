@@ -1,12 +1,26 @@
 var mongoose = require("mongoose");
 var gracefulShutdown;
-var dbURI = "mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp";
-// var dbURI = "mongodb://localhost:27017/erpdemo";
+// var dbURI =
+//   "mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp?authSource=admin&retryWrites=true";
+var dbURI = "mongodb://localhost:27017/erpdemo";
 if (process.env.NODE_ENV === "production") {
   dbURI = process.env.MONGOLAB_URI;
 }
 
-mongoose.connect(dbURI, { useNewUrlParser: true, useCreateIndex: true });
+mongoose
+  .connect(dbURI, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    reconnectTries: 100,
+    reconnectInterval: 500,
+    autoReconnect: true
+  })
+  .then(() => {
+    console.log(`[MongoDB]: Connection to server successful`);
+  })
+  .catch(err =>
+    console.log(`[MongoError]: Failed to establish a connection to server.`)
+  );
 
 // CONNECTION EVENTS
 mongoose.connection.on("connected", function() {
