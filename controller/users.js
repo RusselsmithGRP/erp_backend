@@ -1,6 +1,7 @@
 var passport = require("passport");
 var mongoose = require("mongoose");
 var User = mongoose.model("User");
+// const User = require("../model/user");
 var Vendor = mongoose.model("Vendor");
 var mailer = require("../model/mailer");
 var crypto = require("crypto");
@@ -207,27 +208,42 @@ module.exports.view = function(req, res) {
   }
 };
 
-module.exports.updateProfileData = function(req, res, next) {
+/**
+ * @author Idowu
+ * @summary changed the Query params for updateProfileData from req.body.id to req.body._id
+ * @summary Added type, department fields to the `data` object
+ * @param 'req.body._id'
+ *
+ */
+module.exports.updateProfileData = function(req, res) {
   let data = {
     email: req.body.email,
     lastname: req.body.lastname,
     firstname: req.body.firstname,
     eid: req.body.eid,
     role: req.body.role,
+    type: req.body.type,
+    department: req.body.department,
 
     updatedAt: Date.now()
   };
-  console.log(data, "data");
-  User.findByIdAndUpdate(req.body.id, data, function(err, profileData) {
-    if (err) {
-      res.send(err);
+  User.findOneAndUpdate(
+    { _id: req.body._id },
+    { $set: data },
+    { new: true },
+    function(err, profileData) {
+      if (err) {
+        // next(err);
+        res.send(err);
+      } else {
+        res.send({
+          success: true,
+          message: "profile has been updated",
+          profileData
+        });
+      }
     }
-    res.json({
-      success: true,
-      message: "profile has been updated!!!!",
-      profileData
-    });
-  });
+  );
 };
 
 module.exports.requestResetToken = function(req, res, next) {
