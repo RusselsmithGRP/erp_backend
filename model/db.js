@@ -4,7 +4,7 @@ var gracefulShutdown;
 //   "mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp?authSource=admin&retryWrites=true";
 // var dbURI = "mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp";
 
-var dbURI = "mongodb://localhost:27017/erpdemo";
+var dbURI = "mongodb://localhost:27017/erpdemo?authSource=admin";
 if (process.env.NODE_ENV === "production") {
   dbURI = process.env.MONGOLAB_URI;
 }
