@@ -19,6 +19,7 @@
     "mongoose": "^5.2.4",
     "nano": "^6.3.0",
     "nodemailer": "^4.0.1",
+    "nodemailer-smtp-transport": "^2.7.4",
     "nodemon": "^1.18.4",
     "office365-nodejs-authentication": "^1.0.0",
     "passport": "^0.4.0",

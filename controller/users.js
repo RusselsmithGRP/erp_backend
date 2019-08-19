@@ -422,6 +422,7 @@ module.exports.findManagers = (req, res) => {
         res.json({ message: err });
         return;
       }
+      // console.log(users);
       res.status(200).json(users);
     });
 };
