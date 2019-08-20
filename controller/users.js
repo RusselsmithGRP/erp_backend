@@ -212,7 +212,8 @@ module.exports.view = function(req, res) {
  * @author Idowu
  * @summary changed the Query params for updateProfileData from req.body.id to req.body._id
  * @summary Added type, department fields to the `data` object
- * @param 'req.body._id'
+ * @param {*} req Sends a `Request` to the server
+ * @param {*} res Returns a `Response` from the server with a `payload`
  *
  */
 module.exports.updateProfileData = function(req, res) {

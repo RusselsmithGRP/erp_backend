@@ -89,11 +89,11 @@ let send_new_requisition_email = function(req, res, next) {
     //bcc: process.env.IAC_GROUP_EMAIL,
     subject: "New Purchase Request Submitted", // Subject line
     text:
-      "A purchase requisition has been submitted for you review and approval.\n To view, please click the link below: Link: " +
+      "A purchase requisition has been submitted for your review and approval.\n To view, please click the link below: Link: " +
       request_link +
       " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
     html:
-      '<p>A purchase requisition has been submitted for you review and approval.</p><p> To view, please click the link below: Link: <a href="' +
+      '<p>A purchase requisition has been submitted for your review and approval.</p><p> To view, please click the link below: Link: <a href="' +
       request_link +
       '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
   };
