@@ -7,21 +7,20 @@ const nodemailer = require("nodemailer");
  *
  */
 let transporter = nodemailer.createTransport({
+  service: "outlook",
   host: "smtp.office365.com",
   // host: "russelsmithgroup-com.mail.protection.outlook.com",
   // port: 587,
-  port: 25,
-  secure: true,
+  port: 587,
+  secure: false,
+
   requireTLS: true,
   auth: {
     user: "rssmtp@russelsmithgroup.com",
     // pass: "Nigeria*2"
     pass: "Nigeria*1"
   },
-  tls: { ciphers: "SSLv3" },
-  connectionTimeout: "7000",
-  greetingTimeout: "7000",
-  socketTimeout: 7000
+  tls: { ciphers: "SSLv3" }
 });
 
 /* var transporter = nodemailer.createTransport({

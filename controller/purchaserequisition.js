@@ -72,7 +72,7 @@ exports.submit = (req, res, next) => {
           .populate("hod")
           .exec((err, dept) => {
             if (err) return next(err);
-            send_new_requisition_email({ id: result.id, dept }, res, next);
+            send_new_requisition_email({ id: result.id, dept }, req, res, next);
           });
         res.send(result);
       }
@@ -80,12 +80,21 @@ exports.submit = (req, res, next) => {
   });
 };
 
-let send_new_requisition_email = function(req, res, next) {
+/**
+ * @author Idowu
+ * @param {*} options Object parameters passed to the function call
+ * @param {*} req Request for payload or resource from a server.
+ * @param {*} res Returns a response from a server
+ * @param {*} next Express middleware function to either terminate or make a middleware available
+ * to the next middleware for use
+ */
+let send_new_requisition_email = function(options, req, res, next) {
+  const { id, dept } = options;
   // setup email data with unicode symbols
-  const request_link = Utility.generateLink("/requisition/view/", req.id);
+  const request_link = Utility.generateLink("/requisition/view/", id);
   let mailOptions = {
     from: process.env.EMAIL_FROM, // sender address
-    to: req.dept.hod.email,
+    to: dept.hod.email,
     //bcc: process.env.IAC_GROUP_EMAIL,
     subject: "New Purchase Request Submitted", // Subject line
     text:
@@ -98,12 +107,14 @@ let send_new_requisition_email = function(req, res, next) {
       '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
   };
   mailer.sendMail(mailOptions, res, next);
+  // console.log(mailOptions);
   next();
 };
 
 let sendApprovalEmail = function(req, res, next) {
   const request_link = Utility.generateLink("/requisition/view/", req.id);
-  const status = Status.getStatus(req.status);
+  // const status = Status.getStatus(req.status);
+  const status = Status.getStatus(res.status);
   const reason = req.reason ? req.reason : "";
 
   let mailOptions = {

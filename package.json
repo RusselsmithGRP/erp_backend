@@ -18,7 +18,7 @@
     "mongodb": "^3.0.10",
     "mongoose": "^5.2.4",
     "nano": "^6.3.0",
-    "nodemailer": "^4.0.1",
+    "nodemailer": "^4.7.0",
     "nodemailer-smtp-transport": "^2.7.4",
     "nodemon": "^1.18.4",
     "office365-nodejs-authentication": "^1.0.0",
