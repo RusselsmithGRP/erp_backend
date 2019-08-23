@@ -10,6 +10,8 @@ var requestQuotationSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'PurchaseRequisition'
     },
+    requester: String,
+    service_type: String,
     lineitems: Object,
     no: String,
     updated: { type: Date, default: Date.now },
@@ -22,7 +24,8 @@ var requestQuotationSchema = Schema({
     },
     creditterms:Number,
     reason: String,
+    accepted: Boolean,
+    rejection_reason: String,
 });
-
 
 mongoose.model('RequestQuotation', requestQuotationSchema);

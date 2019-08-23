@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var ExpenseHeader = mongoose.model('Expenseheader');
 
 exports.index = (req, res, next)=>{
-  ExpenseHeader.find().exec((err, docs)=>{
+  ExpenseHeader.find().sort({created:-1}).exec((err, docs)=>{
       if (err) return next(err);
       else res.send(docs);
   });
@@ -19,4 +19,19 @@ exports.add = (req, res) => {
   });
 }
 else return res.json({ success:false, message: "An error occured!"});
+}
+
+exports.edit = (req,res) =>{
+  const data = req.body;
+  ExpenseHeader.updateOne({_id:req.params.id}, data, (err,result)=>{
+    if (err) return next(err);
+    res.send(result);
+  });
+}
+
+exports.view = (req,res) =>{
+  ExpenseHeader.findOne({_id:req.params.id}, (err,doc)=>{
+    if (err) return next(err);
+    res.send(doc);
+  });
 }

@@ -1,4 +1,8 @@
-exports.generateReqNo = (prefix, dept, id, callback)=>{
+exports.generateReqNo = (prefix, dept, id)=>{
         const idsubstr = id.substring(id.length - 6);
-        callback(prefix+"/"+dept+"/"+idsubstr);
+        return (prefix+"/"+dept+"/"+idsubstr);
 }
+
+exports.generateLink = (link, id)=>{
+        return process.env.PUBLIC_URL+link+id;
+} 
