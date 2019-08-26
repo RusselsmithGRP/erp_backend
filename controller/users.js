@@ -217,15 +217,19 @@ module.exports.view = function(req, res) {
  *
  */
 module.exports.updateProfileData = function(req, res) {
-  let data = {
-    email: req.body.email,
-    lastname: req.body.lastname,
-    firstname: req.body.firstname,
-    eid: req.body.eid,
-    role: req.body.role,
-    type: req.body.type,
-    department: req.body.department,
+  // let data = {
+  //   email: req.body.email,
+  //   lastname: req.body.lastname,
+  //   firstname: req.body.firstname,
+  //   eid: req.body.eid,
+  //   role: req.body.role,
+  //   type: req.body.type,
+  //   department: req.body.department,
 
+  //   updatedAt: Date.now()
+  // };
+  let data = {
+    ...req.body,
     updatedAt: Date.now()
   };
   User.findOneAndUpdate(
@@ -237,7 +241,7 @@ module.exports.updateProfileData = function(req, res) {
         // next(err);
         res.send(err);
       } else {
-        res.send({
+        return res.send({
           success: true,
           message: "profile has been updated",
           profileData

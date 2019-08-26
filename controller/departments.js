@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
-// const Department = mongoose.model("Department");
-const Department = require("../model/department");
+const Department = mongoose.model("Department");
+// const Department = require("../model/department");
 
 exports.index = (req, res, next) => {
   //   Department.find({}, (err, docs) => {
