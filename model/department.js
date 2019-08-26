@@ -11,5 +11,4 @@ var departmentSchema = new Schema({
   }
 });
 
-// mongoose.model("Department", departmentSchema);
-module.exports = Department = mongoose.model("Department", departmentSchema);
+mongoose.model("Department", departmentSchema);

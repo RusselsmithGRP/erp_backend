@@ -8,7 +8,7 @@ router.get("/", jwt, userController.index);
 router.post("/login", userController.login);
 router.post("/register", userController.register);
 router.post("/import", userController.importuser);
-router.patch("/updateprofiledata", userController.updateProfileData);
+router.put("/updateprofiledata", userController.updateProfileData);
 router.get("/view/:id", jwt, userController.view);
 router.put("/requestresettoken", userController.requestResetToken);
 router.put("/resetthepassword/:token", userController.resetThePassword);

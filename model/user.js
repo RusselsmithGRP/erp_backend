@@ -32,6 +32,10 @@ var userSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: "User"
   },
+  line_manager: {
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  },
   firstname: String,
   lastname: String,
   phone: String,
