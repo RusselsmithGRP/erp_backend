@@ -1,12 +1,12 @@
 var mongoose = require('mongoose');
 var gracefulShutdown;
-//var dbURI = 'mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp';
-var dbURI = 'mongodb://localhost:27017/erpdemo';
+var dbURI = 'mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp';
+//var dbURI = 'mongodb://localhost:27017/erpdemo';
 if (process.env.NODE_ENV === 'production') {
   dbURI = process.env.MONGOLAB_URI;
 }
 
-mongoose.connect(dbURI);
+mongoose.connect(dbURI, {useNewUrlParser: true, useCreateIndex: true});
 
 // CONNECTION EVENTS
 mongoose.connection.on('connected', function() {

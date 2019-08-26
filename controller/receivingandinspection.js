@@ -8,6 +8,26 @@ var User = mongoose.model('User');
 var mailer = require('../model/mailer');
 var Status = require("../commons/Status");
 
+exports.index = (req, res, next) => {
+    receiving.find()
+    .populate("recievied logs")
+    .sort({ created: -1 })
+    .exec((err, docs) => {
+      if (err) return next(err);
+      else res.send(docs);
+    });
+};
+
+exports.allWorkCompletion = (req, res, next) => {
+    work.find()
+    .populate("all work completed")
+    .sort({ created: -1 })
+    .exec((err, docs) => {
+      if (err) return next(err);
+      else res.send(docs);
+    });
+};
+
 exports.submit = (req, res, next) => {
      const data = req.body;
     data.created = new Date();

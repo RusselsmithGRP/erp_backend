@@ -78,23 +78,24 @@ exports.search = (req, res, next)=>{
 }
 
 exports.update = (req, res, next)=>{
-    const data = req.body;
-    const key = data.key;
-    const value = data.value;
-    if("business_info" in data.payload){
-        if(data.payload.business_info.product_related && data.payload.business_info.service_related){
-            data.payload['classes'] = 3;
-        }else if(data.payload.business_info.product_related){
-            data.payload['classes'] = 1;
-        }
-        else if(data.payload.business_info.service_related){
-            data.payload['classes'] = 2;
-        }
-    }
-    Vendor.updateOne({[key]:value}, req.body.payload, (err,result)=>{
+    let data = req.body;
+    // const key = data.key;
+    // const value = data.value;
+    // if("business_info" in data.payload){
+    //     if(data.payload.business_info.product_related && data.payload.business_info.service_related){
+    //         data.payload['classes'] = 3;
+    //     }else if(data.payload.business_info.product_related){
+    //         data.payload['classes'] = 1;
+    //     }
+    //     else if(data.payload.business_info.service_related){
+    //         data.payload['classes'] = 2;
+    //     }
+    // }
+    Vendor.updateOne({user:data.user}, data, (err,result)=>{
         if (err) return next(err);
         res.send(result);
     });
+    console.log("data", data)
 }
 
 exports.updateStatus = (req, res, next)=>{

@@ -4,7 +4,8 @@ var router = express.Router();
 var receivingAndInspectionController = require('../controller/receivingandinspection');
 var jwt = require('../config/jwt');
 
-
+router.get('/', jwt, receivingAndInspectionController.index);
+router.get('/all/work/completion', jwt, receivingAndInspectionController.allWorkCompletion);
 router.post('/submit', jwt, receivingAndInspectionController.submit);
 router.post('/submitworkcompletion', jwt, receivingAndInspectionController.submitWorkCompletion);
 router.get('/getinspectedproduct/:id', jwt, receivingAndInspectionController.getinspectedproduct);
