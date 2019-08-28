@@ -10,7 +10,6 @@ let transporter = nodemailer.createTransport({
   service: "outlook",
   host: "smtp.office365.com",
   // host: "russelsmithgroup-com.mail.protection.outlook.com",
-  // port: 587,
   port: 587,
   secure: false,
 
