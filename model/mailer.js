@@ -1,5 +1,7 @@
 "use strict";
 const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // create reusable transporter object using the default SMTP transport
 /**
@@ -12,14 +14,15 @@ let transporter = nodemailer.createTransport({
   // host: "russelsmithgroup-com.mail.protection.outlook.com",
   port: 587,
   secure: false,
-
+  tls: {
+    rejectUnauthorized: false,
+    ciphers: "SSLv3"
+  },
   requireTLS: true,
   auth: {
     user: "rssmtp@russelsmithgroup.com",
-    // pass: "Nigeria*2"
-    pass: "Nigeria*1"
-  },
-  tls: { ciphers: "SSLv3" }
+    pass: "Nigeria*2"
+  }
 });
 
 /* var transporter = nodemailer.createTransport({
@@ -45,4 +48,40 @@ exports.sendMail = (mailOptions, res, next) => {
     }
     /// next(('Message %s sent: %s', info.messageId, info.response));
   });
+};
+
+/**
+ * @author Idowu
+ * @package `Sendgrid`
+ * @summary Using Sendgrid mailing services to deliver email and notifications
+ * @template `msg`
+ * 
+ * =============
+ * @example msg = {
+    to: req.body.email,
+    from: process.env.EMAIL_FROM,
+    subject: "Approval for purchase order",
+    templateId: process.env.TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: "Approval for Purchase order",
+      name: req.body.username,
+      sender_name: `Russelsmith Group.`,
+      sender_address: "3, Swisstrade drive, Ikota-Lekki, Lagos."
+    }
+ * ===============
+ */
+
+exports.sendMailer = (msg, req, res, next) => {
+  return sgMail
+    .send(msg)
+    .then(result => {
+      res.status(200).send({ success: true, result });
+    })
+    .catch(err => {
+      next(err);
+      res.status(500).send({
+        success: false,
+        errMessage: err || `Email to ${req.body.email} was unsuccessful.`
+      });
+    });
 };

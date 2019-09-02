@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@sendgrid/mail": "^6.4.0",
     "body-parser": "^1.0.2",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
@@ -18,6 +19,7 @@
     "mongodb": "^3.0.10",
     "mongoose": "^5.2.4",
     "nano": "^6.3.0",
+    "nodejs-nodemailer-outlook": "^1.1.0",
     "nodemailer": "^4.0.1",
     "nodemon": "^1.18.4",
     "office365-nodejs-authentication": "^1.0.0",
