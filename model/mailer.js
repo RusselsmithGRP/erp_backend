@@ -53,11 +53,11 @@ exports.sendMail = (mailOptions, res, next) => {
 /**
  * @author Idowu
  * @package `Sendgrid`
- * @summary Using Sendgrid mailing services to deliver email and notifications
+ * @summary Using Sendgrid mailing services to deliver email notifications
  * @template `msg`
  * 
  * =============
- * @example msg = {
+ * msg = {
     to: req.body.email,
     from: process.env.EMAIL_FROM,
     subject: "Approval for purchase order",
@@ -71,17 +71,15 @@ exports.sendMail = (mailOptions, res, next) => {
  * ===============
  */
 
-exports.sendMailer = (msg, req, res, next) => {
-  return sgMail
-    .send(msg)
-    .then(result => {
-      res.status(200).send({ success: true, result });
-    })
-    .catch(err => {
-      next(err);
-      res.status(500).send({
-        success: false,
-        errMessage: err || `Email to ${req.body.email} was unsuccessful.`
-      });
+exports.sendMailer = (msg, req, res) => {
+  sgMail.send(msg, (err, result) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log({
+      result,
+      msg: `Email was sent to ${req.body.email}`
     });
+  });
 };
