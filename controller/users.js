@@ -512,13 +512,13 @@ module.exports.findOnlyStaff = function(req, res) {
 /**
  * @author Idowu
  * @summary createNewUser logic has been refactored
- * @summary `save()` method now returns promise
- * @summary err message was changed
+ * @summary `save()` method now returns a promise instead of a callback
+ * @summary `err` message was changed
  * @param {*} req
  * @param {*} res
  * @param {*} next
  */
-module.exports.createNewUser = function(req, res, next) {
+module.exports.createNewUser = function(req, res) {
   const user = new User(req.body);
   user
     .save()

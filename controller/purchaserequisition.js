@@ -86,7 +86,7 @@ exports.submit = (req, res, next) => {
  * @param {*} req Request for payload or resource from a server.
  * @param {*} res Returns a response from a server
  * @param {*} next Express middleware function to either terminate or make a middleware available
- * to the next middleware for use
+ * to the next middleware/function for use
  */
 let send_new_requisition_email = function(options, req, res, next) {
   const { id, dept } = options;

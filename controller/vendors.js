@@ -155,7 +155,13 @@ exports.create = (req, res, next) => {
       return;
     } else {
       vendor.save(function(err, result) {
-        if (err) return next(err);
+        if (err) {
+          res.send({
+            success: false,
+            message: `This user already exist, Try logging in.`
+          });
+          return next(err);
+        }
         // saved!
         res.send(result);
       });
