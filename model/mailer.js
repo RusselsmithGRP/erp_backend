@@ -79,7 +79,7 @@ exports.sendMailer = (msg, req, res) => {
     }
     console.log({
       result,
-      msg: `Email was sent to ${req.body.email}`
+      msg: `Email sent successfully to ${msg.to}`
     });
   });
 };

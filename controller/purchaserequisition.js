@@ -72,7 +72,7 @@ exports.submit = (req, res, next) => {
           .populate("hod")
           .exec((err, dept) => {
             if (err) return next(err);
-            send_new_requisition_email({ id: result.id, dept }, req, res, next);
+            send_new_requisition_email({ id: result.id, dept }, req, res);
           });
         res.send(result);
       }
@@ -88,61 +88,112 @@ exports.submit = (req, res, next) => {
  * @param {*} next Express middleware function to either terminate or make a middleware available
  * to the next middleware/function for use
  */
-let send_new_requisition_email = function(options, req, res, next) {
+// let send_new_requisition_email = function(options, req, res, next) {
+//   const { id, dept } = options;
+//   // setup email data with unicode symbols
+//   const request_link = Utility.generateLink("/requisition/view/", id);
+//   let mailOptions = {
+//     from: process.env.EMAIL_FROM, // sender address
+//     to: dept.hod.email,
+//     //bcc: process.env.IAC_GROUP_EMAIL,
+//     subject: "New Purchase Request Submitted", // Subject line
+//     text:
+//       "A purchase requisition has been submitted for your review and approval.\n To view, please click the link below: Link: " +
+//       request_link +
+//       " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
+//     html:
+//       '<p>A purchase requisition has been submitted for your review and approval.</p><p> To view, please click the link below: Link: <a href="' +
+//       request_link +
+//       '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+//   };
+//   mailer.sendMail(mailOptions, res, next);
+//   // console.log(mailOptions);
+//   next();
+// };
+
+const send_new_requisition_email = (options, req, res, next) => {
   const { id, dept } = options;
-  // setup email data with unicode symbols
+  // Set email data with unicode symbols
   const request_link = Utility.generateLink("/requisition/view/", id);
-  let mailOptions = {
-    from: process.env.EMAIL_FROM, // sender address
+  const msg = {
     to: dept.hod.email,
-    //bcc: process.env.IAC_GROUP_EMAIL,
-    subject: "New Purchase Request Submitted", // Subject line
-    text:
-      "A purchase requisition has been submitted for your review and approval.\n To view, please click the link below: Link: " +
-      request_link +
-      " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
-    html:
-      '<p>A purchase requisition has been submitted for your review and approval.</p><p> To view, please click the link below: Link: <a href="' +
-      request_link +
-      '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+    from: process.env.EMAIL_FROM,
+    subject: `New Purchase request submitted`,
+    templateId: process.env.PURCHASE_REG_TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: `New Purchase request submitted`,
+      request_link,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
   };
-  mailer.sendMail(mailOptions, res, next);
-  // console.log(mailOptions);
+  mailer.sendMailer(msg, req, res);
   next();
 };
 
-let sendApprovalEmail = function(req, res, next) {
+// let sendApprovalEmail = function(req, res, next) {
+//   const request_link = Utility.generateLink("/requisition/view/", req.id);
+//   // const status = Status.getStatus(req.status);
+//   const status = Status.getStatus(res.status);
+//   const reason = req.reason ? req.reason : "";
+
+//   let mailOptions = {
+//     from: process.env.EMAIL_FROM, // sender address
+//     to: req.requestor.email,
+//     //bcc: process.env.IAC_GROUP_EMAIL,
+//     subject: status + " " + req.requisitionno, // Subject line
+//     text:
+//       status +
+//       " Purchase requisition with No: " +
+//       req.requisitionno +
+//       " .\n Reason .\n" +
+//       reason +
+//       " \n To view, please click the link below: Link: " +
+//       request_link +
+//       " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
+//     html:
+//       "<p>" +
+//       status +
+//       " Purchase requisition with No " +
+//       req.requisitionno +
+//       '.</p>"<p><b>Reason</b></p><p>' +
+//       reason +
+//       '</p><p> To view, please click the link below: Link: <a href="' +
+//       request_link +
+//       '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+//   };
+//   mailer.sendMail(mailOptions, res, next);
+// };
+
+/**
+ * @author Idowu
+ * @param {*} req
+ * @param {*} res
+ * @summary Handles email notification using sendgrid, leveraging handlebars,
+ * @summary thus, the reason for `dynamic_template_data`
+ * @summary which is a way of passing data to the email template on sendgrid
+ */
+const sendApprovalEmail = (req, res, next) => {
   const request_link = Utility.generateLink("/requisition/view/", req.id);
-  // const status = Status.getStatus(req.status);
   const status = Status.getStatus(res.status);
   const reason = req.reason ? req.reason : "";
-
-  let mailOptions = {
-    from: process.env.EMAIL_FROM, // sender address
+  const msg = {
     to: req.requestor.email,
-    //bcc: process.env.IAC_GROUP_EMAIL,
-    subject: status + " " + req.requisitionno, // Subject line
-    text:
-      status +
-      " Purchase requisition with No: " +
-      req.requisitionno +
-      " .\n Reason .\n" +
-      reason +
-      " \n To view, please click the link below: Link: " +
-      request_link +
-      " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
-    html:
-      "<p>" +
-      status +
-      " Purchase requisition with No " +
-      req.requisitionno +
-      '.</p>"<p><b>Reason</b></p><p>' +
-      reason +
-      '</p><p> To view, please click the link below: Link: <a href="' +
-      request_link +
-      '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+    from: process.env.EMAIL_FROM,
+    subject: `status ${req.requisitionno}`,
+    templateId: process.env.APPROVAL_TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: `status`,
+      status,
+      reason,
+      reqNo: req.requisitionNo,
+      request_link,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
   };
-  mailer.sendMail(mailOptions, res, next);
+  mailer.sendMailer(msg, req, res);
+  next();
 };
 
 exports.view = (req, res, next) => {
@@ -172,7 +223,7 @@ exports.resubmitted = (req, res, next) => {
       .populate("hod")
       .exec((err, dept) => {
         if (err) return next(err);
-        send_new_requisition_email({ id: result.id, dept }, res, next);
+        send_new_requisition_email({ id: result.id, dept }, req, res);
       });
   });
 };
@@ -187,3 +238,5 @@ let update = (req, res, next, callback) => {
     }
   );
 };
+
+// const send_update_status_email = (req, res, next) => {};
