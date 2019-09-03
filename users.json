@@ -1,0 +1,201 @@
+{
+	"_id": {
+		"$oid": "5b5084afea66c14743edade2  5b59e8d9ed895c0dcdb6aef6"
+
+	},
+	"email": "k@g.c",
+	"role": "admin",
+	"salt": "18263a62855de9232dd242d621f1823d",
+	"hash": "38f7d51b73f9ba0c331f4fcd3edc4a331715ce3557f64df68347b5d5021fcec8a427957e370aca4774c0a98be684ef8e9ba06e8870cc6b8afdb8b928e6462fd2",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5b5596e4894a4f5ea25481c5"
+	},
+	"email": "a@g.c",
+	"role": "vendor",
+	"salt": "32c5b80bf4b8d84798732abb539b24ad",
+	"hash": "aa92f3ed7c85ca3cbbcb0d590266b971a30fd4d7439aa98c9fd0dc5b76401ef442e8752d665e569363bae7c6b5d07fd1115e83a72d23f01daa25286c93d5126c",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5b55988c894a4f5ea25481c7"
+	},
+	"email": "iac@g.c",
+	"role": "iac",
+	"salt": "5cc5d288a63abe46bb2c866ef806b262",
+	"hash": "060e6d3a3b8c4d3bc0d56f8b5e1ebd0467a2659a2373dab69151af99e42d43cededfd054962ceafa0a31b0b84d4afe99224fa4a541c17a64327beb309d647bbf",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5b59e8d9ed895c0dcdb6aef6"
+	},
+	"email": "info@robson.com",
+	"role": "vendor",
+	"salt": "0a93087b2545a8addeb5d423640f644d",
+	"hash": "b97645f6fae2bb54ec2c3c9532825537b9f592e0ad7a8c7a5fa87c794136eecb9548a0db383bedd1dbd86117ec247b1c8bb0e39f463a2c6d6c29217f5e9929f0",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5b837fa0ef08bc68704549c1"
+	},
+	"email": "kolawole.abobade+4@gmail.com",
+	"role": "vendor",
+	"salt": "eb617280443b5c6eceb1ac45d5b125fa",
+	"hash": "86f87cd8a2401ef57b35f3c73b945e6b7c54945aff568e6f121a6adf704cd136974c0a12265706c5ef3547c14b6d5ff6a5d163d5e77f50bdbe43be8419dfb98e",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5b8382b6ef08bc68704549c3"
+	},
+	"email": "kolawole.abobade+2@gmail.com",
+	"role": "vendor",
+	"salt": "ce2c7281ff22860fc4ef7b2608447aea",
+	"hash": "13a856b0af01af0f5d2c8d1e4f73dd7bdcf4306e5410eb6bc9cc2e04b2c6683ebe0a2ed380ef241156be9374667af33581ab8b1f54ab8dbe8b8ae3ccbb06f30f",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5b84228733e2191bff036ed3"
+	},
+	"email": "kolawole.abobade@gmail.com",
+	"role": "vendor",
+	"salt": "789c31ac10d64f7ad07704be6b33ca1e",
+	"hash": "ef1daf924c2bf2a307cd878bc93c97a59baa400f6beca9acf2ebf9b6cb173590759ad77fec700b3068d6ee820bd4a9db2885eb00232c0826790b062cfc23e15e",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5bbb72f6eb09ea15f6ec8afd"
+	},
+	"email": "procurement@russellsmithgroup.com",
+	"role": "procurement",
+	"salt": "9dfa29070be4002298fe32c25566cb9c",
+	"hash": "a83c474107a79c5867ad90262ab627e07a1f6ea4090d40ba213c4c87ab773a73fff7abd1cc635921eb8459a35904152466cf26c34f557e9d6ebc01fc46e8c967",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5bc0b15f440aab39521ef5c9"
+	},
+	"email": "kabobade@russelsmithgroup.com",
+	"eid": "701000209`",
+	"role": "smd",
+	"department": "smd",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5bc5caf58cb28810c010b5a4"
+	},
+	"email": "k@rs.com",
+	"firstname": "Kolawole",
+	"lastname": "Abobade",
+	"eid": "201700209",
+	"role": "smd",
+	"department": "smd",
+	"hash": "38f7d51b73f9ba0c331f4fcd3edc4a331715ce3557f64df68347b5d5021fcec8a427957e370aca4774c0a98be684ef8e9ba06e8870cc6b8afdb8b928e6462fd2",
+	"salt": "18263a62855de9232dd242d621f1823d",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5bcd7711422091146d6d07ad"
+	},
+	"email": "k@rosabon.com",
+	"role": "vendor",
+	"salt": "4c28a27ffbe4cc4a5ab80af1172c0f6d",
+	"hash": "2ad035fcf8c2dbb536db575fe73fa6289b47632a7c733801917ea27c9034f28f8c0802dee75a5faafa12fc9b36ceaedb523bf78472fa7a652ef5f87210819c22",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5be0636eb6e6611aa8c808df"
+	},
+	"updated": {
+		"$date": "2018-11-05T15:36:14.967Z"
+	},
+	"firstname": "Okwong",
+	"lastname": "Effiong",
+	"email": "eokwog@rs.com",
+	"eid": "7012000100",
+	"role": "smd",
+	"department": {
+		"$oid": "5bc07bb5801a39265cb6bbd9"
+	},
+	"type": "staff",
+	"__v": 0,
+	"salt": "18263a62855de9232dd242d621f1823d",
+	"hash": "38f7d51b73f9ba0c331f4fcd3edc4a331715ce3557f64df68347b5d5021fcec8a427957e370aca4774c0a98be684ef8e9ba06e8870cc6b8afdb8b928e6462fd2",
+	"updatedAt": {
+		"$date": "2018-11-06T16:26:45.423Z"
+	}
+}
+{
+	"_id": {
+		"$oid": "5be1688ee4a880734e8825dc"
+	},
+	"updated": {
+		"$date": "2018-11-06T10:10:22.988Z"
+	},
+	"firstname": "Mohammad Anwar  ",
+	"lastname": "Mazhar ",
+	"email": "mmazhar@rs.com",
+	"eid": "701000104",
+	"role": "procurement",
+	"department": {
+		"$oid": "5bc0a32c801a39265cb6bbdf"
+	},
+	"type": "staff",
+	"salt": "18263a62855de9232dd242d621f1823d",
+	"hash": "38f7d51b73f9ba0c331f4fcd3edc4a331715ce3557f64df68347b5d5021fcec8a427957e370aca4774c0a98be684ef8e9ba06e8870cc6b8afdb8b928e6462fd2",
+	"__v": 0,
+	"updatedAt": {
+		"$date": "2018-11-06T16:27:07.240Z"
+	}
+}
+{
+	"_id": {
+		"$oid": "5be2f0293014864c671ead71"
+	},
+	"updated": {
+		"$date": "2018-11-07T14:01:13.666Z"
+	},
+	"firstname": "Salama",
+	"lastname": "Giwa-Osagie",
+	"email": "salama@rs.com",
+	"eid": "70120030",
+	"role": "procurement",
+	"department": {
+		"$oid": "5bc0a32c801a39265cb6bbdf"
+	},
+	"type": "staff",
+	"hash": "38f7d51b73f9ba0c331f4fcd3edc4a331715ce3557f64df68347b5d5021fcec8a427957e370aca4774c0a98be684ef8e9ba06e8870cc6b8afdb8b928e6462fd2",
+	"salt": "18263a62855de9232dd242d621f1823d",
+	"__v": 0
+}
+{
+	"_id": {
+		"$oid": "5be2f0903014864c671ead72"
+	},
+	"updated": {
+		"$date": "2018-11-07T14:02:56.790Z"
+	},
+	"firstname": "Prabhu",
+	"lastname": "Natarajan",
+	"email": "pnatarajan@rs.com",
+	"eid": "701200342",
+	"role": "procurement",
+	"department": {
+		"$oid": "5bc0a32c801a39265cb6bbdf"
+	},
+	"type": "staff",
+	"hash": "38f7d51b73f9ba0c331f4fcd3edc4a331715ce3557f64df68347b5d5021fcec8a427957e370aca4774c0a98be684ef8e9ba06e8870cc6b8afdb8b928e6462fd2",
+	"salt": "18263a62855de9232dd242d621f1823d",
+	"__v": 0
+}

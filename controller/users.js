@@ -1,6 +1,7 @@
 var passport = require("passport");
 var mongoose = require("mongoose");
 var User = mongoose.model("User");
+// const User = require("../model/user");
 var Vendor = mongoose.model("Vendor");
 var mailer = require("../model/mailer");
 var crypto = require("crypto");
@@ -88,7 +89,7 @@ module.exports.importuser = function(req, res, next) {
 let send_user_registration_email = function(confirmationId, req, res, next) {
   // setup email data with unicode symbols
   let mailOptions = {
-    from: process.env.EMAIL_FROM,  // sender address
+    from: process.env.EMAIL_FROM, // sender address
     to: req.body.email, //req.body.email, // list of receivers
     bcc: process.env.IAC_GROUP_EMAIL,
     subject: "New Vendor Account Confirmation", // Subject line
@@ -207,22 +208,47 @@ module.exports.view = function(req, res) {
   }
 };
 
-module.exports.updateProfileData = function(req, res, next) {
-  let data = {
-    email: req.body.email,
-    lastname: req.body.lastname,
-    firstname: req.body.firstname,
-    eid: req.body.eid,
-    role: req.body.role,
+/**
+ * @author Idowu
+ * @summary changed the Query params for updateProfileData from req.body.id to req.body._id
+ * @summary Added type, department fields to the `data` object
+ * @param {*} req Sends a `Request` to the server
+ * @param {*} res Returns a `Response` from the server with a `payload`
+ *
+ */
+module.exports.updateProfileData = function(req, res) {
+  // let data = {
+  //   email: req.body.email,
+  //   lastname: req.body.lastname,
+  //   firstname: req.body.firstname,
+  //   eid: req.body.eid,
+  //   role: req.body.role,
+  //   type: req.body.type,
+  //   department: req.body.department,
 
+  //   updatedAt: Date.now()
+  // };
+  let data = {
+    ...req.body,
     updatedAt: Date.now()
   };
-  User.findByIdAndUpdate(req.body.id, data, function(err, profileData) {
-    if (err) {
-      res.send(err);
+  User.findOneAndUpdate(
+    { _id: req.body._id },
+    { $set: data },
+    { new: true },
+    function(err, profileData) {
+      if (err) {
+        // next(err);
+        res.send(err);
+      } else {
+        return res.send({
+          success: true,
+          message: "profile has been updated",
+          profileData
+        });
+      }
     }
-    res.json({ success: true, message: "profile has been updated!" });
-  });
+  );
 };
 
 module.exports.requestResetToken = function(req, res, next) {
@@ -401,6 +427,7 @@ module.exports.findManagers = (req, res) => {
         res.json({ message: err });
         return;
       }
+      // console.log(users);
       res.status(200).json(users);
     });
 };
