@@ -110,6 +110,7 @@ const send_mail_to_line_manager = (req, res) => {
         templateId: process.env.LINE_MANAGER_TEMPLATE_ID,
         dynamic_template_data: {
           status,
+          submitter: doc.email,
           reqNo: req.requisitionno,
           purchaseNo: req.no,
           request_link,
@@ -173,86 +174,164 @@ const send_rejection_email = (req, res) => {
       status,
       purchaseNo: req.no,
       reason,
-      request_link
+      request_link,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
   };
   mailer.sendMailer(msg, req, res);
 };
 
-let send_approval_email = (req, res, next) => {
+// let send_approval_email = (req, res, next) => {
+//   const request_link = Utility.generateLink("/order/view/", req.id);
+//   const status = Status.getStatus(req.status);
+//   switch (req.status) {
+//     case "PO01":
+//       Department.getHod(req.requestor.department, next, doc => {
+//         let mailOptions = {
+//           from: process.env.EMAIL_FROM, // sender address
+//           to: doc.hod.email,
+//           //bcc: process.env.IAC_GROUP_EMAIL,
+//           subject: status + " " + req.no, // Subject line
+//           text:
+//             " Purchase order No: " +
+//             req.no +
+//             " is awaiting your approval. \n To view, please click the link below: Link: " +
+//             request_link +
+//             " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
+//           html:
+//             "<p> Purchase order No: " +
+//             req.no +
+//             ' is awaiting your approval.</p><p> To view, please click the link below: Link: <a href="' +
+//             request_link +
+//             '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+//         };
+//         mailer.sendMail(mailOptions, res, next);
+//       });
+//       break;
+//     case "PO02":
+//       User.findOne({ type: "ceo" })
+//         .populate("delegate")
+//         .exec((err, doc) => {
+//           let mailOptions = {
+//             from: process.env.EMAIL_FROM, // sender address
+//             to: doc.email,
+//             //bcc: process.env.IAC_GROUP_EMAIL,
+//             subject: status + " " + req.no, // Subject line
+//             text:
+//               " Purchase order No: " +
+//               req.no +
+//               " is awaiting your approval. \n To view, please click the link below: Link: " +
+//               request_link +
+//               " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
+//             html:
+//               "<p> Purchase order No: " +
+//               req.no +
+//               ' is awaiting your approval.</p><p> To view, please click the link below: Link: <a href="' +
+//               request_link +
+//               '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+//           };
+//           mailer.sendMail(mailOptions, res, next);
+//         });
+//       break;
+//     case "PO03":
+//       let mailOptions = {
+//         from: process.env.EMAIL_FROM, // sender address
+//         to: process.env.PROCUREMENT_EMAIL,
+//         subject: status + " " + req.no, // Subject line
+//         text:
+//           status +
+//           " Purchase order with No: " +
+//           req.no +
+//           " has been approved by the CEO. \n To view, please click the link below: Link: " +
+//           request_link +
+//           " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
+//         html:
+//           "<p>" +
+//           status +
+//           " Purchase order with No: " +
+//           req.no +
+//           ' has been approved by the CEO.</p><p> To view, please click the link below: Link: <a href="' +
+//           request_link +
+//           '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+//       };
+//       mailer.sendMail(mailOptions, res, next);
+//       break;
+//   }
+// };
+
+/**
+ * @author Idowu
+ * @param {*} req Request
+ * @param {*} res Response
+ * @summary Sends Approval Email to procurement department.
+ * @summary Utilizes sendgrid's handlebars templating engine to accomodate dynamic data.
+ *
+ */
+const send_approval_email = (req, res) => {
   const request_link = Utility.generateLink("/order/view/", req.id);
   const status = Status.getStatus(req.status);
   switch (req.status) {
     case "PO01":
       Department.getHod(req.requestor.department, next, doc => {
-        let mailOptions = {
-          from: process.env.EMAIL_FROM, // sender address
+        const msg = {
           to: doc.hod.email,
-          //bcc: process.env.IAC_GROUP_EMAIL,
-          subject: status + " " + req.no, // Subject line
-          text:
-            " Purchase order No: " +
-            req.no +
-            " is awaiting your approval. \n To view, please click the link below: Link: " +
-            request_link +
-            " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
-          html:
-            "<p> Purchase order No: " +
-            req.no +
-            ' is awaiting your approval.</p><p> To view, please click the link below: Link: <a href="' +
-            request_link +
-            '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+          from: process.env.EMAIL_FROM,
+          subject: `${status} ${req.no}`,
+          templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
+          dynamic_template_data: {
+            subject: `${status} ${req.no}`,
+            status,
+            purchaseNo: req.no,
+            p1: `Purchase order No: ${req.no} is awaiting your approval.`,
+            request_link,
+            sender_phone: "+234 706 900 0900",
+            sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+          }
         };
-        mailer.sendMail(mailOptions, res, next);
+        mailer.sendMailer(msg, req, res);
       });
       break;
     case "PO02":
       User.findOne({ type: "ceo" })
         .populate("delegate")
         .exec((err, doc) => {
-          let mailOptions = {
-            from: process.env.EMAIL_FROM, // sender address
+          const msg = {
             to: doc.email,
-            //bcc: process.env.IAC_GROUP_EMAIL,
-            subject: status + " " + req.no, // Subject line
-            text:
-              " Purchase order No: " +
-              req.no +
-              " is awaiting your approval. \n To view, please click the link below: Link: " +
-              request_link +
-              " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
-            html:
-              "<p> Purchase order No: " +
-              req.no +
-              ' is awaiting your approval.</p><p> To view, please click the link below: Link: <a href="' +
-              request_link +
-              '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+            from: process.env.EMAIL_FROM,
+            subject: `${status} ${req.no}`,
+            templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
+            dynamic_template_data: {
+              subject: `${status} ${req.no}`,
+              status,
+              purchaseNo: req.no,
+              p1: `Purchase order No: ${req.no} is awaiting your approval.`,
+              request_link,
+              sender_phone: "+234 706 900 0900",
+              sender_address:
+                "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+            }
           };
-          mailer.sendMail(mailOptions, res, next);
+          mailer.sendMailer(msg, req, res);
         });
       break;
     case "PO03":
-      let mailOptions = {
-        from: process.env.EMAIL_FROM, // sender address
+      const msg = {
         to: process.env.PROCUREMENT_EMAIL,
-        subject: status + " " + req.no, // Subject line
-        text:
-          status +
-          " Purchase order with No: " +
-          req.no +
-          " has been approved by the CEO. \n To view, please click the link below: Link: " +
-          request_link +
-          " \n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.", // plain text body
-        html:
-          "<p>" +
-          status +
-          " Purchase order with No: " +
-          req.no +
-          ' has been approved by the CEO.</p><p> To view, please click the link below: Link: <a href="' +
-          request_link +
-          '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+        from: process.env.EMAIL_FROM,
+        subject: `${status} ${req.no}`,
+        templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
+        dynamic_template_data: {
+          subject: `${status} ${req.no}`,
+          status,
+          purchaseNo: req.no,
+          p1: `${status} Purchase order with No: ${req.no} has been approved by the CEO.`,
+          request_link,
+          sender_phone: "+234 706 900 0900",
+          sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+        }
       };
-      mailer.sendMail(mailOptions, res, next);
+      mailer.sendMailer(msg, req, res);
       break;
   }
 };

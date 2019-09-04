@@ -43,6 +43,10 @@ exports.save = (req, res, next) => {
   });
 };
 
+/**
+ * @author Idowu
+ * @summary User.findOne was added to get requestor details
+ */
 exports.submit = (req, res, next) => {
   const data = req.body;
   data.dateneeded = data.dateneeded;
@@ -68,11 +72,22 @@ exports.submit = (req, res, next) => {
       { requisitionno: requisitionNo.toUpperCase() },
       (err, r) => {
         if (err) return next(err);
+
         Department.findOne({ deparment: result.deparment })
           .populate("hod")
           .exec((err, dept) => {
-            if (err) return next(err);
-            send_new_requisition_email({ id: result.id, dept }, req, res);
+            // if (err) return next(err);
+            User.findOne({ _id: result.requestor }).exec((err, doc) => {
+              if (err) {
+                return next(err);
+              }
+              let requestor = doc.email;
+              send_new_requisition_email(
+                { id: result.id, dept, requisitionNo, requestor },
+                req,
+                res
+              );
+            });
           });
         res.send(result);
       }
@@ -80,14 +95,6 @@ exports.submit = (req, res, next) => {
   });
 };
 
-/**
- * @author Idowu
- * @param {*} options Object parameters passed to the function call
- * @param {*} req Request for payload or resource from a server.
- * @param {*} res Returns a response from a server
- * @param {*} next Express middleware function to either terminate or make a middleware available
- * to the next middleware/function for use
- */
 // let send_new_requisition_email = function(options, req, res, next) {
 //   const { id, dept } = options;
 //   // setup email data with unicode symbols
@@ -111,8 +118,16 @@ exports.submit = (req, res, next) => {
 //   next();
 // };
 
+/**
+ * @author Idowu
+ * @param {*} options Object parameters passed to the function call
+ * @param {*} req Request for payload or resource from a server.
+ * @param {*} res Returns a response from a server
+ * @param {*} next Express middleware function to either terminate or make a middleware available
+ * to the next middleware/function for use
+ */
 const send_new_requisition_email = (options, req, res, next) => {
-  const { id, dept } = options;
+  const { id, dept, requisitionNo, requestor } = options;
   // Set email data with unicode symbols
   const request_link = Utility.generateLink("/requisition/view/", id);
   const msg = {
@@ -123,6 +138,8 @@ const send_new_requisition_email = (options, req, res, next) => {
     dynamic_template_data: {
       subject: `New Purchase request submitted`,
       request_link,
+      requisitionNo,
+      requestor,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
@@ -184,6 +201,7 @@ const sendApprovalEmail = (req, res, next) => {
     templateId: process.env.APPROVAL_TEMPLATE_ID,
     dynamic_template_data: {
       subject: `status`,
+      name: `${req.requestor.lastname}`,
       status,
       reason,
       reqNo: req.requisitionNo,
@@ -222,8 +240,19 @@ exports.resubmitted = (req, res, next) => {
     Department.findOne({ deparment: result.deparment })
       .populate("hod")
       .exec((err, dept) => {
-        if (err) return next(err);
-        send_new_requisition_email({ id: result.id, dept }, req, res);
+        // if (err) return next(err);
+        // send_new_requisition_email({ id: result.id, dept }, req, res);
+        User.findOne({ _id: result.requestor }).exec((err, doc) => {
+          if (err) {
+            return next(err);
+          }
+          let requestor = doc.email;
+          send_new_requisition_email(
+            { id: result.id, dept, requisitionNo, requestor },
+            req,
+            res
+          );
+        });
       });
   });
 };

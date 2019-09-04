@@ -195,34 +195,62 @@ exports.acceptQoute = (req, res, next) => {
   });
 };
 
-let send_po_accepted_email = function(req, res, next) {
-  let mailOptions = {
-    from: process.env.EMAIL_FROM, // sender address
-    to: req.body.vendorEmail, //req.body.email, // list of receivers
-    subject: "Your PO Has Been Accepted", // Subject line
-    text:
-      "Dear Vendor\n Your PO has been approved.\n Kindly Logon unto the platform for more information.\nRegards \nThe Russelsmith Team.", // plain text body
-    html:
-      "<p>Dear Vendor, </p><p> Your PO has been approved.</p><p>  Kindly Logon unto the platform for more information.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
+// let send_po_accepted_email = function(req, res, next) {
+//   let mailOptions = {
+//     from: process.env.EMAIL_FROM, // sender address
+//     to: req.body.vendorEmail, //req.body.email, // list of receivers
+//     subject: "Your PO Has Been Accepted", // Subject line
+//     text:
+//       "Dear Vendor\n Your PO has been approved.\n Kindly Logon unto the platform for more information.\nRegards \nThe Russelsmith Team.", // plain text body
+//     html:
+//       "<p>Dear Vendor, </p><p> Your PO has been approved.</p><p>  Kindly Logon unto the platform for more information.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
+//   };
+//   mailer.sendMail(mailOptions, res, next);
+// };
+
+const send_po_accepted_email = (req, res) => {
+  const msg = {
+    to: req.body.vendorEmail,
+    from: process.env.EMAIL_FROM,
+    subject: `Your PO Has Been Accepted`,
+    templateId: process.env.PO_ACCEPTED_EMAIL_TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: `Your PO Has Been Accepted`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
   };
-  mailer.sendMail(mailOptions, res, next);
 };
 
-let send_po_rejected_email = function(req, res, next) {
-  // setup email data with unicode symbols
-  let mailOptions = {
-    from: process.env.EMAIL_FROM, // sender address
-    to: req.body.vendorEmail, //req.body.email, // list of receivers
-    subject: "Your PO Has Been Rejected", // Subject line
-    text:
-      "Dear Vendor\n We did not approve your PO for the reasons stated below.\n " +
-      req.body.rejection_reason +
-      "\n" +
-      "For more information, kindly Logon unto the platform.\nRegards \nThe Russelsmith Team.", // plain text body
-    html:
-      "<p>Dear Vendor, </p><p> We did not approve your PO for the reasons stated below.</p> <p> " +
-      req.body.rejection_reason +
-      "</p><p> For more information, kindly Logon unto the platform.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
+// let send_po_rejected_email = function(req, res, next) {
+//   // setup email data with unicode symbols
+//   let mailOptions = {
+//     from: process.env.EMAIL_FROM, // sender address
+//     to: req.body.vendorEmail, //req.body.email, // list of receivers
+//     subject: "Your PO Has Been Rejected", // Subject line
+//     text:
+//       "Dear Vendor\n We did not approve your PO for the reasons stated below.\n " +
+//       req.body.rejection_reason +
+//       "\n" +
+//       "For more information, kindly Logon unto the platform.\nRegards \nThe Russelsmith Team.", // plain text body
+//     html:
+//       "<p>Dear Vendor, </p><p> We did not approve your PO for the reasons stated below.</p> <p> " +
+//       req.body.rejection_reason +
+//       "</p><p> For more information, kindly Logon unto the platform.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
+//   };
+//   mailer.sendMail(mailOptions, res, next);
+// };
+const send_po_rejected_email = (req, res) => {
+  const msg = {
+    to: req.body.vendorEmail,
+    from: process.env.EMAIL_FROM,
+    subject: `Your PO Has Been Rejected`,
+    templateId: process.env.PO_REJECTED_EMAIL_TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: `Your PO Has Been Rejected`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
   };
-  mailer.sendMail(mailOptions, res, next);
+  mailer.sendMailer(msg, req, res);
 };
