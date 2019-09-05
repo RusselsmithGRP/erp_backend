@@ -220,6 +220,7 @@ const send_po_accepted_email = (req, res) => {
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
   };
+  mailer.sendMailer(msg, req, res);
 };
 
 // let send_po_rejected_email = function(req, res, next) {

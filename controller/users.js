@@ -118,7 +118,7 @@ module.exports.importuser = function(req, res, next) {
  * @param {*} confirmationId
  * @param {*} req
  * @param {*} res
- * @summary Send Confirmation Notification to Vendor
+ * @summary Send Confirmation Notification to Vendor after successful registration
  */
 const send_user_registration_email = (confirmationId, req, res) => {
   const msg = {
@@ -258,7 +258,7 @@ module.exports.view = function(req, res) {
 /**
  * @author Idowu
  * @summary changed the Query params for updateProfileData from req.body.id to req.body._id
- * @summary Added type, department fields to the `data` object
+ * @summary Destructured the `data` object to access all fields without any bother for model structure.
  * @param {*} req Sends a `Request` to the server
  * @param {*} res Returns a `Response` from the server with a `payload`
  *
