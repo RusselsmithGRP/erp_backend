@@ -86,54 +86,101 @@ module.exports.importuser = function(req, res, next) {
   });
 };
 
-let send_user_registration_email = function(confirmationId, req, res, next) {
-  // setup email data with unicode symbols
-  let mailOptions = {
-    from: process.env.EMAIL_FROM, // sender address
-    to: req.body.email, //req.body.email, // list of receivers
+// let send_user_registration_email = function(confirmationId, req, res, next) {
+//   // setup email data with unicode symbols
+//   let mailOptions = {
+//     from: process.env.EMAIL_FROM, // sender address
+//     to: req.body.email, //req.body.email, // list of receivers
+//     bcc: process.env.IAC_GROUP_EMAIL,
+//     subject: "New Vendor Account Confirmation", // Subject line
+//     text:
+//       "Dear " +
+//       req.body.coy_name +
+//       '\n Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.\n To continue the vendor registration, please click the link below: Confirmation Link: \n<a href="' +
+//       process.env.PUBLIC_URL +
+//       "/confirm/" +
+//       confirmationId +
+//       '">\n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.', // plain text body
+//     html:
+//       "<p>Dear " +
+//       req.body.coy_name +
+//       ', </p><p>Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.</p><p> To continue the vendor registration, please click the link below: Confirmation Link: <a href="' +
+//       process.env.PUBLIC_URL +
+//       "/confirm/" +
+//       confirmationId +
+//       '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+//   };
+//   mailer.sendMail(mailOptions, res, next);
+// };
+
+/**
+ * @author Idowu
+ * @param {*} confirmationId
+ * @param {*} req
+ * @param {*} res
+ * @summary Send Confirmation Notification to Vendor after successful registration
+ */
+const send_user_registration_email = (confirmationId, req, res) => {
+  const msg = {
+    to: req.body.email,
+    from: process.env.EMAIL_FROM,
     bcc: process.env.IAC_GROUP_EMAIL,
-    subject: "New Vendor Account Confirmation", // Subject line
-    text:
-      "Dear " +
-      req.body.coy_name +
-      '\n Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.\n To continue the vendor registration, please click the link below: Confirmation Link: \n<a href="' +
-      process.env.PUBLIC_URL +
-      "/confirm/" +
-      confirmationId +
-      '">\n If you do not see a link, kindly copy out the text in the line above and paste into your browser.\nRegards \nThe Russelsmith Team.', // plain text body
-    html:
-      "<p>Dear " +
-      req.body.coy_name +
-      ', </p><p>Thank you for creating an account on RS Edge, RusselSmith’s Vendor Management Platform.</p><p> To continue the vendor registration, please click the link below: Confirmation Link: <a href="' +
-      process.env.PUBLIC_URL +
-      "/confirm/" +
-      confirmationId +
-      '">RS Edge</a></p><p> If you do not see a link, kindly copy out the text in the line above and paste into your browser.</p><br /><p>Regards </p><p>The Russelsmith Team.</p>' // plain text body
+    subject: "New Vendor Account Confirmation",
+    templateId: process.env.USER_REG_TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: `New Vendor Account Confirmation`,
+      company_name: req.body.coy_name,
+      confirmLink: `${process.env.PUBLIC_URL}/confirm/${confirmationId}`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
   };
-  mailer.sendMail(mailOptions, res, next);
+  mailer.sendMailer(msg, req, res);
 };
 
-let send_email_reset_token = function(resetToken, req, res, next) {
-  // setup email data with unicode symbols
-  let mailOptions = {
-    from: process.env.EMAIL_FROM, // sender address
-    to: req.body.email, //req.body.email, // list of receivers
+// let send_email_reset_token = function(resetToken, req, res, next) {
+//   // setup email data with unicode symbols
+//   let mailOptions = {
+//     from: process.env.EMAIL_FROM, // sender address
+//     to: req.body.email, //req.body.email, // list of receivers
+//     bcc: process.env.IAC_GROUP_EMAIL,
+//     subject: "Reset Your Password", // Subject line
+//     text:
+//       'A password request has just been initaited on your account! \n Please click the link below to reset your password. \n<a href="' +
+//       process.env.PUBLIC_URL +
+//       "/resetpassword/" +
+//       resetToken +
+//       '">RS Edge</a>  \n If this is not you, please kindly ignore this email.', // plain text body
+//     html:
+//       '<p>A password request has just been initaited on your account!</p><p> Please click the link below to reset your password. </p> <p> <a href="' +
+//       process.env.PUBLIC_URL +
+//       "/resetpassword/" +
+//       resetToken +
+//       '">RS Edge</a></p><p>If this is not you, please kindly ignore this email</p>' // plain text body
+//   };
+//   mailer.sendMail(mailOptions, res, next);
+// };
+
+/**
+ * @author Idowu
+ * @param {*} resetToken Token to initiate a password reset
+ * @param {*} req
+ * @param {*} res
+ */
+const send_email_reset_token = (resetToken, req, res) => {
+  const msg = {
+    to: req.body.email,
+    from: process.env.EMAIL_FROM,
     bcc: process.env.IAC_GROUP_EMAIL,
-    subject: "Reset Your Password", // Subject line
-    text:
-      'A password request has just been initaited on your account! \n Please click the link below to reset your password. \n<a href="' +
-      process.env.PUBLIC_URL +
-      "/resetpassword/" +
-      resetToken +
-      '">RS Edge</a>  \n If this is not you, please kindly ignore this email.', // plain text body
-    html:
-      '<p>A password request has just been initaited on your account!</p><p> Please click the link below to reset your password. </p> <p> <a href="' +
-      process.env.PUBLIC_URL +
-      "/resetpassword/" +
-      resetToken +
-      '">RS Edge</a></p><p>If this is not you, please kindly ignore this email</p>' // plain text body
+    subject: `Reset Your Password`,
+    templateId: process.env.RESET_TOKEN_TEMPLATE_ID,
+    dynamic_template_data: {
+      resetLink: `${process.env.PUBLIC_URL}/resetpassword/${resetToken}`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
   };
-  mailer.sendMail(mailOptions, res, next);
+  mailer.sendMailer(msg, req, res);
 };
 
 let generateToken = function() {
@@ -211,7 +258,7 @@ module.exports.view = function(req, res) {
 /**
  * @author Idowu
  * @summary changed the Query params for updateProfileData from req.body.id to req.body._id
- * @summary Added type, department fields to the `data` object
+ * @summary Destructured the `data` object to access all fields without any bother for model structure.
  * @param {*} req Sends a `Request` to the server
  * @param {*} res Returns a `Response` from the server with a `payload`
  *
@@ -512,13 +559,13 @@ module.exports.findOnlyStaff = function(req, res) {
 /**
  * @author Idowu
  * @summary createNewUser logic has been refactored
- * @summary `save()` method now returns promise
- * @summary err message was changed
+ * @summary `save()` method now returns a promise instead of a callback
+ * @summary `err` message was changed
  * @param {*} req
  * @param {*} res
  * @param {*} next
  */
-module.exports.createNewUser = function(req, res, next) {
+module.exports.createNewUser = function(req, res) {
   const user = new User(req.body);
   user
     .save()
@@ -561,7 +608,7 @@ const send_staff_reg_email = (req, res) => {
     to: req.body.email,
     from: process.env.EMAIL_FROM,
     subject: `New User Account confirmation`,
-    templateId: process.env.USER_REG_TEMPLATE_ID,
+    templateId: process.env.STAFF_REG_TEMPLATE_ID,
     dynamic_template_data: {
       subject: "New User Account Confirmation",
       email: req.body.email,
@@ -574,19 +621,19 @@ const send_staff_reg_email = (req, res) => {
   mailer.sendMailer(msg, req, res);
 };
 
-let send_staff_registration_email = function(req, res, next) {
-  // setup email data with unicode symbols
-  let mailOptions = {
-    from: process.env.EMAIL_FROM, // sender address
-    to: req.body.email, //req.body.email, // list of receivers
-    subject: "New User Account Confirmation", // Subject line
-    text:
-      "Dear User\n An account has just been created for you on RS Edge.\n Kindly Logon unto the platform to access your account.\nRegards \nThe Russelsmith Team.", // plain text body
-    html:
-      "<p>Dear User, </p><p>An account has just been created for you on RS Edge.</p><p> Kindly Logon unto the platform to access your account..</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
-  };
-  mailer.sendMail(mailOptions, res, next);
-};
+// let send_staff_registration_email = function(req, res, next) {
+//   // setup email data with unicode symbols
+//   let mailOptions = {
+//     from: process.env.EMAIL_FROM, // sender address
+//     to: req.body.email, //req.body.email, // list of receivers
+//     subject: "New User Account Confirmation", // Subject line
+//     text:
+//       "Dear User\n An account has just been created for you on RS Edge.\n Kindly Logon unto the platform to access your account.\nRegards \nThe Russelsmith Team.", // plain text body
+//     html:
+//       "<p>Dear User, </p><p>An account has just been created for you on RS Edge.</p><p> Kindly Logon unto the platform to access your account..</p><br /><p>Regards </p><p>The Russelsmith Team.</p>" // plain text body
+//   };
+//   mailer.sendMail(mailOptions, res, next);
+// };
 module.exports.getProfileDetails = function(req, res) {
   User.findOne({ _id: req.params.id })
     .select()
