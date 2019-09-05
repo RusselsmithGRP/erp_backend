@@ -64,8 +64,6 @@ exports.blacklisted = (req, res, next) => {
 exports.view = (req, res, next) => {
   Vendor.find({ user: req.params.user_id }).exec((err, doc) => {
     if (err) return next(err);
-    console.log("here", doc);
-
     res.send(doc);
   });
 };
@@ -75,6 +73,13 @@ exports.viewOne = (req, res, next) => {
     if (err) return next(err);
     res.send(doc);
   });
+};
+exports.detailsByUserId = (req, res, next) => {
+  Vendor.findOne({ user: req.params.id }).exec((err, doc) => {
+    if (err) return next(err);
+    res.send(doc);
+  });
+
 };
 
 exports.search = (req, res, next) => {
@@ -95,24 +100,28 @@ exports.search = (req, res, next) => {
 
 exports.update = (req, res, next) => {
   const data = req.body;
-  const key = data.key;
-  const value = data.value;
-  if ("business_info" in data.payload) {
-    if (
-      data.payload.business_info.product_related &&
-      data.payload.business_info.service_related
-    ) {
-      data.payload["classes"] = 3;
-    } else if (data.payload.business_info.product_related) {
-      data.payload["classes"] = 1;
-    } else if (data.payload.business_info.service_related) {
-      data.payload["classes"] = 2;
-    }
-  }
-  Vendor.updateOne({ [key]: value }, req.body.payload, (err, result) => {
+  // const key = data.key;
+  // const value = data.value;
+  // if ("business_info" in data.payload) {
+  //   if (
+  //     data.payload.business_info.product_related &&
+  //     data.payload.business_info.service_related
+  //   ) {
+  //     data.payload["classes"] = 3;
+  //   } else if (data.payload.business_info.product_related) {
+  //     data.payload["classes"] = 1;
+  //   } else if (data.payload.business_info.service_related) {
+  //     data.payload["classes"] = 2;
+  //   }
+  // }
+  // Vendor.updateOne({ [key]: value }, req.body.payload, (err, result) => {
+  //   if (err) return next(err);
+  //   res.send(result);
+  // });
+  Vendor.updateOne({user:data.user}, data, (err,result)=>{
     if (err) return next(err);
     res.send(result);
-  });
+});
 };
 
 exports.updateStatus = (req, res, next) => {

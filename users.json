@@ -1,7 +1,6 @@
 {
 	"_id": {
-		"$oid": "5b5084afea66c14743edade2  5b59e8d9ed895c0dcdb6aef6"
-
+		"$oid": "5b5084afea66c14743edade2"
 	},
 	"email": "k@g.c",
 	"role": "admin",

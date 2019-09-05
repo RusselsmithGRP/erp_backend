@@ -16,6 +16,7 @@ router.put('/updatestatus', vendorController.updateStatus);
 router.get('/search' , vendorController.search);
 router.get('/:user_id', vendorController.view);
 router.get('/one/:id', vendorController.viewOne);
+router.get('/details-by-userId/:id',jwt, vendorController.detailsByUserId);
 router.delete('/deletevendor', jwt , vendorController.deleteVendor);
 
 module.exports = router;

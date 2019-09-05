@@ -509,30 +509,69 @@ module.exports.findOnlyStaff = function(req, res) {
   });
 };
 
+/**
+ * @author Idowu
+ * @summary createNewUser logic has been refactored
+ * @summary `save()` method now returns promise
+ * @summary err message was changed
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
 module.exports.createNewUser = function(req, res, next) {
-  var user = new User();
-  user.firstname = req.body.firstname;
-  user.lastname = req.body.lastname;
-  user.email = req.body.email;
-  user.eid = req.body.eid;
-  user.role = req.body.role;
-  user.department = req.body.department;
-  user.type = req.body.type;
-
-  user.save(function(err) {
-    if (err) {
-      return res.json({
-        success: false,
-        message: "An error occured. Plese check your inputs."
+  const user = new User(req.body);
+  user
+    .save()
+    .then(() => {
+      res.json({
+        success: true,
+        message: "New User Created!",
+        user: { type: "staff" }
       });
-    }
-    res.json({
-      success: true,
-      message: "New User Created!",
-      user: { type: "staff" }
+      send_staff_reg_email(req, res);
+    })
+    .catch(err => {
+      res.json({
+        success: false,
+        message: `A user with email: "${req.body.email}" already exists.`
+      });
     });
-    send_staff_registration_email(req, res, next);
-  });
+};
+
+/**
+ * @author Idowu
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @example msg = {
+    to: req.body.email,
+    from: process.env.EMAIL_FROM,
+    subject: "Approval for purchase order",
+    templateId: process.env.TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: "Approval for Purchase order",
+      name: req.body.username,
+      sender_name: `Russelsmith Group.`,
+      sender_address: "3, Swisstrade drive, Ikota-Lekki, Lagos."
+    }
+ */
+
+const send_staff_reg_email = (req, res) => {
+  const msg = {
+    to: req.body.email,
+    from: process.env.EMAIL_FROM,
+    subject: `New User Account confirmation`,
+    templateId: process.env.USER_REG_TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: "New User Account Confirmation",
+      email: req.body.email,
+      name: req.body.lastname,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+
+  mailer.sendMailer(msg, req, res);
 };
 
 let send_staff_registration_email = function(req, res, next) {

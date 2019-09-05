@@ -1,0 +1,6 @@
+PUBLIC_URL=http://www.russelsmithedge.com
+PARENT_FOLDER=/
+NODE_PATH=./src
+EMAIL_FROM=rssmtp@russelsmithgroup.com
+PROCUREMENT_EMAIL=procurement@russelsmithgroup.com
+IAC_GROUP_EMAIL=iac@russelsmithgroup.com
