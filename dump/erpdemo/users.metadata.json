@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"erpdemo.users"},{"v":2,"unique":true,"key":{"email":1},"name":"email_1","ns":"erpdemo.users","background":true}],"uuid":"4e86dcc013ad4b8fb224dc9c29d082b4"}
