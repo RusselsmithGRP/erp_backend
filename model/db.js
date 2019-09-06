@@ -1,9 +1,9 @@
 var mongoose = require("mongoose");
 var gracefulShutdown;
-// dbURI = 'mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp';
-var dbURI = 'mongodb://localhost:27017/erpdemo';
+// dbURI = "mongodb://Austine:9090mx8n@ds147592.mlab.com:47592/erp";
+var dbURI = "mongodb://localhost:27017/erpdemo";
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   dbURI = process.env.MONGOLAB_URI;
 }
 

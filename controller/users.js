@@ -566,16 +566,23 @@ module.exports.findOnlyStaff = function(req, res) {
  * @param {*} next
  */
 module.exports.createNewUser = function(req, res) {
+  let confirmationId = generateToken();
   const user = new User(req.body);
+  user.confirmationId = confirmationId;
+
   user
     .save()
-    .then(() => {
+    .then((err, doc) => {
       res.json({
         success: true,
         message: "New User Created!",
         user: { type: "staff" }
       });
-      send_staff_reg_email(req, res);
+      if (doc.role === "vendor") {
+        send_user_registration_email(confirmationId, req, res, next);
+      } else {
+        send_staff_reg_email(req, res);
+      }
     })
     .catch(err => {
       res.json({
