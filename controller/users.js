@@ -131,6 +131,7 @@ const send_user_registration_email = (confirmationId, req, res) => {
       subject: `New Vendor Account Confirmation`,
       company_name: req.body.coy_name,
       confirmLink: `${process.env.PUBLIC_URL}/confirm/${confirmationId}`,
+      // confirmLink: `http://localhost:3000/users/confirmregistration/${confirmationId}`,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
@@ -239,7 +240,12 @@ module.exports.login = function(req, res) {
   })(req, res);
 };
 
-module.exports.index = function(req, res) {};
+module.exports.index = function(req, res) {
+  User.find({}).exec((err, doc) => {
+    if (err) return res.send(err);
+    res.send(doc);
+  });
+};
 
 module.exports.view = function(req, res) {
   // If no user ID exists in the JWT return a 401
@@ -530,7 +536,10 @@ module.exports.getProfileDetails = function(req, res) {
 module.exports.deleteUser = function(userId) {
   User.deleteOne({ _id: userId })
     .select()
-    .exec(function(err, user) {});
+    .exec(function(err, user) {
+      if (err) return res.send(err);
+      res.send({ message: "User deleted successfully" });
+    });
 };
 
 module.exports.findAllStaff = function(req, res) {
@@ -598,16 +607,16 @@ module.exports.createNewUser = function(req, res) {
  * @param {*} res 
  * @param {*} next 
  * @example msg = {
-    to: req.body.email,
-    from: process.env.EMAIL_FROM,
-    subject: "Approval for purchase order",
-    templateId: process.env.TEMPLATE_ID,
-    dynamic_template_data: {
-      subject: "Approval for Purchase order",
-      name: req.body.username,
-      sender_name: `Russelsmith Group.`,
-      sender_address: "3, Swisstrade drive, Ikota-Lekki, Lagos."
-    }
+        to: req.body.email,
+        from: process.env.EMAIL_FROM,
+        subject: "Approval for purchase order",
+        templateId: process.env.TEMPLATE_ID,
+        dynamic_template_data: {
+              subject: "Approval for Purchase order",
+              name: req.body.username,
+              sender_name: `Russelsmith Group.`,
+              sender_address: "3, Swisstrade drive, Ikota-Lekki, Lagos."
+        }
  */
 
 const send_staff_reg_email = (req, res) => {
