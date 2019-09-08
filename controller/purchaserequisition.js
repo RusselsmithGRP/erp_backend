@@ -189,7 +189,7 @@ const send_new_requisition_email = (options, req, res) => {
  * @summary thus, the reason for `dynamic_template_data`
  * @summary which is a way of passing data to the email template on sendgrid
  */
-const sendApprovalEmail = (req, res, next) => {
+const sendApprovalEmail = (req, res) => {
   const request_link = Utility.generateLink("/requisition/view/", req.id);
   const status = Status.getStatus(res.status);
   const reason = req.reason ? req.reason : "";
@@ -210,7 +210,6 @@ const sendApprovalEmail = (req, res, next) => {
     }
   };
   mailer.sendMailer(msg, req, res);
-  next();
 };
 
 exports.view = (req, res, next) => {
