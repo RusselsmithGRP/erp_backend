@@ -38,7 +38,8 @@ module.exports.register = function(req, res, next) {
           });
         });
       } else {
-        send_user_registration_email(confirmationId, req, res, next);
+        // send_user_registration_email(confirmationId, req, res, next);
+        send_staff_reg_email(req, res);
       }
     }
   });
