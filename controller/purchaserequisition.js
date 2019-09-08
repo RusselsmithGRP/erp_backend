@@ -126,7 +126,7 @@ exports.submit = (req, res, next) => {
  * @param {*} next Express middleware function to either terminate or make a middleware available
  * to the next middleware/function for use
  */
-const send_new_requisition_email = (options, req, res, next) => {
+const send_new_requisition_email = (options, req, res) => {
   const { id, dept, requisitionNo, requestor } = options;
   // Set email data with unicode symbols
   const request_link = Utility.generateLink("/requisition/view/", id);
@@ -145,7 +145,6 @@ const send_new_requisition_email = (options, req, res, next) => {
     }
   };
   mailer.sendMailer(msg, req, res);
-  next();
 };
 
 // let sendApprovalEmail = function(req, res, next) {
