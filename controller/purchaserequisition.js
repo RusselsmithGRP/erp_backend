@@ -126,7 +126,7 @@ exports.submit = (req, res, next) => {
  * @param {*} next Express middleware function to either terminate or make a middleware available
  * to the next middleware/function for use
  */
-const send_new_requisition_email = (options, req, res, next) => {
+const send_new_requisition_email = (options, req, res) => {
   const { id, dept, requisitionNo, requestor } = options;
   // Set email data with unicode symbols
   const request_link = Utility.generateLink("/requisition/view/", id);
@@ -145,7 +145,6 @@ const send_new_requisition_email = (options, req, res, next) => {
     }
   };
   mailer.sendMailer(msg, req, res);
-  next();
 };
 
 // let sendApprovalEmail = function(req, res, next) {
@@ -190,7 +189,7 @@ const send_new_requisition_email = (options, req, res, next) => {
  * @summary thus, the reason for `dynamic_template_data`
  * @summary which is a way of passing data to the email template on sendgrid
  */
-const sendApprovalEmail = (req, res, next) => {
+const sendApprovalEmail = (req, res) => {
   const request_link = Utility.generateLink("/requisition/view/", req.id);
   const status = Status.getStatus(res.status);
   const reason = req.reason ? req.reason : "";
@@ -202,16 +201,16 @@ const sendApprovalEmail = (req, res, next) => {
     dynamic_template_data: {
       subject: `status`,
       name: `${req.requestor.lastname}`,
-      status,
-      reason,
-      reqNo: req.requisitionNo,
+      status: status,
+      reason: reason,
+      reqNo: req.requisitionno,
       request_link,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
   };
+  // console.log(`Status: ${status}, reqNo: ${req.requisitionno}, reason: ${reason}`);
   mailer.sendMailer(msg, req, res);
-  next();
 };
 
 exports.view = (req, res, next) => {
@@ -228,7 +227,7 @@ exports.updateStatus = (req, res, next) => {
     PurchaseRequisition.findOne({ _id: req.params.id })
       .populate("requestor")
       .exec((err, doc) => {
-        sendApprovalEmail(doc, res, next);
+        sendApprovalEmail(doc, res);
       });
     res.send(result);
   });
