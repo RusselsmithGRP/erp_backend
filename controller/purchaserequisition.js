@@ -196,7 +196,7 @@ const send_new_requisition_email = (options, req, res) => {
  */
 const sendApprovalEmail = (req, res) => {
   const request_link = Utility.generateLink("/requisition/view/", req.id);
-  const status = Status.getStatus(res.status);
+  const status = Status.getStatus(req.status);
   const reason = req.reason ? req.reason : "";
   const msg = {
     to: req.requestor.email,
