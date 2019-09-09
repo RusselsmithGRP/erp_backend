@@ -662,3 +662,25 @@ module.exports.getProfileDetails = function(req, res) {
       res.status(200).json(user);
     });
 };
+
+/**
+ * @author Idowu
+ * @param {req} Request req
+ * @param {res} Response res
+ * @param {next} Middleware next
+ */
+module.exports.updateUserProfile = (req, res, next) => {
+  const updatedData = {
+    ...req.body,
+    updatedAt: Date.now()
+  };
+
+  User.findOneAndUpdate(
+    { _id: req.body._id },
+    { $set: updatedData },
+    { new: true }
+  ).exec((err, doc) => {
+    if (err) return next(err);
+    res.send({ message: "User Updated successfully", payload: doc });
+  });
+};

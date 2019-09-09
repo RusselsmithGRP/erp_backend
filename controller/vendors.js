@@ -79,7 +79,6 @@ exports.detailsByUserId = (req, res, next) => {
     if (err) return next(err);
     res.send(doc);
   });
-
 };
 
 exports.search = (req, res, next) => {
@@ -118,10 +117,10 @@ exports.update = (req, res, next) => {
   //   if (err) return next(err);
   //   res.send(result);
   // });
-  Vendor.updateOne({user:data.user}, data, (err,result)=>{
+  Vendor.updateOne({ user: data.user }, data, (err, result) => {
     if (err) return next(err);
     res.send(result);
-});
+  });
 };
 
 exports.updateStatus = (req, res, next) => {
@@ -260,11 +259,17 @@ const send_unapproval_email = (req, res, doc) => {
 
   mailer.sendMailer(msg, req, res);
 };
+
+/**
+ * @author Idowu
+ * @summary Fixed delete vendor
+ * @deprecated Do NOT uncomment user_controller.deleteUser -- Issue pending Resolution
+ */
 exports.deleteVendor = (req, res) => {
   Vendor.deleteOne({ user: req.body.user })
     .select()
     .exec(function(err, vendor) {
       userId = req.body.user;
-      user_controller.deleteUser(userId);
+      // user_controller.deleteUser(userId);
     });
 };
