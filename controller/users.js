@@ -223,7 +223,7 @@ module.exports.login = function(req, res) {
       res.status(406);
       res.json({
         message:
-          "your account is not verified! please log into your email and follow the link sent to you."
+          "Your account is not verified! Please log into your email and follow the link sent to you."
       });
       return;
     }
@@ -447,7 +447,7 @@ module.exports.confirmRegistration = function(req, res) {
             if (err) return next(err);
             return res.json({
               success: true,
-              message: "Thank you, registration is now complete"
+              message: "Thank you, your email has been verified."
             });
           });
         } else {
