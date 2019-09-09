@@ -83,7 +83,12 @@ exports.submit = (req, res, next) => {
               }
               let requestor = doc.email;
               send_new_requisition_email(
-                { id: result.id, dept, requisitionNo, requestor },
+                {
+                  id: result.id,
+                  dept,
+                  requisitionNo: r.requisitionno,
+                  requestor
+                },
                 req,
                 res
               );
@@ -137,9 +142,9 @@ const send_new_requisition_email = (options, req, res) => {
     templateId: process.env.PURCHASE_REG_TEMPLATE_ID,
     dynamic_template_data: {
       subject: `New Purchase request submitted`,
-      request_link,
-      requisitionNo,
-      requestor,
+      request_link: request_link,
+      requisitionNo: requisitionNo,
+      requestor: requestor,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
