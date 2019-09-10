@@ -668,6 +668,7 @@ module.exports.getProfileDetails = function(req, res) {
  * @param {req} Request req
  * @param {res} Response res
  * @param {next} Middleware next
+ * @summary This function handles the update of logged in User's profile
  */
 module.exports.updateUserProfile = (req, res, next) => {
   const updatedData = {
