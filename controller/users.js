@@ -1,6 +1,7 @@
 var passport = require("passport");
 var mongoose = require("mongoose");
 var User = mongoose.model("User");
+var Department = mongoose.model("Department");
 // const User = require("../model/user");
 var Vendor = mongoose.model("Vendor");
 var mailer = require("../model/mailer");
@@ -295,11 +296,20 @@ module.exports.updateProfileData = function(req, res) {
         // next(err);
         res.send(err);
       } else {
-        return res.send({
-          success: true,
-          message: "profile has been updated",
-          profileData
-        });
+        Department.findOneAndUpdate(
+          { slug: profileData.role },
+          { $set: { hod: req.body._id } },
+          { new: true },
+          (err, doc) => {
+            console.log(doc);
+            if (err) throw err;
+            return res.send({
+              success: true,
+              message: "profile has been updated",
+              profileData
+            });
+          }
+        );
       }
     }
   );
@@ -582,7 +592,8 @@ module.exports.createNewUser = function(req, res) {
   user.confirmationId = confirmationId;
 
   user.save((err, doc) => {
-    if (err) res.send(err);
+    if (err) return res.send(err);
+
     res.send({
       success: true,
       message: "New User Created",

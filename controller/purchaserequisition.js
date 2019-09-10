@@ -82,16 +82,17 @@ exports.submit = (req, res, next) => {
                 return next(err);
               }
               let requestor = doc.email;
-              send_new_requisition_email(
-                {
-                  id: result.id,
-                  dept,
-                  requisitionNo: r.requisitionno,
-                  requestor
-                },
-                req,
-                res
-              );
+              console.log("Requestor:", requestor, "Department:", dept);
+              // send_new_requisition_email(
+              //   {
+              //     id: result.id,
+              //     dept,
+              //     requisitionNo: r.requisitionno,
+              //     requestor
+              //   },
+              //   req,
+              //   res
+              // );
             });
           });
         res.send(result);
@@ -138,10 +139,10 @@ const send_new_requisition_email = (options, req, res) => {
   const msg = {
     to: dept.hod.email,
     from: process.env.EMAIL_FROM,
-    subject: `New Purchase Requisition Submitted`,
+    subject: `New Purchase request submitted`,
     templateId: process.env.PURCHASE_REG_TEMPLATE_ID,
     dynamic_template_data: {
-      subject: `New Purchase Requisition Submitted`,
+      subject: `New Purchase request submitted`,
       request_link: request_link,
       requisitionNo: requisitionNo,
       requestor: requestor,
@@ -251,11 +252,11 @@ exports.resubmitted = (req, res, next) => {
             return next(err);
           }
           let requestor = doc.email;
-          send_new_requisition_email(
-            { id: result.id, dept, requisitionNo, requestor },
-            req,
-            res
-          );
+          // send_new_requisition_email(
+          //   { id: result.id, dept, requisitionNo, requestor },
+          //   req,
+          //   res
+          // );
         });
       });
   });
