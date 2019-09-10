@@ -577,29 +577,45 @@ module.exports.findOnlyStaff = function(req, res) {
  */
 module.exports.createNewUser = function(req, res) {
   let confirmationId = generateToken();
-  const user = new User(req.body);
+  const data = { ...req.body };
+  const user = new User(data);
   user.confirmationId = confirmationId;
 
-  user
-    .save()
-    .then((err, doc) => {
-      res.json({
-        success: true,
-        message: "New User Created!",
-        user: { type: "staff" }
-      });
-      if (doc.role === "vendor") {
-        send_user_registration_email(confirmationId, req, res, next);
-      } else {
-        send_staff_reg_email(req, res);
-      }
-    })
-    .catch(err => {
-      res.json({
-        success: false,
-        message: `A user with email: "${req.body.email}" already exists.`
-      });
+  user.save((err, doc) => {
+    if (err) res.send(err);
+    res.send({
+      success: true,
+      message: "New User Created",
+      user: { type: "staff" }
     });
+    send_staff_reg_email(req, res);
+  });
+
+  // user
+  //   .save()
+  //   .then((err, doc) => {
+  //     if (err) {
+  //       return res.send(err);
+  //     } else {
+  //       res.json({
+  //         success: true,
+  //         message: "New User Created!",
+  //         user: { type: "staff" }
+  //       });
+  //       send_staff_reg_email(req, res);
+  //     }
+  //     // if (doc.role === "vendor") {
+  //     //   send_user_registration_email(confirmationId, req, res, next);
+  //     // } else {
+  //     //   send_staff_reg_email(req, res);
+  //     // }
+  //   })
+  //   .catch(err => {
+  //     res.json({
+  //       success: false,
+  //       message: `A user with email: "${req.body.email}" already exists.`
+  //     });
+  //   });
 };
 
 /**
