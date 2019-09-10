@@ -82,17 +82,18 @@ exports.submit = (req, res, next) => {
                 return next(err);
               }
               let requestor = doc.email;
-              console.log("Requestor:", requestor, "Department:", dept);
-              // send_new_requisition_email(
-              //   {
-              //     id: result.id,
-              //     dept,
-              //     requisitionNo: r.requisitionno,
-              //     requestor
-              //   },
-              //   req,
-              //   res
-              // );
+              // console.log("Requestor:", requestor, "Department:", dept);
+              console.log(`RequisitionNo: ${requisitionNo}`);
+              send_new_requisition_email(
+                {
+                  id: result.id,
+                  dept,
+                  requisitionNo: requisitionNo.toUpperCase(),
+                  requestor
+                },
+                req,
+                res
+              );
             });
           });
         res.send(result);
