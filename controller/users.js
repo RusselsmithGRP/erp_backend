@@ -269,6 +269,7 @@ module.exports.view = function(req, res) {
  * @summary Destructured the `data` object to access all fields without any bother for model structure.
  * @param {*} req Sends a `Request` to the server
  * @param {*} res Returns a `Response` from the server with a `payload`
+ * @summary Department/role updated
  *
  */
 module.exports.updateProfileData = function(req, res) {
