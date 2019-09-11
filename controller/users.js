@@ -296,20 +296,22 @@ module.exports.updateProfileData = function(req, res) {
         // next(err);
         res.send(err);
       } else {
-        Department.findOneAndUpdate(
-          { slug: profileData.role },
-          { $set: { hod: req.body._id } },
-          { new: true },
-          (err, doc) => {
-            console.log(doc);
-            if (err) throw err;
-            return res.send({
-              success: true,
-              message: "profile has been updated",
-              profileData
-            });
-          }
-        );
+        if (req.body.type === "hod") {
+          Department.findOneAndUpdate(
+            { slug: profileData.role },
+            { $set: { hod: req.body._id } },
+            { new: true },
+            (err, doc) => {
+              console.log(doc);
+              if (err) throw err;
+            }
+          );
+        }
+        return res.send({
+          success: true,
+          message: "profile has been updated",
+          profileData
+        });
       }
     }
   );
