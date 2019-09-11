@@ -83,7 +83,12 @@ exports.submit = (req, res, next) => {
               }
               let requestor = doc.email;
               send_new_requisition_email(
-                { id: result.id, dept, requisitionNo, requestor },
+                {
+                  id: result.id,
+                  dept,
+                  requisitionNo: r.requisitionno,
+                  requestor
+                },
                 req,
                 res
               );
@@ -137,9 +142,9 @@ const send_new_requisition_email = (options, req, res) => {
     templateId: process.env.PURCHASE_REG_TEMPLATE_ID,
     dynamic_template_data: {
       subject: `New Purchase request submitted`,
-      request_link,
-      requisitionNo,
-      requestor,
+      request_link: request_link,
+      requisitionNo: requisitionNo,
+      requestor: requestor,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
@@ -191,7 +196,7 @@ const send_new_requisition_email = (options, req, res) => {
  */
 const sendApprovalEmail = (req, res) => {
   const request_link = Utility.generateLink("/requisition/view/", req.id);
-  const status = Status.getStatus(res.status);
+  const status = Status.getStatus(req.status);
   const reason = req.reason ? req.reason : "";
   const msg = {
     to: req.requestor.email,
@@ -201,14 +206,15 @@ const sendApprovalEmail = (req, res) => {
     dynamic_template_data: {
       subject: `status`,
       name: `${req.requestor.lastname}`,
-      status,
-      reason,
-      reqNo: req.requisitionNo,
+      status: status,
+      reason: reason,
+      reqNo: req.requisitionno,
       request_link,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
   };
+  // console.log(`Status: ${status}, reqNo: ${req.requisitionno}, reason: ${reason}`);
   mailer.sendMailer(msg, req, res);
 };
 
@@ -226,7 +232,7 @@ exports.updateStatus = (req, res, next) => {
     PurchaseRequisition.findOne({ _id: req.params.id })
       .populate("requestor")
       .exec((err, doc) => {
-        sendApprovalEmail(doc, res, next);
+        sendApprovalEmail(doc, res);
       });
     res.send(result);
   });

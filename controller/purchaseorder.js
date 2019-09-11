@@ -281,7 +281,7 @@ const send_approval_email = (req, res) => {
           templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
           dynamic_template_data: {
             subject: `${status} ${req.no}`,
-            status,
+            status: status,
             purchaseNo: req.no,
             p1: `Purchase order No: ${req.no} is awaiting your approval.`,
             request_link,
@@ -303,7 +303,7 @@ const send_approval_email = (req, res) => {
             templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
             dynamic_template_data: {
               subject: `${status} ${req.no}`,
-              status,
+              status: status,
               purchaseNo: req.no,
               p1: `Purchase order No: ${req.no} is awaiting your approval.`,
               request_link,
