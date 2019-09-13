@@ -279,6 +279,7 @@ const send_unapproval_email = (req, res, doc) => {
  * @author Idowu
  * @summary Fixed delete vendor
  * @deprecated Do NOT uncomment user_controller.deleteUser -- Issue pending Resolution
+ *
  */
 exports.deleteVendor = (req, res) => {
   Vendor.findOneAndDelete({ user: req.body.user })
