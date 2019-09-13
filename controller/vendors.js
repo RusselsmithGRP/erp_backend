@@ -281,12 +281,20 @@ const send_unapproval_email = (req, res, doc) => {
  * @deprecated Do NOT uncomment user_controller.deleteUser -- Issue pending Resolution
  */
 exports.deleteVendor = (req, res) => {
-  Vendor.deleteOne({ user: req.body.user })
+  Vendor.findOneAndDelete({ user: req.body.user })
     .select()
-    .exec(function(err, vendor) {
-      userId = req.body.user;
-      // user_controller.deleteUser(userId);
+    .exec((err, doc) => {
+      User.findOneAndDelete({ _id: doc.user }).exec((err, user) => {
+        if (err) return res.status(500).send({ success: false, err });
+        res.send({ success: true, doc, user });
+      });
     });
+  // Vendor.deleteOne({ user: req.body.user })
+  //   .select()
+  //   .exec(function(err, vendor) {
+  //     userId = req.body.user;
+  //     // user_controller.deleteUser(userId);
+  //   });
 };
 
 /**
