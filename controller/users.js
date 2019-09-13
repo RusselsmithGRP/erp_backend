@@ -126,7 +126,11 @@ const send_user_registration_email = (confirmationId, req, res) => {
   const msg = {
     to: req.body.email,
     from: process.env.EMAIL_FROM,
-    bcc: process.env.IAC_GROUP_EMAIL,
+    // bcc: [
+    //   process.env.IAC_GROUP_EMAIL,
+    //   process.env.PROCUREMENT_EMAIL,
+    //   process.env.QHSE_GROUP_EMAIL
+    // ],
     subject: "New Vendor Account Confirmation",
     templateId: process.env.USER_REG_TEMPLATE_ID,
     dynamic_template_data: {
@@ -273,17 +277,6 @@ module.exports.view = function(req, res) {
  *
  */
 module.exports.updateProfileData = function(req, res) {
-  // let data = {
-  //   email: req.body.email,
-  //   lastname: req.body.lastname,
-  //   firstname: req.body.firstname,
-  //   eid: req.body.eid,
-  //   role: req.body.role,
-  //   type: req.body.type,
-  //   department: req.body.department,
-
-  //   updatedAt: Date.now()
-  // };
   let data = {
     ...req.body,
     updatedAt: Date.now()
@@ -713,5 +706,20 @@ module.exports.updateUserProfile = (req, res, next) => {
   ).exec((err, doc) => {
     if (err) return next(err);
     res.send({ message: "User Updated successfully", payload: doc });
+  });
+};
+
+/**
+ * @author Idowu
+ * @description Delete Staff/User
+ * @summary For API testing and future usage
+ */
+exports.deleteStaff = (req, res) => {
+  User.findOneAndDelete({ _id: req.params.id }, (err, doc) => {
+    if (err)
+      return res
+        .status(400)
+        .send({ success: false, msg: "Failure deleting user" });
+    res.send({ success: true, doc });
   });
 };

@@ -123,6 +123,20 @@ exports.update = (req, res, next) => {
   });
 };
 
+/**
+ * @author Idowu
+ * @description A Fallback approach to the existing update function
+ */
+exports.updateById = (req, res) => {
+  const data = { ...req.body };
+  Vendor.findOneAndUpdate({ _id: req.params.id }, data, { new: true }).exec(
+    (err, doc) => {
+      if (err) return res.status(400).send(err);
+      res.send({ success: true, doc });
+    }
+  );
+};
+
 exports.updateStatus = (req, res, next) => {
   const body = req.body;
   const key = body.key;
