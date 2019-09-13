@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var Vendor = mongoose.model("Vendor");
+var User = mongoose.model("User");
 var mailer = require("../model/mailer");
 var user_controller = require("./users");
 
@@ -286,4 +287,36 @@ exports.deleteVendor = (req, res) => {
       userId = req.body.user;
       // user_controller.deleteUser(userId);
     });
+};
+
+/**
+ * @author Idowu
+ * @summary Approve/Reject Vendor
+ * @description FOR API testing and future usage
+ */
+exports.approveVendor = (req, res) => {
+  // Get LoggedIn user
+  User.find({ _id: req.payload._id }).exec((err, user) => {
+    if (err) throw err;
+    if (user) {
+      Vendor.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { status: "APPROVED", updated: new Date() } },
+        { new: true }
+      )
+        .populate("user")
+        .exec((err, doc) => {
+          if (err) return res.status(400).send(err);
+          // TODO
+          // SEND AN EMAIL TO VENDOR HERE
+          // SEND AN EMAIL TO IAC/QHSE DEPT WITH NAME OF STAFF WHO APROVED
+          res.send({
+            success: true,
+            msg: `status updated`,
+            doc,
+            approvedUser: user
+          });
+        });
+    }
+  });
 };

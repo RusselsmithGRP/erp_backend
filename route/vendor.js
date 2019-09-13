@@ -25,4 +25,11 @@ router.delete("/deletevendor", jwt, vendorController.deleteVendor);
  */
 router.patch("/update/:id", vendorController.updateById);
 
+/**
+ * @author Idowu
+ * @description Fallback route for API testing
+ * @summary Update Vendor status
+ */
+router.patch("/approve/:id", jwt, vendorController.approveVendor);
+
 module.exports = router;
