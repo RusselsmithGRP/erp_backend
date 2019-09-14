@@ -32,4 +32,11 @@ router.patch("/update/:id", vendorController.updateById);
  */
 router.patch("/approve/:id", jwt, vendorController.approveVendor);
 
+/**
+ * @author Idowu
+ * @description Fallback route for API testing
+ * @summary Reject vendor
+ */
+router.patch("/reject/:id", jwt, vendorController.rejectVendor);
+
 module.exports = router;

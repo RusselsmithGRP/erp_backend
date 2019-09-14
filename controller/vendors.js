@@ -329,3 +329,31 @@ exports.approveVendor = (req, res) => {
     }
   });
 };
+
+/**
+ * @author Idowu
+ * @summary Vendor Rejection
+ * @typedef {{ req: Request, res: Response }} user
+ */
+exports.rejectVendor = (req, res) => {
+  User.findById({ _id: req.payload._id }).exec((err, user) => {
+    if (err) throw err;
+    if (user) {
+      Vendor.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { status: "REJECTED" } },
+        { new: true }
+      ).exec((err, doc) => {
+        if (err) return res.status(400).send({ success: false, err });
+        // TODO
+        // SEND EMAIL TO VENDOR WITH REASONS FOR REJECTION
+        // SEND EMAIL TO DEPARTMENT WITH REJECTION INFO AND WHO REJECTED
+        res.send({
+          success: true,
+          rejectedUser: user,
+          doc
+        });
+      });
+    }
+  });
+};
