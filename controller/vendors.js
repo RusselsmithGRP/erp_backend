@@ -258,13 +258,13 @@ const send_approval_email = (req, res, doc) => {
 
 const send_unapproval_email = (req, res, doc) => {
   const msg = {
-    to: doc.user._doc.email,
+    to: doc.user.email,
     from: process.env.EMAIL_FROM,
     bcc: process.env.IAC_GROUP_EMAIL,
-    subject: "Vendor Application Modification Required",
+    subject: "Vendor Registration: Correction Required",
     templateId: process.env.VENDOR_UNAPPROVAL_TEMPLATE_ID,
     dynamic_template_data: {
-      subject: "Vendor Application Modification Required",
+      subject: "Vendor Registration: Correction Required",
       company_name: doc.general_info.company_name,
       comments: req.body.message,
       sender_phone: "+234 706 900 0900",
@@ -323,6 +323,7 @@ exports.approveVendor = (req, res) => {
           if (err) return res.status(400).send(err);
           // TODO
           // SEND AN EMAIL TO VENDOR HERE
+          send_approval_email(req, res, doc);
           // SEND AN EMAIL TO IAC/QHSE DEPT WITH NAME OF STAFF WHO APROVED
           res.send({
             success: true,
@@ -352,6 +353,7 @@ exports.rejectVendor = (req, res) => {
         if (err) return res.status(400).send({ success: false, err });
         // TODO
         // SEND EMAIL TO VENDOR WITH REASONS FOR REJECTION
+        send_unapproval_email(req, res, doc);
         // SEND EMAIL TO DEPARTMENT WITH REJECTION INFO AND WHO REJECTED
         res.send({
           success: true,

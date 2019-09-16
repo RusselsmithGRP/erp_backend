@@ -419,3 +419,32 @@ exports.terms = (req, res, next) => {
     res.send(result);
   });
 };
+
+/**
+ * @author Idowu
+ * @param {*} req
+ * @param {*} res
+ * @typedef {{ req: Request, res: Response }}
+ */
+const send_mail_to_procurement = (req, res) => {
+  const msg = {
+    to: process.env.PROCUREMENT_EMAIL,
+    from: process.env.EMAIL_FROM,
+    bcc: ["mmazhar@russelsmithgroup.com", "sgiwa-osagie@russelsmithgroup.com"],
+    subject: "PO Approval Required",
+    templateId: process.env.PROCUREMENT_PO_NOTIFICATION_TEMPLATE_ID
+  };
+  mailer.sendMailer(msg, req, res);
+};
+
+exports.getDocs = (req, res) => {
+  User.find({ role: "procurement" }).exec((err, result) => {
+    if (err) throw err;
+    User.findOne({ type: "ceo" }).exec((err, doc) => {
+      res.send({
+        ceo: doc,
+        procurement: result
+      });
+    });
+  });
+};
