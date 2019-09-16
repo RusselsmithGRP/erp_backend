@@ -99,7 +99,7 @@ exports.search = (req, res, next) => {
 };
 
 exports.update = (req, res, next) => {
-  const data = req.body;
+  const data = { ...req.body, updated: new Date() };
   // const key = data.key;
   // const value = data.value;
   // if ("business_info" in data.payload) {
@@ -129,7 +129,7 @@ exports.update = (req, res, next) => {
  * @description A Fallback approach to the existing update function
  */
 exports.updateById = (req, res) => {
-  const data = { ...req.body };
+  const data = { ...req.body, updated: new Date() };
   Vendor.findOneAndUpdate({ _id: req.params.id }, data, { new: true }).exec(
     (err, doc) => {
       if (err) return res.status(400).send(err);
@@ -218,13 +218,13 @@ exports.create = (req, res, next) => {
 
 const send_approval_email = (req, res, doc) => {
   const msg = {
-    to: doc.user._doc.email,
+    to: doc.user.email,
     from: process.env.EMAIL_FROM,
     bcc: process.env.IAC_GROUP_EMAIL + "," + process.env.PROCUREMENT_EMAIL,
-    subject: "Vendor Application Approved",
+    subject: "Vendor Registration Approved",
     templateId: process.env.VENDOR_APPROVAL_TEMPLATE_ID,
     dynamic_template_data: {
-      subject: "Vendor Application Approved",
+      subject: "Vendor Registration Approved",
       company_name: doc.general_info.company_name,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
@@ -282,14 +282,19 @@ const send_unapproval_email = (req, res, doc) => {
  *
  */
 exports.deleteVendor = (req, res) => {
-  Vendor.findOneAndDelete({ user: req.body.user })
-    .select()
-    .exec((err, doc) => {
-      User.findOneAndDelete({ _id: doc.user }).exec((err, user) => {
-        if (err) return res.status(500).send({ success: false, err });
-        res.send({ success: true, doc, user });
-      });
-    });
+  User.findById({ _id: req.payload._id }).exec((err, authUser) => {
+    if (err) throw err;
+    if (authUser) {
+      Vendor.findOneAndDelete({ user: req.body.user })
+        .select()
+        .exec((err, doc) => {
+          User.findOneAndDelete({ _id: doc.user }).exec((err, user) => {
+            if (err) return res.status(500).send({ success: false, err });
+            res.send({ success: true, doc, user });
+          });
+        });
+    }
+  });
   // Vendor.deleteOne({ user: req.body.user })
   //   .select()
   //   .exec(function(err, vendor) {
@@ -333,7 +338,7 @@ exports.approveVendor = (req, res) => {
 /**
  * @author Idowu
  * @summary Vendor Rejection
- * @typedef {{ req: Request, res: Response }} user
+ * @typedef {{ req: Request, res: Response }} payload
  */
 exports.rejectVendor = (req, res) => {
   User.findById({ _id: req.payload._id }).exec((err, user) => {
@@ -341,7 +346,7 @@ exports.rejectVendor = (req, res) => {
     if (user) {
       Vendor.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: { status: "REJECTED" } },
+        { $set: { status: "REJECTED", updated: new Date() } },
         { new: true }
       ).exec((err, doc) => {
         if (err) return res.status(400).send({ success: false, err });
