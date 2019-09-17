@@ -55,6 +55,13 @@ exports.getHod = (id, next, callback) => {
     });
 };
 
+/**
+ * @author Idowu
+ * @summary Get HOD by filter
+ * @param {filter} filter
+ * @param {*} next
+ * @param {*} callback
+ */
 exports.getHod2 = (filter, next, callback) => {
   Department.findOne(filter)
     .populate("hod")
