@@ -10,6 +10,6 @@ router.post("/submit", jwt, purchaseOrderController.submit);
 router.post("/terms", jwt, purchaseOrderController.terms);
 router.get("/view/:id", jwt, purchaseOrderController.view);
 router.post("/update/:id", jwt, purchaseOrderController.update);
-router.get("/docs", jwt, purchaseOrderController.getDocs);
+// router.get("/docs", jwt, purchaseOrderController.getDocs);
 
 module.exports = router;
