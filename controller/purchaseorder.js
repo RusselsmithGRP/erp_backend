@@ -33,24 +33,26 @@ exports.submit = (req, res, next) => {
     const prefix = "PO";
     const ref = Utility.generateReqNo(prefix, "PROC", r.id);
     r.no = ref.toUpperCase();
-    PurchaseOrder.updateOne({ _id: r.id }, r, (err, response) => {
-      if (err) return next(err);
-      lineitems.forEach(e => {
-        PurchasingItem.updateOne(
-          { _id: e },
-          { purchaseOrder: r.id },
-          (err, response) => {
-            if (err) return next(err);
-          }
-        );
+    PurchaseOrder.findOneAndUpdate({ _id: r.id }, { $set: r }, { new: true })
+      .populate("requestor")
+      .exec((err, response) => {
+        if (err) return next(err);
+        lineitems.forEach(e => {
+          PurchasingItem.updateOne(
+            { _id: e },
+            { purchaseOrder: r.id },
+            (err, res) => {
+              if (err) return next(err);
+            }
+          );
+        });
+        sendPOEmail(r, res, response, next);
+        res.send({ isOk: true });
       });
-      sendPOEmail(r, res, next);
-      res.send({ isOk: true });
-    });
   });
 };
 
-let sendPOEmail = (req, res, next) => {
+let sendPOEmail = (req, res, staff, next) => {
   if (req.status == "POX0") {
     //"Awaiting Line Manager Review and Approval",
     // send_mail_to_line_manager(req, res, next);
@@ -58,7 +60,7 @@ let sendPOEmail = (req, res, next) => {
   } else if (req.status.indexOf("X") > -1) {
     send_rejection_email(req, res, next);
   } else {
-    send_approval_email(req, res, next);
+    send_approval_email(req, res, staff, next);
   }
 };
 
@@ -270,7 +272,7 @@ const send_rejection_email = (req, res) => {
  * @summary Utilizes sendgrid's handlebars templating engine to accomodate dynamic data.
  *
  */
-const send_approval_email = (req, res) => {
+const send_approval_email = (req, res, staff) => {
   const request_link = Utility.generateLink("/order/view/", req.id);
   const status = Status.getStatus(req.status);
   switch (req.status) {
@@ -319,8 +321,9 @@ const send_approval_email = (req, res) => {
       break;
     case "PO03":
       const msg = {
-        to: process.env.PROCUREMENT_EMAIL,
+        to: staff.requestor.email,
         from: process.env.EMAIL_FROM,
+        bcc: process.env.PROCUREMENT_EMAIL,
         subject: `${status} ${req.no}`,
         templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
         dynamic_template_data: {
