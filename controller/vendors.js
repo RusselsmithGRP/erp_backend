@@ -364,22 +364,3 @@ exports.rejectVendor = (req, res) => {
     }
   });
 };
-
-exports.mapvendortouser = async (req, res) => {
-  const users = await User.find();
-
-  try {
-    users.forEach(doc => {
-      Vendor.updateMany(
-        { general_info: { company_email: doc.email } },
-        { $set: { user: doc._id } }
-      ).exec((err, vendor) => {
-        if (err) throw err;
-        return res.send({ success: true, vendor });
-      });
-    });
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
-};
