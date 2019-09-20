@@ -25,6 +25,18 @@ var purchaseOrderSchema = Schema({
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    reviewedBy: {
+         type: Schema.Types.ObjectId,
+        ref: 'User'
+     },
+    authorizedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    approvedBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     types: Array
 });
 

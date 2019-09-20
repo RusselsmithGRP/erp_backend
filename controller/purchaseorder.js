@@ -361,7 +361,7 @@ exports.save = (req, res, next) => {
 
 exports.view = (req, res, next) => {
   PurchaseOrder.findOne({ _id: req.params.id })
-    .populate("vendor requestor")
+    .populate("vendor requestor reviewedBy authorizedBy approvedBy")
     .exec((err, po) => {
       if (err) return next(err);
       PurchasingItem.find({ purchaseOrder: req.params.id })
@@ -381,12 +381,15 @@ exports.update = (req, res, next) => {
     switch (tokenz.type) {
       case "hod":
         data.status = "PO02";
+        data.authorizedBy = tokenz._id;
         break;
       case "ceo":
         data.status = "PO03";
+        data.approvedBy =  tokenz._id;
         break;
       case "manager":
         data.status = "PO01";
+        data.reviewedBy =  tokenz._id;
         break;
     }
   } else {
@@ -402,12 +405,13 @@ exports.update = (req, res, next) => {
         break;
     }
   }
+  //console.log(data, "data")
   PurchaseOrder.updateOne({ _id: req.params.id }, data, (err, result) => {
     if (err) return next(err);
     PurchaseOrder.findOne({ _id: req.params.id })
       .populate("requestor")
       .exec((err, doc) => {
-        sendPOEmail(doc, res, next);
+        //sendPOEmail(doc, res, next);
       });
     res.send(result);
   });

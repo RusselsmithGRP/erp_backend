@@ -1,6 +1,7 @@
 var passport = require("passport");
 var mongoose = require("mongoose");
 var User = mongoose.model("User");
+var Department = mongoose.model("Department");
 // const User = require("../model/user");
 var Vendor = mongoose.model("Vendor");
 var mailer = require("../model/mailer");
@@ -268,6 +269,7 @@ module.exports.view = function(req, res) {
  * @summary Destructured the `data` object to access all fields without any bother for model structure.
  * @param {*} req Sends a `Request` to the server
  * @param {*} res Returns a `Response` from the server with a `payload`
+ * @summary Department/role updated
  *
  */
 module.exports.updateProfileData = function(req, res) {
@@ -295,6 +297,17 @@ module.exports.updateProfileData = function(req, res) {
         // next(err);
         res.send(err);
       } else {
+        if (req.body.type === "hod") {
+          Department.findOneAndUpdate(
+            { slug: profileData.role },
+            { $set: { hod: req.body._id } },
+            { new: true },
+            (err, doc) => {
+              console.log(doc);
+              if (err) throw err;
+            }
+          );
+        }
         return res.send({
           success: true,
           message: "profile has been updated",
@@ -577,29 +590,46 @@ module.exports.findOnlyStaff = function(req, res) {
  */
 module.exports.createNewUser = function(req, res) {
   let confirmationId = generateToken();
-  const user = new User(req.body);
+  const data = { ...req.body };
+  const user = new User(data);
   user.confirmationId = confirmationId;
 
-  user
-    .save()
-    .then((err, doc) => {
-      res.json({
-        success: true,
-        message: "New User Created!",
-        user: { type: "staff" }
-      });
-      if (doc.role === "vendor") {
-        send_user_registration_email(confirmationId, req, res, next);
-      } else {
-        send_staff_reg_email(req, res);
-      }
-    })
-    .catch(err => {
-      res.json({
-        success: false,
-        message: `A user with email: "${req.body.email}" already exists.`
-      });
+  user.save((err, doc) => {
+    if (err) return res.send(err);
+
+    res.send({
+      success: true,
+      message: "New User Created",
+      user: { type: "staff" }
     });
+    send_staff_reg_email(req, res);
+  });
+
+  // user
+  //   .save()
+  //   .then((err, doc) => {
+  //     if (err) {
+  //       return res.send(err);
+  //     } else {
+  //       res.json({
+  //         success: true,
+  //         message: "New User Created!",
+  //         user: { type: "staff" }
+  //       });
+  //       send_staff_reg_email(req, res);
+  //     }
+  //     // if (doc.role === "vendor") {
+  //     //   send_user_registration_email(confirmationId, req, res, next);
+  //     // } else {
+  //     //   send_staff_reg_email(req, res);
+  //     // }
+  //   })
+  //   .catch(err => {
+  //     res.json({
+  //       success: false,
+  //       message: `A user with email: "${req.body.email}" already exists.`
+  //     });
+  //   });
 };
 
 /**
@@ -661,4 +691,27 @@ module.exports.getProfileDetails = function(req, res) {
       }
       res.status(200).json(user);
     });
+};
+
+/**
+ * @author Idowu
+ * @param {req} Request req
+ * @param {res} Response res
+ * @param {next} Middleware next
+ * @summary This function handles the update of logged in User's profile
+ */
+module.exports.updateUserProfile = (req, res, next) => {
+  const updatedData = {
+    ...req.body,
+    updatedAt: Date.now()
+  };
+
+  User.findOneAndUpdate(
+    { _id: req.body._id },
+    { $set: updatedData },
+    { new: true }
+  ).exec((err, doc) => {
+    if (err) return next(err);
+    res.send({ message: "User Updated successfully", payload: doc });
+  });
 };

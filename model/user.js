@@ -19,6 +19,7 @@ var userSchema = new mongoose.Schema({
   token: String,
   eid: String,
   confirmationId: String,
+  signature: String,
   emailVerified: {
     type: Boolean,
     default: false

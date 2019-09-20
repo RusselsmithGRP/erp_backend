@@ -10,7 +10,7 @@ router.post("/register", userController.register);
 router.post("/import", userController.importuser);
 /**
  * @author Idowu
- * @method patch
+ * @method PATCH
  * @summary Changed method from put to patch
  */
 router.patch("/updateprofiledata", userController.updateProfileData);
@@ -26,5 +26,11 @@ router.get("/findonlystaff", userController.findOnlyStaff);
 router.get("/findmanagers", userController.findManagers);
 router.post("/createnewuser", userController.createNewUser);
 router.get("/getprofiledetails/:id", userController.getProfileDetails);
+/**
+ * @author Idowu
+ * @method PATCH
+ * @summary Update User's Profile
+ */
+router.patch("/user", userController.updateUserProfile);
 
 module.exports = router;
