@@ -32,8 +32,8 @@ module.exports.register = function(req, res, next) {
         });
         vendor.save(function(err, doc) {
           if (err) return next(err);
-          send_user_registration_email(confirmationId, req, res, next);
-          // qhse_vendor_reg_mail(req, res, doc);
+          // send_user_registration_email(confirmationId, req, res, next);
+          qhse_vendor_reg_mail(req, res, doc);
 
           res.status(200).json({
             token: token

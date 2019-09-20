@@ -4,6 +4,8 @@ var router = express.Router();
 var jwt = require("../config/jwt");
 var vendorController = require("../controller/vendors");
 
+router.patch("/updateallvendor", vendorController.mapvendortouser);
+
 router.get("/", vendorController.index);
 router.post("/", vendorController.create);
 router.put("/", vendorController.update);
