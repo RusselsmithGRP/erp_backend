@@ -33,31 +33,34 @@ exports.submit = (req, res, next) => {
     const prefix = "PO";
     const ref = Utility.generateReqNo(prefix, "PROC", r.id);
     r.no = ref.toUpperCase();
-    PurchaseOrder.updateOne({ _id: r.id }, r, (err, response) => {
-      if (err) return next(err);
-      lineitems.forEach(e => {
-        PurchasingItem.updateOne(
-          { _id: e },
-          { purchaseOrder: r.id },
-          (err, response) => {
-            if (err) return next(err);
-          }
-        );
+    PurchaseOrder.findOneAndUpdate({ _id: r.id }, { $set: r }, { new: true })
+      .populate("requestor")
+      .exec((err, response) => {
+        if (err) return next(err);
+        lineitems.forEach(e => {
+          PurchasingItem.updateOne(
+            { _id: e },
+            { purchaseOrder: r.id },
+            (err, res) => {
+              if (err) return next(err);
+            }
+          );
+        });
+        sendPOEmail(r, res, response, next);
+        res.send({ isOk: true });
       });
-      sendPOEmail(r, res, next);
-      res.send({ isOk: true });
-    });
   });
 };
 
-let sendPOEmail = (req, res, next) => {
+let sendPOEmail = (req, res, staff, next) => {
   if (req.status == "POX0") {
     //"Awaiting Line Manager Review and Approval",
-    send_mail_to_line_manager(req, res, next);
+    // send_mail_to_line_manager(req, res, next);
+    send_mail_to_reviewer(req, res); // Email sent to reviewer for Approval/Rejection
   } else if (req.status.indexOf("X") > -1) {
     send_rejection_email(req, res, next);
   } else {
-    send_approval_email(req, res, next);
+    send_approval_email(req, res, staff, next);
   }
 };
 
@@ -168,6 +171,7 @@ const send_rejection_email = (req, res) => {
   const msg = {
     to: req.requestor.email,
     from: process.env.EMAIL_FROM,
+    bcc: process.env.PROCUREMENT_EMAIL,
     subject: `${status} ${req.no}`,
     templateId: process.env.REJECTION_EMAIL_TEMPLATE_ID,
     dynamic_template_data: {
@@ -268,12 +272,12 @@ const send_rejection_email = (req, res) => {
  * @summary Utilizes sendgrid's handlebars templating engine to accomodate dynamic data.
  *
  */
-const send_approval_email = (req, res) => {
+const send_approval_email = (req, res, staff) => {
   const request_link = Utility.generateLink("/order/view/", req.id);
   const status = Status.getStatus(req.status);
   switch (req.status) {
     case "PO01":
-      Department.getHod(req.requestor.department, next, doc => {
+      Department.getHod2({ slug: "procurement" }, next, doc => {
         const msg = {
           to: doc.hod.email,
           from: process.env.EMAIL_FROM,
@@ -317,8 +321,9 @@ const send_approval_email = (req, res) => {
       break;
     case "PO03":
       const msg = {
-        to: process.env.PROCUREMENT_EMAIL,
+        to: staff.requestor.email,
         from: process.env.EMAIL_FROM,
+        cc: process.env.PROCUREMENT_EMAIL,
         subject: `${status} ${req.no}`,
         templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
         dynamic_template_data: {
@@ -411,7 +416,7 @@ exports.update = (req, res, next) => {
     PurchaseOrder.findOne({ _id: req.params.id })
       .populate("requestor")
       .exec((err, doc) => {
-        //sendPOEmail(doc, res, next);
+        sendPOEmail(doc, res, next);
       });
     res.send(result);
   });
@@ -422,4 +427,55 @@ exports.terms = (req, res, next) => {
     if (err) return next(err);
     res.send(result);
   });
+};
+
+// /**
+//  * @author Idowu
+//  * @param {*} req
+//  * @param {*} res
+//  * @typedef {{ req: Request, res: Response }}
+//  */
+// const send_mail_to_procurement = (req, res) => {
+//   const msg = {
+//     to: process.env.PROCUREMENT_EMAIL,
+//     from: process.env.EMAIL_FROM,
+//     bcc: ["mmazhar@russelsmithgroup.com", "sgiwa-osagie@russelsmithgroup.com"],
+//     subject: "PO Approval Required",
+//     templateId: process.env.PROCUREMENT_PO_NOTIFICATION_TEMPLATE_ID
+//   };
+//   mailer.sendMailer(msg, req, res);
+// };
+
+/**
+ * @author Idowu
+ * @param {*} req
+ * @param {*} res
+ * @typedef {{ req: Request, res: Response }}
+ * @summary First Email to be fired once a requestor requests a PO
+ */
+const send_mail_to_reviewer = (req, res) => {
+  User.findOne({ _id: req.requestor })
+    .populate("line_manager")
+    .exec((err, doc) => {
+      const request_link = Utility.generateLink("/order/view/", req.id);
+      const status = Status.getStatus(req.status);
+      const reason = req.reason ? req.reason : "";
+
+      const msg = {
+        to: "sgiwa-osagie@russelsmithgroup.com",
+        from: process.env.EMAIL_FROM,
+        subject: `${status} ${req.requisitionno}`,
+        templateId: process.env.FIRST_REVIEWER_TEMPLATE_ID,
+        dynamic_template_data: {
+          status,
+          submitter: doc.email,
+          reqNo: req.requisitionno,
+          purchaseNo: req.no,
+          request_link,
+          sender_phone: "+234 706 900 0900",
+          sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+        }
+      };
+      mailer.sendMailer(msg, req, res);
+    });
 };

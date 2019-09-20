@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var Vendor = mongoose.model("Vendor");
+var User = mongoose.model("User");
 var mailer = require("../model/mailer");
 var user_controller = require("./users");
 
@@ -98,7 +99,7 @@ exports.search = (req, res, next) => {
 };
 
 exports.update = (req, res, next) => {
-  const data = req.body;
+  const data = { ...req.body, updated: new Date() };
   // const key = data.key;
   // const value = data.value;
   // if ("business_info" in data.payload) {
@@ -121,6 +122,20 @@ exports.update = (req, res, next) => {
     if (err) return next(err);
     res.send(result);
   });
+};
+
+/**
+ * @author Idowu
+ * @description A Fallback approach to the existing update function
+ */
+exports.updateById = (req, res) => {
+  const data = { ...req.body, updated: new Date() };
+  Vendor.findOneAndUpdate({ _id: req.params.id }, data, { new: true }).exec(
+    (err, doc) => {
+      if (err) return res.status(400).send(err);
+      res.send({ success: true, doc });
+    }
+  );
 };
 
 exports.updateStatus = (req, res, next) => {
@@ -203,13 +218,13 @@ exports.create = (req, res, next) => {
 
 const send_approval_email = (req, res, doc) => {
   const msg = {
-    to: doc.user._doc.email,
+    to: doc.user.email,
     from: process.env.EMAIL_FROM,
     bcc: process.env.IAC_GROUP_EMAIL + "," + process.env.PROCUREMENT_EMAIL,
-    subject: "Vendor Application Approved",
+    subject: "Vendor Registration Approved",
     templateId: process.env.VENDOR_APPROVAL_TEMPLATE_ID,
     dynamic_template_data: {
-      subject: "Vendor Application Approved",
+      subject: "Vendor Registration Approved",
       company_name: doc.general_info.company_name,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
@@ -243,13 +258,13 @@ const send_approval_email = (req, res, doc) => {
 
 const send_unapproval_email = (req, res, doc) => {
   const msg = {
-    to: doc.user._doc.email,
+    to: doc.user.email,
     from: process.env.EMAIL_FROM,
     bcc: process.env.IAC_GROUP_EMAIL,
-    subject: "Vendor Application Modification Required",
+    subject: "Vendor Registration: Correction Required",
     templateId: process.env.VENDOR_UNAPPROVAL_TEMPLATE_ID,
     dynamic_template_data: {
-      subject: "Vendor Application Modification Required",
+      subject: "Vendor Registration: Correction Required",
       company_name: doc.general_info.company_name,
       comments: req.body.message,
       sender_phone: "+234 706 900 0900",
@@ -264,12 +279,107 @@ const send_unapproval_email = (req, res, doc) => {
  * @author Idowu
  * @summary Fixed delete vendor
  * @deprecated Do NOT uncomment user_controller.deleteUser -- Issue pending Resolution
+ *
  */
 exports.deleteVendor = (req, res) => {
-  Vendor.deleteOne({ user: req.body.user })
-    .select()
-    .exec(function(err, vendor) {
-      userId = req.body.user;
-      // user_controller.deleteUser(userId);
+  User.findById({ _id: req.payload._id }).exec((err, authUser) => {
+    if (err) throw err;
+    if (authUser) {
+      Vendor.findOneAndDelete({ user: req.body.user })
+        .select()
+        .exec((err, doc) => {
+          User.findOneAndDelete({ _id: doc.user }).exec((err, user) => {
+            if (err) return res.status(500).send({ success: false, err });
+            res.send({ success: true, doc, user });
+          });
+        });
+    }
+  });
+  // Vendor.deleteOne({ user: req.body.user })
+  //   .select()
+  //   .exec(function(err, vendor) {
+  //     userId = req.body.user;
+  //     // user_controller.deleteUser(userId);
+  //   });
+};
+
+/**
+ * @author Idowu
+ * @summary Approve/Reject Vendor
+ * @description FOR API testing and future usage
+ */
+exports.approveVendor = (req, res) => {
+  // Get LoggedIn user
+  User.find({ _id: req.payload._id }).exec((err, user) => {
+    if (err) throw err;
+    if (user) {
+      Vendor.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { status: "APPROVED", updated: new Date() } },
+        { new: true }
+      )
+        .populate("user")
+        .exec((err, doc) => {
+          if (err) return res.status(400).send(err);
+          // TODO
+          // SEND AN EMAIL TO VENDOR HERE
+          send_approval_email(req, res, doc);
+          // SEND AN EMAIL TO IAC/QHSE DEPT WITH NAME OF STAFF WHO APROVED
+          res.send({
+            success: true,
+            msg: `status updated`,
+            doc,
+            approvedUser: user
+          });
+        });
+    }
+  });
+};
+
+/**
+ * @author Idowu
+ * @summary Vendor Rejection
+ * @typedef {{ req: Request, res: Response }} payload
+ */
+exports.rejectVendor = (req, res) => {
+  User.findById({ _id: req.payload._id }).exec((err, user) => {
+    if (err) throw err;
+    if (user) {
+      Vendor.findOneAndUpdate(
+        { _id: req.params.id },
+        { $set: { status: "REJECTED", updated: new Date() } },
+        { new: true }
+      ).exec((err, doc) => {
+        if (err) return res.status(400).send({ success: false, err });
+        // TODO
+        // SEND EMAIL TO VENDOR WITH REASONS FOR REJECTION
+        send_unapproval_email(req, res, doc);
+        // SEND EMAIL TO DEPARTMENT WITH REJECTION INFO AND WHO REJECTED
+        res.send({
+          success: true,
+          rejectedUser: user,
+          doc
+        });
+      });
+    }
+  });
+};
+
+exports.mapvendortouser = async (req, res) => {
+  const users = await User.find();
+
+  try {
+    users.forEach(doc => {
+      Vendor.updateMany(
+        { general_info: { company_email: doc.email } },
+        { $set: { user: doc._id } }
+      ).exec((err, vendor) => {
+        if (err) throw err;
+        return res.send({ success: true, vendor });
+      });
     });
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };

@@ -126,10 +126,17 @@ exports.submitVendorQuote = (req, res, next) => {
     result.creditterms = data.creditterms;
     result.lineitems = mappedItems;
     result.status = "RFQ02";
-    RequestQuotation.updateOne({ _id: data.id }, result, (err, result) => {
-      if (err) return next(err);
-      res.send(result);
-    });
+    RequestQuotation.findOneAndUpdate(
+      { _id: data.id },
+      { $set: result },
+      { new: true }
+    )
+      .populate("vendor")
+      .exec((err, result) => {
+        if (err) return next(err);
+        send_request_for_quote(req, res, result);
+        res.send(result);
+      });
   });
 };
 
@@ -184,15 +191,22 @@ exports.acceptQoute = (req, res, next) => {
       });
     });
   }
-  RequestQuotation.updateOne({ _id: req.body.id }, req.body, (err, result) => {
-    if (err) return next(err);
-    if (req.body.accepted == "true") {
-      send_po_accepted_email(req, res, next);
-    } else if (req.body.accepted == "false") {
-      send_po_rejected_email(req, res, next);
-    }
-    res.send(result);
-  });
+  RequestQuotation.findOneAndUpdate(
+    { _id: req.body.id },
+    { $set: req.body },
+    { new: true }
+  )
+    .populate("vendor")
+    .exec((err, result) => {
+      if (err) return next(err);
+      if (req.body.accepted == "true") {
+        send_po_accepted_email(req, res, result);
+        send_rfq_to_procurement(req, res, result); // Notification to Procurement about the response
+      } else if (req.body.accepted == "false") {
+        send_po_rejected_email(req, res, result);
+      }
+      res.send(result);
+    });
 };
 
 // let send_po_accepted_email = function(req, res, next) {
@@ -208,9 +222,9 @@ exports.acceptQoute = (req, res, next) => {
 //   mailer.sendMail(mailOptions, res, next);
 // };
 
-const send_po_accepted_email = (req, res) => {
+const send_po_accepted_email = (req, res, doc) => {
   const msg = {
-    to: req.body.vendorEmail,
+    to: doc.user.email,
     from: process.env.EMAIL_FROM,
     subject: `Your PO Has Been Accepted`,
     templateId: process.env.PO_ACCEPTED_EMAIL_TEMPLATE_ID,
@@ -220,6 +234,51 @@ const send_po_accepted_email = (req, res) => {
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
   };
+  mailer.sendMailer(msg, req, res);
+};
+
+/**
+ * @author Idowu
+ * @param {*} req
+ * @param {*} res
+ * @typedef {{ req: Request, res: Response }}
+ */
+const send_request_for_quote = (req, res, doc) => {
+  const msg = {
+    to: doc.vendor.user.email,
+    from: process.env.EMAIL_FROM,
+    subject: "Request For Quotation",
+    templateId: process.env.VENDOR_REQUEST_FOR_QUOTATION_TEMPLATE_ID,
+    dynamic_template_data: {
+      redirectLink: `${process.env.PUBLIC_URL}/quotation`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+
+  mailer.sendMailer(msg, req, res);
+};
+
+/**
+ * @author Idowu
+ * @param {*} req
+ * @param {*} res
+ * @param {*} doc
+ */
+const send_rfq_to_procurement = (req, res, doc) => {
+  const msg = {
+    to: process.env.PROCUREMENT_EMAIL,
+    from: process.env.EMAIL_FROM,
+    subject: `New RFQ Response`,
+    templateId: process.env.PROCUREMENT_RFQ_TEMPLATE_ID,
+    dynamic_template_data: {
+      company_name: doc.vendor.general_info.company_name,
+      redirectLink: `${process.env.PUBLIC_URL}/quotation/#`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+
   mailer.sendMailer(msg, req, res);
 };
 
@@ -241,9 +300,9 @@ const send_po_accepted_email = (req, res) => {
 //   };
 //   mailer.sendMail(mailOptions, res, next);
 // };
-const send_po_rejected_email = (req, res) => {
+const send_po_rejected_email = (req, res, doc) => {
   const msg = {
-    to: req.body.vendorEmail,
+    to: doc.user.email,
     from: process.env.EMAIL_FROM,
     subject: `Your PO Has Been Rejected`,
     templateId: process.env.PO_REJECTED_EMAIL_TEMPLATE_ID,

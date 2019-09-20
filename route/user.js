@@ -32,5 +32,11 @@ router.get("/getprofiledetails/:id", userController.getProfileDetails);
  * @summary Update User's Profile
  */
 router.patch("/user", userController.updateUserProfile);
+/**
+ * @author Idowu
+ * @method DELETE
+ * @summary Delete User Data
+ */
+router.delete("/user/:id", userController.deleteStaff);
 
 module.exports = router;

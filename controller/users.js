@@ -30,11 +30,12 @@ module.exports.register = function(req, res, next) {
           user: user._id,
           general_info: { company_name: req.body.coy_name }
         });
-        vendor.save(function(err) {
+        vendor.save(function(err, doc) {
           if (err) return next(err);
-          send_user_registration_email(confirmationId, req, res, next);
-          res.status(200);
-          res.json({
+          // send_user_registration_email(confirmationId, req, res, next);
+          qhse_vendor_reg_mail(req, res, doc);
+
+          res.status(200).json({
             token: token
           });
         });
@@ -79,7 +80,9 @@ module.exports.importuser = function(req, res, next) {
       });
       vendor.save(function(err, vendor) {
         if (err) return res.json({ success: false, message: err.message });
-        send_user_registration_email(confirmationId, req, res, next);
+        // send_user_registration_email(confirmationId, req, res, next);
+        qhse_vendor_reg_mail(req, res, vendor);
+        vendor_success_reg_email(req, res);
         res.json({ success: true, message: "New Vendor Created" });
       });
     } else {
@@ -126,7 +129,11 @@ const send_user_registration_email = (confirmationId, req, res) => {
   const msg = {
     to: req.body.email,
     from: process.env.EMAIL_FROM,
-    bcc: process.env.IAC_GROUP_EMAIL,
+    // bcc: [
+    //   process.env.IAC_GROUP_EMAIL,
+    //   process.env.PROCUREMENT_EMAIL,
+    //   process.env.QHSE_GROUP_EMAIL
+    // ],
     subject: "New Vendor Account Confirmation",
     templateId: process.env.USER_REG_TEMPLATE_ID,
     dynamic_template_data: {
@@ -179,6 +186,49 @@ const send_email_reset_token = (resetToken, req, res) => {
     templateId: process.env.RESET_TOKEN_TEMPLATE_ID,
     dynamic_template_data: {
       resetLink: `${process.env.PUBLIC_URL}/resetpassword/${resetToken}`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+  mailer.sendMailer(msg, req, res);
+};
+
+/**
+ * @author Idowu
+ * @summary Send Email notification to QHSE department when vendor submits registration form
+ * @typedef {{ req: Request, res: Response }}
+ */
+const qhse_vendor_reg_mail = (req, res, doc) => {
+  const msg = {
+    to: process.env.QHSE_GROUP_EMAIL,
+    from: process.env.EMAIL_FROM,
+    bcc: ["lojefua@russelsmithgroup.com", "eokinedo@russelsmithgroup.com"],
+    subject: "New Vendor Approval Required",
+    templateId: process.env.QHSE_VENDOR_REGISTRATION_TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: "New Vendor Approval Required",
+      company_name: req.body.coy_name,
+      redirect_link: `${process.env.PUBLIC_URL}/vendor/view/${doc._id}`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+
+  mailer.sendMailer(msg, req, res);
+};
+
+/**
+ * @author Idowu
+ * @summary Send Email To vendor when registration is complete
+ */
+const vendor_success_reg_email = (req, res) => {
+  const msg = {
+    to: req.body.email,
+    from: process.env.EMAIL_FROM,
+    subject: "Vendor Application Submitted Successfully",
+    templateId: process.env.VENDOR_SUCCESS_REGISTRATION_TEMPLATE_ID,
+    dynamic_template_data: {
+      subject: "Vendor Application Submitted Successfully",
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
@@ -273,17 +323,6 @@ module.exports.view = function(req, res) {
  *
  */
 module.exports.updateProfileData = function(req, res) {
-  // let data = {
-  //   email: req.body.email,
-  //   lastname: req.body.lastname,
-  //   firstname: req.body.firstname,
-  //   eid: req.body.eid,
-  //   role: req.body.role,
-  //   type: req.body.type,
-  //   department: req.body.department,
-
-  //   updatedAt: Date.now()
-  // };
   let data = {
     ...req.body,
     updatedAt: Date.now()
@@ -713,5 +752,20 @@ module.exports.updateUserProfile = (req, res, next) => {
   ).exec((err, doc) => {
     if (err) return next(err);
     res.send({ message: "User Updated successfully", payload: doc });
+  });
+};
+
+/**
+ * @author Idowu
+ * @description Delete Staff/User
+ * @summary For API testing and future usage
+ */
+exports.deleteStaff = (req, res) => {
+  User.findOneAndDelete({ _id: req.params.id }, (err, doc) => {
+    if (err)
+      return res
+        .status(400)
+        .send({ success: false, msg: "Failure deleting user" });
+    res.send({ success: true, doc });
   });
 };
