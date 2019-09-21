@@ -148,13 +148,13 @@ exports.updateStatus = (req, res, next) => {
   Vendor.updateOne({ _id: key }, data, (err, result) => {
     if (err) return next(err);
 
-    Vendor.find({ _id: key })
+    Vendor.findOne({ _id: key })
       .populate("user")
       .exec((err, doc) => {
         if (value === "APPROVED") {
-          send_approval_email(req, res, next, doc[0]);
+          // send_approval_email(req, res, next, doc);
         } else if (value === "UPDATE") {
-          send_unapproval_email(req, res, next, doc[0]);
+          // send_unapproval_email(req, res, next, doc);
         }
       });
     res.send(result);
@@ -310,30 +310,55 @@ exports.deleteVendor = (req, res) => {
  */
 exports.approveVendor = (req, res) => {
   // Get LoggedIn user
-  User.find({ _id: req.payload._id }).exec((err, user) => {
-    if (err) throw err;
-    if (user) {
-      Vendor.findOneAndUpdate(
-        { _id: req.params.id },
-        { $set: { status: "APPROVED", updated: new Date() } },
-        { new: true }
-      )
-        .populate("user")
-        .exec((err, doc) => {
-          if (err) return res.status(400).send(err);
-          // TODO
-          // SEND AN EMAIL TO VENDOR HERE
-          send_approval_email(req, res, doc);
-          // SEND AN EMAIL TO IAC/QHSE DEPT WITH NAME OF STAFF WHO APROVED
-          res.send({
-            success: true,
-            msg: `status updated`,
-            doc,
-            approvedUser: user
-          });
-        });
-    }
-  });
+  const status = req.body.status;
+  // const id = req.params.id;
+  const id = req.body.id;
+
+  Vendor.findOneAndUpdate(
+    { _id: id },
+    { $set: { status, updated: new Date() } },
+    { new: true }
+  )
+    .populate("user")
+    .exec((err, doc) => {
+      if (err) return res.status(400).send(err);
+      // TODO
+      // SEND AN EMAIL TO VENDOR HERE
+      // send_approval_email(req, res, doc);
+      // SEND AN EMAIL TO IAC/QHSE DEPT WITH NAME OF STAFF WHO APROVED
+
+      res.send({
+        success: true,
+        msg: `status updated`,
+        doc
+        // approvedUser: user
+      });
+    });
+  // User.find({ _id: req.payload._id }).exec((err, user) => {
+  //   if (err) throw err;
+  //   if (user) {
+  //     Vendor.findOneAndUpdate(
+  //       { _id: req.body._id },
+  //       { $set: { status: status, updated: new Date() } },
+  //       { new: true }
+  //     )
+  //       .populate("user")
+  //       .exec((err, doc) => {
+  //         if (err) return res.status(400).send(err);
+  //         // TODO
+  //         // SEND AN EMAIL TO VENDOR HERE
+  //         // send_approval_email(req, res, doc);
+  //         // SEND AN EMAIL TO IAC/QHSE DEPT WITH NAME OF STAFF WHO APROVED
+  //         console.log(doc._id);
+  //         res.send({
+  //           success: true,
+  //           msg: `status updated`,
+  //           doc,
+  //           approvedUser: user
+  //         });
+  //       });
+  //   }
+  // });
 };
 
 /**
@@ -347,13 +372,13 @@ exports.rejectVendor = (req, res) => {
     if (user) {
       Vendor.findOneAndUpdate(
         { _id: req.params.id },
-        { $set: { status: "REJECTED", updated: new Date() } },
+        { $set: { status: "UPDATE", updated: new Date() } },
         { new: true }
       ).exec((err, doc) => {
         if (err) return res.status(400).send({ success: false, err });
         // TODO
         // SEND EMAIL TO VENDOR WITH REASONS FOR REJECTION
-        send_unapproval_email(req, res, doc);
+        // send_unapproval_email(req, res, doc);
         // SEND EMAIL TO DEPARTMENT WITH REJECTION INFO AND WHO REJECTED
         res.send({
           success: true,
@@ -363,23 +388,4 @@ exports.rejectVendor = (req, res) => {
       });
     }
   });
-};
-
-exports.mapvendortouser = async (req, res) => {
-  const users = await User.find();
-
-  try {
-    users.forEach(doc => {
-      Vendor.updateMany(
-        { general_info: { company_email: doc.email } },
-        { $set: { user: doc._id } }
-      ).exec((err, vendor) => {
-        if (err) throw err;
-        return res.send({ success: true, vendor });
-      });
-    });
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
 };

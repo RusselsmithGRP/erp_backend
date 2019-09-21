@@ -4,8 +4,6 @@ var router = express.Router();
 var jwt = require("../config/jwt");
 var vendorController = require("../controller/vendors");
 
-router.patch("/updateallvendor", vendorController.mapvendortouser);
-
 router.get("/", vendorController.index);
 router.post("/", vendorController.create);
 router.put("/", vendorController.update);
@@ -32,7 +30,7 @@ router.patch("/update/:id", vendorController.updateById);
  * @description Fallback route for API testing
  * @summary Update Vendor status
  */
-router.patch("/approve/:id", jwt, vendorController.approveVendor);
+router.put("/approve", vendorController.approveVendor);
 
 /**
  * @author Idowu

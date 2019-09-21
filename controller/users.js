@@ -28,7 +28,8 @@ module.exports.register = function(req, res, next) {
       if (user.role === "vendor") {
         let vendor = new Vendor({
           user: user._id,
-          general_info: { company_name: req.body.coy_name }
+          general_info: { company_name: req.body.coy_name },
+          status: "PENDING"
         });
         vendor.save(function(err, doc) {
           if (err) return next(err);
