@@ -28,11 +28,12 @@ module.exports.register = function(req, res, next) {
       if (user.role === "vendor") {
         let vendor = new Vendor({
           user: user._id,
-          general_info: { company_name: req.body.coy_name }
+          general_info: { company_name: req.body.coy_name },
+          status: "PENDING"
         });
         vendor.save(function(err, doc) {
           if (err) return next(err);
-          // send_user_registration_email(confirmationId, req, res, next);
+          send_user_registration_email(confirmationId, req, res, next);
           qhse_vendor_reg_mail(req, res, doc);
 
           res.status(200).json({
@@ -139,8 +140,8 @@ const send_user_registration_email = (confirmationId, req, res) => {
     dynamic_template_data: {
       subject: `New Vendor Account Confirmation`,
       company_name: req.body.coy_name,
-      confirmLink: `${process.env.PUBLIC_URL}/confirm/${confirmationId}`,
-      // confirmLink: `http://localhost:3000/users/confirmregistration/${confirmationId}`,
+      // confirmLink: `${process.env.PUBLIC_URL}/confirm/${confirmationId}`,
+      confirmLink: `http://localhost:3000/users/confirmregistration/${confirmationId}`,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
