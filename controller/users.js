@@ -140,8 +140,8 @@ const send_user_registration_email = (confirmationId, req, res) => {
     dynamic_template_data: {
       subject: `New Vendor Account Confirmation`,
       company_name: req.body.coy_name,
-      // confirmLink: `${process.env.PUBLIC_URL}/confirm/${confirmationId}`,
-      confirmLink: `http://localhost:3000/users/confirmregistration/${confirmationId}`,
+      confirmLink: `${process.env.PUBLIC_URL}/confirm/${confirmationId}`,
+      // confirmLink: `http://localhost:3000/users/confirmregistration/${confirmationId}`,
       sender_phone: "+234 706 900 0900",
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
