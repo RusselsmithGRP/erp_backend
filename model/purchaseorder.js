@@ -29,14 +29,17 @@ var purchaseOrderSchema = Schema({
          type: Schema.Types.ObjectId,
         ref: 'User'
      },
+    reviewedByDate: { type: Date},
     authorizedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    authorizedByDate:{ type: Date},
     approvedBy: {
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    approvedByDate:{ type: Date},
     types: Array
 });
 

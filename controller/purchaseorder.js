@@ -387,14 +387,17 @@ exports.update = (req, res, next) => {
       case "hod":
         data.status = "PO02";
         data.authorizedBy = tokenz._id;
+        data.authorizedByDate = new Date();
         break;
       case "ceo":
         data.status = "PO03";
         data.approvedBy =  tokenz._id;
+        data.approvedByDate = new Date();
         break;
       case "manager":
         data.status = "PO01";
         data.reviewedBy =  tokenz._id;
+        data.reviewedByDate = new Date();
         break;
     }
   } else {
@@ -416,7 +419,7 @@ exports.update = (req, res, next) => {
     PurchaseOrder.findOne({ _id: req.params.id })
       .populate("requestor")
       .exec((err, doc) => {
-        sendPOEmail(doc, res, next);
+        // sendPOEmail(doc, res, next);
       });
     res.send(result);
   });
