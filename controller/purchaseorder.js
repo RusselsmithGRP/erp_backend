@@ -419,7 +419,7 @@ exports.update = (req, res, next) => {
     PurchaseOrder.findOne({ _id: req.params.id })
       .populate("requestor")
       .exec((err, doc) => {
-        // sendPOEmail(doc, res, next);
+        sendPOEmail(doc, res, next);
       });
     res.send(result);
   });
