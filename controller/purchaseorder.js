@@ -52,15 +52,15 @@ exports.submit = (req, res, next) => {
   });
 };
 
-let sendPOEmail = (req, res, staff, next) => {
+let sendPOEmail = (req, res, staff) => {
   if (req.status == "POX0") {
     //"Awaiting Line Manager Review and Approval",
     // send_mail_to_line_manager(req, res, next);
     send_mail_to_reviewer(req, res); // Email sent to reviewer for Approval/Rejection
   } else if (req.status.indexOf("X") > -1) {
-    send_rejection_email(req, res, next);
+    send_rejection_email(req, res);
   } else {
-    send_approval_email(req, res, staff, next);
+    send_approval_email(req, res, staff);
   }
 };
 
@@ -277,7 +277,7 @@ const send_approval_email = (req, res, staff) => {
   const status = Status.getStatus(req.status);
   switch (req.status) {
     case "PO01":
-      Department.getHod2({ slug: "procurement" }, next, doc => {
+      Department.getHod2({ slug: "procurement" }, doc => {
         const msg = {
           to: doc.hod.email,
           from: process.env.EMAIL_FROM,
@@ -382,7 +382,7 @@ exports.update = (req, res, next) => {
   const token = req.headers.authorization;
   var user = new User();
   const tokenz = user.getUser(token);
-  if (req.body.type == "approve") {
+  if (req.body.type === "approve") {
     switch (tokenz.type) {
       case "hod":
         data.status = "PO02";
@@ -407,15 +407,18 @@ exports.update = (req, res, next) => {
         break;
     }
   }
-  PurchaseOrder.updateOne({ _id: req.params.id }, data, (err, result) => {
-    if (err) return next(err);
-    PurchaseOrder.findOne({ _id: req.params.id })
-      .populate("requestor")
-      .exec((err, doc) => {
-        sendPOEmail(doc, res, next);
-      });
-    res.send(result);
-  });
+
+  PurchaseOrder.findByIdAndUpdate(
+    { _id: req.params.id },
+    { $set: { status: data.status } },
+    { new: true }
+  )
+    .populate("requestor")
+    .exec((err, result) => {
+      if (err) return next(err);
+      sendPOEmail(result, res, next);
+      res.send(result);
+    });
 };
 
 exports.terms = (req, res, next) => {
