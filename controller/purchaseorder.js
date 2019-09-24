@@ -46,7 +46,7 @@ exports.submit = (req, res, next) => {
             }
           );
         });
-        sendPOEmail(r, res, response, next);
+        sendPOEmail(r, res, response);
         res.send({ isOk: true });
       });
   });
@@ -56,7 +56,7 @@ let sendPOEmail = (req, res, staff) => {
   if (req.status == "POX0") {
     //"Awaiting Line Manager Review and Approval",
     // send_mail_to_line_manager(req, res, next);
-    send_mail_to_reviewer(req, res); // Email sent to reviewer for Approval/Rejection
+    send_mail_to_reviewer(req, res, request); // Email sent to reviewer for Approval/Rejection
   } else if (req.status.indexOf("X") > -1) {
     send_rejection_email(req, res);
   } else {
