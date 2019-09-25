@@ -171,7 +171,6 @@ const send_rejection_email = (req, res) => {
   const msg = {
     to: req.requestor.email,
     from: process.env.EMAIL_FROM,
-    bcc: process.env.PROCUREMENT_EMAIL,
     subject: `${status} ${req.no}`,
     templateId: process.env.REJECTION_EMAIL_TEMPLATE_ID,
     dynamic_template_data: {
@@ -323,7 +322,6 @@ const send_approval_email = (req, res, staff) => {
       const msg = {
         to: staff.requestor.email,
         from: process.env.EMAIL_FROM,
-        cc: process.env.PROCUREMENT_EMAIL,
         subject: `${status} ${req.no}`,
         templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
         dynamic_template_data: {
