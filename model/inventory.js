@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const inventorySchema = new Schema(
   {
-    quantity: { type: Number, default: 0 },
+    quantity: Number,
     type: String,
     description: String,
     status: String,
@@ -15,8 +15,11 @@ const inventorySchema = new Schema(
     remarks: String,
     location: String,
     isDeleted: { type: Boolean, default: false },
-    certificate_comformity: String,
-    manufacturer_no: String
+    certificateComformity: String,
+    manufacturerNo: String,
+    project: String,
+    assetCode: String,
+    creator: { type: Schema.Types.ObjectId, ref: "User" }
   },
   { timestamps: { createdAt: "created", updatedAt: "updated" } }
 );
