@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const inventorySchema = new Schema(
   {
-    quantity: [],
+    quantity: { type: Number, default: 0 },
     type: String,
     description: String,
     status: String,
