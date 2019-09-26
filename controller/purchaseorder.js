@@ -56,7 +56,7 @@ let sendPOEmail = (req, res, staff) => {
   if (req.status == "POX0") {
     //"Awaiting Line Manager Review and Approval",
     // send_mail_to_line_manager(req, res, next);
-    send_mail_to_reviewer(req, res, request); // Email sent to reviewer for Approval/Rejection
+    send_mail_to_reviewer(req, res); // Email sent to reviewer for Approval/Rejection
   } else if (req.status.indexOf("X") > -1) {
     send_rejection_email(req, res);
   } else {
@@ -475,4 +475,18 @@ const send_mail_to_reviewer = (req, res) => {
       };
       mailer.sendMailer(msg, req, res);
     });
+};
+
+/**
+ * @author Idowu
+ * @summary Get only PurchaseOrder's that has been approved by the CEO
+ */
+exports.findGeneralApprovedPO = (req, res) => {
+  PurchaseOrder.find({ status: "PO03" }).exec((err, doc) => {
+    if (err)
+      return res
+        .status(500)
+        .send({ success: false, message: "Something went wrong" });
+    return res.send({ success: true, doc });
+  });
 };

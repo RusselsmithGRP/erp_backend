@@ -11,5 +11,6 @@ router.post("/terms", jwt, purchaseOrderController.terms);
 router.get("/view/:id", jwt, purchaseOrderController.view);
 router.post("/update/:id", jwt, purchaseOrderController.update);
 // router.get("/docs", jwt, purchaseOrderController.getDocs);
+router.get("/allapproved", purchaseOrderController.findGeneralApprovedPO);
 
 module.exports = router;
