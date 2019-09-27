@@ -3,22 +3,24 @@ const Schema = mongoose.Schema;
 
 const inventorySchema = new Schema(
   {
-    description: String,
-    serialNo: String,
+    description: { type: String, required: true },
+    serialNo: { type: String, required: true },
     assetCode: String,
-    assetType: String,
+    assetType: { type: String, required: true },
     quantity: Number,
     warehouse: String,
     room: String,
     rack: String,
     shelf: String,
     condition: String,
-    custodian: { type: Schema.Types.ObjectId, ref: "Custodian" },
+    custodian: { type: Schema.Types.ObjectId, ref: "User" },
+    department: { type: Schema.Types.ObjectId, ref: "Department" },
     dateReceived: { type: Date },
     photo: String,
-    category: String,
+    category: { type: String, required: true },
     certificateComformity: String,
-    manufacturer: String
+    manufacturer: String,
+    isDeleted: { type: Boolean, default: false }
   },
   { timestamps: { createdAt: "created", updatedAt: "updated" } }
 );

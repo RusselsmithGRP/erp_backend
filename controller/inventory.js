@@ -1,13 +1,13 @@
 const Inventory = require("../model/inventory");
 const mongoose = require("mongoose");
 const User = mongoose.model("User");
-// const PurchaseOrder = mongoose.model("PurchaseOrder");
+const Utility = require("../commons/utility");
 
 exports.index = (req, res) => {
   Inventory.find({ isDeleted: false })
     .sort({ created: -1 })
-    .populate("creator")
-    .populate("requestor")
+    .populate("custodian")
+    .populate("department")
     .exec((err, doc) => {
       if (err)
         return res.status(500).send({
@@ -18,24 +18,27 @@ exports.index = (req, res) => {
     });
 };
 
-exports.submit = (req, res) => {
+exports.create = (req, res) => {
   const data = { ...req.body };
-  const token = req.headers.authorization;
-  const user = new User();
-  const tokenz = user.getUser(token);
-  data.created = new Date().toISOString();
-  data.requestor = req.body.requestor; // Fetched from Purchase order
-  data.creator = tokenz._id;
+  const newInventory = new Inventory(data);
 
-  const inventory = new Inventory(data);
+  let newDate = new Date().toISOString();
+  const assetCode = Utility.generateInvNo(
+    data.department,
+    data.category,
+    data.assetType,
+    newDate,
+    newInventory._id.toString()
+  );
+  newInventory.assetCode = assetCode.toUpperCase();
 
-  inventory
+  newInventory
     .save()
-    .then(doc => res.status(200).send({ success: true, doc }))
+    .then(result => res.status(200).send({ success: true, result }))
     .catch(err =>
       res.status(500).send({
         success: false,
-        message: "Failed to save data, please fill required fields"
+        message: "Internal server error. Failed to save data"
       })
     );
 };
@@ -91,6 +94,7 @@ exports.view = (req, res) => {
 
 exports.update = (req, res) => {
   const data = { ...req.body };
+  data.updated = new Date().toISOString();
   Inventory.findOneAndUpdate(
     { _id: req.params.id },
     { $set: data },

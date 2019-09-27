@@ -6,14 +6,13 @@ const jwt = require("../config/jwt");
 /**
  * @summary GET All Inventories
  */
-router.get("/", jwt, inventoryController.index);
+router.get("/", inventoryController.index);
 
-router.get("/view/:id", jwt, inventoryController.view);
+router.get("/view/:id", inventoryController.view);
 
-router.post("/submit", jwt, inventoryController.submit);
+router.patch("/delete", inventoryController.deleteOne);
 
-router.put("/delete", jwt, inventoryController.deleteOne);
+router.patch("/update/:id", inventoryController.update);
 
-router.patch("/update/:id", jwt, inventoryController.update);
-
+router.post("/create", inventoryController.create);
 module.exports = router;
