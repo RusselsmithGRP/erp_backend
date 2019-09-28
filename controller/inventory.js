@@ -18,6 +18,19 @@ exports.index = (req, res) => {
     });
 };
 
+/**
+ * @author Idowu
+ * @summary Create Inventory and handle file upload
+ * @summary Handle file using FormData and e.target.files[0] && e.target.files[0].name for the fileName
+ * @example `
+ *    const formData = new FormData();
+ *    formData.append('file', this.state.photo);
+ * `
+ * @summary Then formData should be added to the inventory payload to be handled upon form submission.
+ * @important the `file` option passed as the first argument
+ * to formData.append() must correspond with the `file` property attached to req.files.file
+ */
+
 exports.create = (req, res) => {
   const data = { ...req.body };
   const newInventory = new Inventory(data);
@@ -37,14 +50,14 @@ exports.create = (req, res) => {
     newInventory._id.toString()
   );
   newInventory.assetCode = assetCode.toUpperCase();
-  const absolutePath = `${__dirname}/../../public/assets/uploads/${newInventory._id}__${file.name}`;
+  const absolutePath = `${__dirname}/../../assets/${newInventory._id}__${file.name}`; // For Production Only
 
   file.mv(absolutePath, err => {
     if (err) {
       console.error(err);
       return res.status(500).send(err);
     }
-    const filePath = `/assets/uploads/${image._id}__${file.name}`;
+    const filePath = `/assets/${newInventory._id}__${file.name}`; // For Production Only
 
     newInventory.photo.filePath = filePath;
     newInventory.photo.fileName = file.name;
