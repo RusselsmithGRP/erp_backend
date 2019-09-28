@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const fileUpload = require("express-fileupload");
 
 app.options("*", cors());
 var bodyParser = require("body-parser");
@@ -16,6 +17,9 @@ require("./config/passport");
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
+// fileUpload for handling file upload
+app.use(fileUpload());
 
 app.use(passport.initialize());
 var vendor = require("./route/vendor");

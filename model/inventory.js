@@ -16,7 +16,10 @@ const inventorySchema = new Schema(
     custodian: { type: Schema.Types.ObjectId, ref: "User" },
     department: { type: Schema.Types.ObjectId, ref: "Department" },
     dateReceived: { type: Date },
-    photo: String,
+    photo: {
+      fileName: String,
+      filePath: String
+    },
     category: { type: String, required: true },
     certificateComformity: String,
     manufacturer: String,

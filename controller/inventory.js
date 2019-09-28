@@ -21,6 +21,12 @@ exports.index = (req, res) => {
 exports.create = (req, res) => {
   const data = { ...req.body };
   const newInventory = new Inventory(data);
+  if (req.files === null) {
+    return res
+      .status(400)
+      .json({ success: false, msg: "No File Exists: Bad Request" });
+  }
+  const file = req.files.file;
 
   let newDate = new Date().toISOString();
   const assetCode = Utility.generateInvNo(
@@ -31,16 +37,28 @@ exports.create = (req, res) => {
     newInventory._id.toString()
   );
   newInventory.assetCode = assetCode.toUpperCase();
+  const absolutePath = `${__dirname}/../../public/assets/uploads/${newInventory._id}__${file.name}`;
 
-  newInventory
-    .save()
-    .then(result => res.status(200).send({ success: true, result }))
-    .catch(err =>
-      res.status(500).send({
-        success: false,
-        message: "Internal server error. Failed to save data"
-      })
-    );
+  file.mv(absolutePath, err => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send(err);
+    }
+    const filePath = `/assets/uploads/${image._id}__${file.name}`;
+
+    newInventory.photo.filePath = filePath;
+    newInventory.photo.fileName = file.name;
+
+    newInventory
+      .save()
+      .then(result => res.status(200).send({ success: true, result }))
+      .catch(err =>
+        res.status(500).send({
+          success: false,
+          message: "Internal server error. Failed to save data"
+        })
+      );
+  });
 };
 
 /**
