@@ -62,11 +62,11 @@ exports.getHod = (id, next, callback) => {
  * @param {*} next
  * @param {*} callback
  */
-exports.getHod2 = (filter, next, callback) => {
+exports.getHod2 = (filter, callback) => {
   Department.findOne(filter)
     .populate("hod")
     .exec((err, doc) => {
-      if (err) return next(err);
+      if (err) throw err;
       callback(doc);
     });
 };

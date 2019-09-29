@@ -326,7 +326,7 @@ module.exports.view = function(req, res) {
 module.exports.updateProfileData = function(req, res) {
   let data = {
     ...req.body,
-    updatedAt: Date.now()
+    updated: Date.now()
   };
   User.findOneAndUpdate(
     { _id: req.body._id },
@@ -743,7 +743,7 @@ module.exports.getProfileDetails = function(req, res) {
 module.exports.updateUserProfile = (req, res, next) => {
   const updatedData = {
     ...req.body,
-    updatedAt: Date.now()
+    updated: Date.now()
   };
 
   User.findOneAndUpdate(

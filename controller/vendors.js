@@ -152,9 +152,9 @@ exports.updateStatus = (req, res, next) => {
       .populate("user")
       .exec((err, doc) => {
         if (value === "APPROVED") {
-           send_approval_email(req, res, next, doc);
+          send_approval_email(req, res, next, doc);
         } else if (value === "UPDATE") {
-         send_unapproval_email(req, res, next, doc);
+          send_unapproval_email(req, res, next, doc);
         }
       });
     res.send(result);
