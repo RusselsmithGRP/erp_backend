@@ -44,7 +44,7 @@ exports.create = (req, res) => {
     if (req.files === null) {
       return res
         .status(400)
-        .json({ success: false, msg: "No File Exists: Bad Request" });
+        .json({ success: false, message: "No File Exists: Bad Request" });
     }
     const file = req.files.file;
 
@@ -71,7 +71,7 @@ exports.create = (req, res) => {
     file.mv(absolutePath, err => {
       if (err) {
         console.error(err);
-        return res.status(500).send(err);
+        return res.status(500).send({ success: false, message: err });
       }
 
       newInventory.photo.filePath = filePath;
