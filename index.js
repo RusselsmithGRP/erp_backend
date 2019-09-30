@@ -19,7 +19,11 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // fileUpload for handling file upload
-app.use(fileUpload());
+app.use(
+  fileUpload({
+    useTempFiles: true
+  })
+);
 
 app.use(passport.initialize());
 var vendor = require("./route/vendor");

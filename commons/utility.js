@@ -22,7 +22,8 @@ exports.generateInvNo = (dept, category, type, date, id) => {
   let day = newDate.split("-")[2];
   let newYear = year.split("0")[1];
   const getDate = day + "" + newYear;
-  return `RSG/${dept}/${newCat}/${type}/${getDate}/${idsubstr}`;
+  let newDept = dept.substring(0, 4);
+  return `RSG/${newDept}/${newCat}/${type}/${getDate}/${idsubstr}`;
 };
 
 /**

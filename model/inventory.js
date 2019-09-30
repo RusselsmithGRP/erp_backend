@@ -14,7 +14,11 @@ const inventorySchema = new Schema(
     shelf: String,
     condition: String,
     custodian: { type: Schema.Types.ObjectId, ref: "User" },
-    department: { type: Schema.Types.ObjectId, ref: "Department" },
+    department: {
+      type: Schema.Types.ObjectId,
+      ref: "Department",
+      required: true
+    },
     dateReceived: { type: Date },
     photo: {
       fileName: String,
