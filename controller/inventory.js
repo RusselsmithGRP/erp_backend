@@ -99,7 +99,7 @@ exports.deleteOne = (req, res) => {
   const user = new User();
   const tokenz = user.getUser(token);
 
-  User.findOne({ _id: tokenz._d }).exec((err, user) => {
+  User.findOne({ _id: tokenz._id }).exec((err, user) => {
     if (err)
       return res
         .status(500)
