@@ -37,6 +37,7 @@ exports.submit = (req, res, next) => {
   let receivingAndInspection = new receiving(data);
   receivingAndInspection.save((err, result) => {
     if (err) return next(err);
+    send_receiving_and_notification_mail(req, res, result); // Email to ASSET
     res.json({
       success: true,
       message: "new data has been saved!",
@@ -145,4 +146,20 @@ exports.getRejectionLog = (req, res, next) => {
         res.send({ result: "nothing" });
       }
     });
+};
+
+const send_receiving_and_notification_mail = (req, res, doc) => {
+  const msg = {
+    to: process.env.PROCUREMENT_EMAIL,
+    from: process.env.EMAIL_FROM,
+    cc: process.env.ASSET_UNIT_GROUP_EMAIL,
+    subject: "New Item Received",
+    templateId: process.env.RECEIVING_AND_INSPECTION_NOTIFICATION_TEMPLATE_ID,
+    dynamic_template_data: {
+      redirect_link: `${process.env.PUBLIC_URL}/receiving/${doc.purchaseOrder}`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+  mailer.sendMailer(msg, req, res);
 };
