@@ -10,9 +10,10 @@ router.get("/", inventoryController.index);
 
 router.get("/view/:id", inventoryController.view);
 
-router.patch("/delete", inventoryController.deleteOne);
-
 router.patch("/update/:id", inventoryController.update);
 
 router.post("/create", inventoryController.create);
+
+router.patch("/delete", jwt, inventoryController.deleteOne);
+
 module.exports = router;
