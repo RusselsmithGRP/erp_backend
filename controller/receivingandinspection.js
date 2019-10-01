@@ -53,6 +53,7 @@ exports.submitWorkCompletion = (req, res, next) => {
   let workCompletion = new work(data);
   workCompletion.save((err, result) => {
     if (err) return next(err);
+    send_work_completion_mail(req, res, result);
     res.json({
       success: true,
       message: "new data has been saved!",
@@ -155,6 +156,21 @@ const send_receiving_and_notification_mail = (req, res, doc) => {
     cc: process.env.ASSET_UNIT_GROUP_EMAIL,
     subject: "New Item Received",
     templateId: process.env.RECEIVING_AND_INSPECTION_NOTIFICATION_TEMPLATE_ID,
+    dynamic_template_data: {
+      redirect_link: `${process.env.PUBLIC_URL}/receiving/${doc.purchaseOrder}`,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+  mailer.sendMailer(msg, req, res);
+};
+
+const send_work_completion_mail = (req, res, doc) => {
+  const msg = {
+    to: process.env.PROCUREMENT_EMAIL,
+    from: process.env.EMAIL_FROM,
+    subject: "Work Completion Form",
+    templateId: process.env.WORK_COMPLETION_TEMPLATE_ID,
     dynamic_template_data: {
       redirect_link: `${process.env.PUBLIC_URL}/receiving/${doc.purchaseOrder}`,
       sender_phone: "+234 706 900 0900",

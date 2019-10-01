@@ -296,6 +296,7 @@ module.exports.login = function(req, res) {
 module.exports.index = function(req, res) {
   User.find({}).exec((err, doc) => {
     if (err) return res.send(err);
+
     res.send(doc);
   });
 };
