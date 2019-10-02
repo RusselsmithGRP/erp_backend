@@ -48,6 +48,8 @@ exports.submit = (req, res) => {
         { requisitionno: requisitionno.toUpperCase() },
         (err, doc) => {
           if (err)
+            // Inventory.findOneAndUpdate({ _id: data.inventoryId })
+
             return res
               .status(400)
               .send({ success: false, message: "Failed to save data" });

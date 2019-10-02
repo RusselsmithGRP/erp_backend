@@ -12,7 +12,7 @@ router.get("/view/:id", inventoryController.view);
 
 router.patch("/update/:id", inventoryController.update);
 
-router.post("/create", inventoryController.create);
+router.post("/submit", inventoryController.submit);
 
 router.patch("/delete", jwt, inventoryController.deleteOne);
 

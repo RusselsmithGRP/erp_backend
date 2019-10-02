@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const secretOrKey = require("../config/secret");
 
-exports.generateReqNo = (prefix, dept, id) => {
+exports.generateReqNo = (prefix, dept = "", id) => {
   const idsubstr = id.substring(id.length - 6);
   return prefix + "/" + dept + "/" + idsubstr;
 };

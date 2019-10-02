@@ -10,6 +10,7 @@ exports.index = (req, res) => {
     .sort({ created: -1 })
     .populate("custodian")
     .populate("department")
+    .populate("warehouse")
     .exec((err, doc) => {
       if (err)
         return res.status(500).send({
@@ -33,7 +34,7 @@ exports.index = (req, res) => {
  * to formData.append() must correspond with the `file` property attached to req.files.[file]
  */
 
-exports.create = (req, res) => {
+exports.submit = (req, res) => {
   const data = { ...req.body };
 
   const newInventory = new Inventory(data);

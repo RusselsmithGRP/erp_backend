@@ -8,10 +8,7 @@ const inventorySchema = new Schema(
     assetCode: String,
     assetType: { type: String, required: true },
     quantity: String,
-    warehouse: String,
-    room: String,
-    rack: String,
-    line: String,
+    warehouse: { type: Schema.Types.ObjectId, ref: "Warehouse" },
     condition: String,
     custodian: { type: Schema.Types.ObjectId, ref: "User" },
     department: {
