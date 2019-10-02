@@ -7,7 +7,7 @@ const inventorySchema = new Schema(
     serialNo: { type: String, required: true },
     assetCode: String,
     assetType: { type: String, required: true },
-    quantity: Number,
+    quantity: String,
     warehouse: String,
     room: String,
     rack: String,
