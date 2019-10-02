@@ -19,7 +19,7 @@ const inventorySchema = new Schema(
       ref: "Department",
       required: true
     },
-    dateReceived: { type: Date },
+    datereceived: { type: Date },
     photo: {
       fileName: String,
       filePath: String
