@@ -487,7 +487,7 @@ module.exports.confirmtoken = function(req, res) {
 };
 
 module.exports.confirmRegistration = function(req, res) {
-  console.log(req.params.token);
+  // console.log(req.params.token);
   User.findOne({ confirmationId: req.params.token })
     .select()
     .exec(function(err, user) {
