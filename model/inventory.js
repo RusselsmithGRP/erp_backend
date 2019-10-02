@@ -11,7 +11,7 @@ const inventorySchema = new Schema(
     warehouse: String,
     room: String,
     rack: String,
-    shelf: String,
+    line: String,
     condition: String,
     custodian: { type: Schema.Types.ObjectId, ref: "User" },
     department: {

@@ -4,8 +4,12 @@ const Schema = mongoose.Schema;
 const warehouseSchema = new Schema(
   {
     name: String,
+    type: {
+      type: String
+    },
     room: [String],
-    shelf: [String]
+    rack: [String],
+    line: String
   },
   { timestamps: { createdAt: "created", updatedAt: "updated" } }
 );
