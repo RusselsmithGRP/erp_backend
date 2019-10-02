@@ -18,7 +18,7 @@ const inventoryRequisitionSchema = new Schema(
     description: String,
     location: String,
     status: String,
-    lineitems: Object,
+    lineitems: [Object],
     requisitionno: String
   },
   { timestamps: { updatedAt: "updated", createdAt: "created" } }

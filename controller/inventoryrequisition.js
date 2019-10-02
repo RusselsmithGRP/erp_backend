@@ -38,7 +38,7 @@ exports.submit = (req, res) => {
   inventoryrequisition
     .save()
     .then(result => {
-      const prefix = "INV";
+      const prefix = "INV/REQ";
       const requisitionno = Utility.generateReqNo(
         prefix,
         data.departmentslug,
