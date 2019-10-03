@@ -9,7 +9,8 @@ const warehouseSchema = new Schema(
     },
     room: [String],
     rack: [String],
-    line: String
+    line: String,
+    custodian: { type: Schema.Types.ObjectId, ref: "User" }
   },
   { timestamps: { createdAt: "created", updatedAt: "updated" } }
 );

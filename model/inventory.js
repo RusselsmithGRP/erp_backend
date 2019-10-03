@@ -10,7 +10,6 @@ const inventorySchema = new Schema(
     quantity: String,
     warehouse: { type: Schema.Types.ObjectId, ref: "Warehouse" },
     condition: String,
-    custodian: { type: Schema.Types.ObjectId, ref: "User" },
     department: {
       type: Schema.Types.ObjectId,
       ref: "Department",

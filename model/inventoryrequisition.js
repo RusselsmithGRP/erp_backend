@@ -8,18 +8,19 @@ const inventoryRequisitionSchema = new Schema(
       ref: "User"
     },
     dateneeded: { type: Date },
-    chargeto: { type: String },
     department: {
       type: Schema.Types.ObjectId,
       ref: "Department"
     },
     category: String,
     purpose: String,
-    description: String,
     location: String,
     status: String,
     lineitems: [Object],
-    requisitionno: String
+    requisitionno: String,
+    custodian: { type: Schema.Types.ObjectId, ref: "User" },
+    onbehalf: String,
+    inventory: { type: Schema.Types.ObjectId, ref: "Inventory" }
   },
   { timestamps: { updatedAt: "updated", createdAt: "created" } }
 );
