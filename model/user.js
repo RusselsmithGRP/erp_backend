@@ -6,9 +6,9 @@ var Schema = mongoose.Schema;
 
 var userSchema = new mongoose.Schema({
   email: {
-    type: String,
-    unique: true,
-    required: true
+    type: String
+    // unique: true,
+    // required: true
   },
   role: {
     type: String,
