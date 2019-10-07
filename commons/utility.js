@@ -12,6 +12,21 @@ exports.generateLink = (link, id) => {
 
 /**
  * @author Idowu
+ * @summary Generate Inventory asset code
+ */
+exports.generateInvNo = (dept, category, type, date, id) => {
+  const idsubstr = id.substring(id.length - 6);
+  const newCat = category.split("")[0] + "" + category.split("")[1];
+  const newDate = date.split("T")[0];
+  let year = newDate.split("-")[0];
+  let day = newDate.split("-")[2];
+  let newYear = year.split("0")[1];
+  const getDate = day + "" + newYear;
+  return `RSG/${dept}/${newCat}/${type}/${getDate}/${idsubstr}`;
+};
+
+/**
+ * @author Idowu
  * @implements `jsonwebtoken`
  * @function return jwt
  * @returns `token`

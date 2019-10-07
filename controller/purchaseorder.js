@@ -56,7 +56,7 @@ let sendPOEmail = (req, res, staff) => {
   if (req.status == "POX0") {
     //"Awaiting Line Manager Review and Approval",
     // send_mail_to_line_manager(req, res, next);
-    send_mail_to_reviewer(req, res, request); // Email sent to reviewer for Approval/Rejection
+    send_mail_to_reviewer(req, res); // Email sent to reviewer for Approval/Rejection
   } else if (req.status.indexOf("X") > -1) {
     send_rejection_email(req, res);
   } else {
@@ -171,7 +171,6 @@ const send_rejection_email = (req, res) => {
   const msg = {
     to: req.requestor.email,
     from: process.env.EMAIL_FROM,
-    bcc: process.env.PROCUREMENT_EMAIL,
     subject: `${status} ${req.no}`,
     templateId: process.env.REJECTION_EMAIL_TEMPLATE_ID,
     dynamic_template_data: {
@@ -323,7 +322,6 @@ const send_approval_email = (req, res, staff) => {
       const msg = {
         to: staff.requestor.email,
         from: process.env.EMAIL_FROM,
-        cc: process.env.PROCUREMENT_EMAIL,
         subject: `${status} ${req.no}`,
         templateId: process.env.PURCHASE_ORDER_APPROVAL_TEMPLATE_ID,
         dynamic_template_data: {
@@ -484,4 +482,18 @@ const send_mail_to_reviewer = (req, res) => {
       };
       mailer.sendMailer(msg, req, res);
     });
+};
+
+/**
+ * @author Idowu
+ * @summary Get only PurchaseOrder's that has been approved by the CEO
+ */
+exports.findGeneralApprovedPO = (req, res) => {
+  PurchaseOrder.find({ status: "PO03" }).exec((err, doc) => {
+    if (err)
+      return res
+        .status(500)
+        .send({ success: false, message: "Something went wrong" });
+    return res.send({ success: true, doc });
+  });
 };
