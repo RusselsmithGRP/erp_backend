@@ -99,13 +99,17 @@ exports.submit = (req, res, next) => {
         req.body.pr.department.slug,
         result.id
       );
-      RequestQuotation.updateOne(
+      RequestQuotation.findOneAndUpdate(
         { _id: result.id },
-        { no: no.toUpperCase() },
-        (err, result) => {
+        { $set: { no: no.toUpperCase() } },
+        { new: true }
+      )
+        .populate("vendor")
+        .exec((err, doc) => {
           if (err) return next(err);
-        }
-      );
+          send_request_for_quote(req, res, doc.vendor.general_info);
+          // console.log(doc.vendor.general_info.coy_email);
+        });
     });
   });
   res.send({ isOk: true });
@@ -134,7 +138,7 @@ exports.submitVendorQuote = (req, res, next) => {
       .populate("vendor")
       .exec((err, result) => {
         if (err) return next(err);
-        send_request_for_quote(req, res, result);
+        send_request_for_quote(req, res, result.vendor.general_info);
         res.send(result);
       });
   });
@@ -200,10 +204,10 @@ exports.acceptQoute = (req, res, next) => {
     .exec((err, result) => {
       if (err) return next(err);
       if (req.body.accepted == "true") {
-        send_po_accepted_email(req, res, result);
-        send_rfq_to_procurement(req, res, result); // Notification to Procurement about the response
+        send_po_accepted_email(req, res, result.vendor.general_info);
+        send_rfq_to_procurement(req, res, result.vendor.general_info); // Notification to Procurement about the response
       } else if (req.body.accepted == "false") {
-        send_po_rejected_email(req, res, result);
+        send_po_rejected_email(req, res, result.vendor.general_info);
       }
       res.send(result);
     });
@@ -224,7 +228,7 @@ exports.acceptQoute = (req, res, next) => {
 
 const send_po_accepted_email = (req, res, doc) => {
   const msg = {
-    to: doc.user.email,
+    to: doc.coy_email,
     from: process.env.EMAIL_FROM,
     subject: `Your PO Has Been Accepted`,
     templateId: process.env.PO_ACCEPTED_EMAIL_TEMPLATE_ID,
@@ -245,7 +249,7 @@ const send_po_accepted_email = (req, res, doc) => {
  */
 const send_request_for_quote = (req, res, doc) => {
   const msg = {
-    to: doc.vendor.user.email,
+    to: doc.coy_email,
     from: process.env.EMAIL_FROM,
     subject: "Request For Quotation",
     templateId: process.env.VENDOR_REQUEST_FOR_QUOTATION_TEMPLATE_ID,
@@ -302,7 +306,7 @@ const send_rfq_to_procurement = (req, res, doc) => {
 // };
 const send_po_rejected_email = (req, res, doc) => {
   const msg = {
-    to: doc.user.email,
+    to: doc.coy_email,
     from: process.env.EMAIL_FROM,
     subject: `Your PO Has Been Rejected`,
     templateId: process.env.PO_REJECTED_EMAIL_TEMPLATE_ID,
