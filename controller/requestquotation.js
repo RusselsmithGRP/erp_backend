@@ -259,8 +259,11 @@ const send_request_for_quote = (req, res, doc) => {
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
   };
-
-  mailer.sendMailer(msg, req, res);
+  if (!doc.coy_email) {
+    return;
+  } else {
+    mailer.sendMailer(msg, req, res);
+  }
 };
 
 /**
