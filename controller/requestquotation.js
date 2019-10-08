@@ -238,7 +238,11 @@ const send_po_accepted_email = (req, res, doc) => {
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
   };
-  mailer.sendMailer(msg, req, res);
+  if (!doc.coy_email) {
+    return;
+  } else {
+    mailer.sendMailer(msg, req, res);
+  }
 };
 
 /**
@@ -319,5 +323,9 @@ const send_po_rejected_email = (req, res, doc) => {
       sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
     }
   };
-  mailer.sendMailer(msg, req, res);
+  if (!doc.coy_email) {
+    return;
+  } else {
+    mailer.sendMailer(msg, req, res);
+  }
 };
