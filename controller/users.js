@@ -637,6 +637,7 @@ module.exports.findOnlyStaff = function(req, res) {
 module.exports.createNewUser = function(req, res) {
   let confirmationId = generateToken();
   const data = { ...req.body };
+  data.email = data.email.toLowerCase();
   const user = new User(data);
   user.confirmationId = confirmationId;
 
