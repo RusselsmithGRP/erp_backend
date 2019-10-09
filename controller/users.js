@@ -409,6 +409,9 @@ module.exports.resetThePassword = function(req, res) {
         }
         if (password === confirmPassword && confirmPassword !== "") {
           user.setPassword(confirmPassword);
+          if (user.role === "vendor" && user.emailVerified === false) {
+            user.emailVerified = true;
+          }
           user.save(function(err) {
             if (err) return next(err);
             return res.json({
