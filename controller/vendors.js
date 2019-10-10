@@ -389,3 +389,19 @@ exports.rejectVendor = (req, res) => {
     }
   });
 };
+
+exports.updateVendorType = (req, res) => {
+  const data = { ...req.body };
+
+  Vendor.findByIdAndUpdate(
+    { _id: data._id },
+    { $set: { vendorType: data.vendorType } },
+    { new: true }
+  ).exec((err, doc) => {
+    if (err)
+      return res
+        .status(500)
+        .send({ success: false, message: "Failed to update vendor" });
+    return res.status(200).send({ success: true, doc });
+  });
+};

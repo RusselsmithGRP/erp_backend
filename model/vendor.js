@@ -28,6 +28,7 @@ var vendorSchema = Schema({
     type: Number
   },
   contracts: [Object],
+  vendorType: String,
   updated: { type: Date, default: Date.now },
   created: { type: Date }
 });
