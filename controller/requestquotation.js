@@ -165,12 +165,14 @@ exports.update = (req, res, next) => {
 };
 
 exports.acceptQoute = (req, res, next) => {
+  console.log("Quote Accepted", "ID:", req.body.id);
   if (
     req.body.meetRfqResponseTime &&
     req.body.meetDefineSpecification &&
     req.body.meetQuality &&
     req.body.onTimeDelivery
   ) {
+    console.log(req.body.id);
     RequestQuotation.findOne({ _id: req.body.id }).exec((err, doc) => {
       if (err) return next(err);
       const totalScore =
@@ -203,10 +205,11 @@ exports.acceptQoute = (req, res, next) => {
     .populate("vendor")
     .exec((err, result) => {
       if (err) return next(err);
-      if (req.body.accepted == "true") {
+      console.log(result.accepted);
+      if (result.accepted === true) {
         send_po_accepted_email(req, res, result.vendor.general_info);
-        send_rfq_to_procurement(req, res, result.vendor.general_info); // Notification to Procurement about the response
-      } else if (req.body.accepted == "false") {
+        send_rfq_to_procurement(req, res, result); // Notification to Procurement about the response
+      } else if (result.accepted == false) {
         send_po_rejected_email(req, res, result.vendor.general_info);
       }
       res.send(result);
