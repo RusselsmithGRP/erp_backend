@@ -255,11 +255,16 @@ exports.resubmitted = (req, res, next) => {
             return next(err);
           }
           let requestor = doc.email;
-          // send_new_requisition_email(
-          //   { id: result.id, dept, requisitionNo, requestor },
-          //   req,
-          //   res
-          // );
+          send_new_requisition_email(
+            {
+              id: r.id,
+              dept,
+              requisitionNo: requisitionNo.toUpperCase(),
+              requestor
+            },
+            req,
+            res
+          );
         });
       });
   });

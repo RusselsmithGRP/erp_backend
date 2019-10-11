@@ -390,12 +390,16 @@ exports.rejectVendor = (req, res) => {
   });
 };
 
-exports.updateVendorType = (req, res) => {
+exports.updateVendorContracts = (req, res) => {
   const data = { ...req.body };
+  data.startDate = new Date(data.startDate);
+  data.endDate = new Date(data.endDate);
+  const contracts = [];
+  contracts.push(data);
 
   Vendor.findByIdAndUpdate(
     { _id: data._id },
-    { $set: { vendorType: data.vendorType } },
+    { $set: { contracts: contracts, isContracted: true } },
     { new: true }
   ).exec((err, doc) => {
     if (err)
