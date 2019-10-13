@@ -394,8 +394,8 @@ exports.updateVendorContracts = (req, res) => {
   const data = { ...req.body };
   data.startDate = new Date(data.startDate);
   data.endDate = new Date(data.endDate);
-  const contracts = [];
-  contracts.push(data);
+  let contracts = [];
+  contracts = [...contracts, data];
 
   Vendor.findByIdAndUpdate(
     { _id: data._id },
