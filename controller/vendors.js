@@ -406,6 +406,12 @@ exports.updateVendorContracts = (req, res) => {
       return res
         .status(500)
         .send({ success: false, message: "Failed to update vendor" });
-    return res.status(200).send({ success: true, doc });
+    return res
+      .status(200)
+      .send({
+        success: true,
+        doc,
+        message: "Vendor contract updated successfully"
+      });
   });
 };
