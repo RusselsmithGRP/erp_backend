@@ -7,15 +7,15 @@ const inventorySchema = new Schema(
     serialNo: { type: String, required: true },
     assetCode: String,
     assetType: { type: String, required: true },
-    quantity: Number,
-    warehouse: String,
-    room: String,
-    rack: String,
-    shelf: String,
+    quantity: String,
+    warehouse: { type: Schema.Types.ObjectId, ref: "Warehouse" },
     condition: String,
-    custodian: { type: Schema.Types.ObjectId, ref: "User" },
-    department: { type: Schema.Types.ObjectId, ref: "Department" },
-    dateReceived: { type: Date },
+    department: {
+      type: Schema.Types.ObjectId,
+      ref: "Department",
+      required: true
+    },
+    datereceived: { type: Date },
     photo: {
       fileName: String,
       filePath: String

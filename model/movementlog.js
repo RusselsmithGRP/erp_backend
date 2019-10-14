@@ -3,14 +3,14 @@ const Schema = mongoose.Schema;
 
 const movementlogSchema = new Schema(
   {
-    purchaseOrder: {
-      type: Schema.Types.ObjectId,
-      ref: "PurchaseOrder"
-    },
+    location: { type: String },
     requestor: {
       type: Schema.Types.ObjectId,
       ref: "User"
-    }
+    },
+    movementno: String,
+    lineitems: [Object],
+    returndate: { type: Date }
   },
   { timestamps: { createdAt: "created", updatedAt: "updated" } }
 );

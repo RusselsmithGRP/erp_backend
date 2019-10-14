@@ -48,7 +48,7 @@ exports.save = (req, res, next) => {
  * @summary User.findOne was added to get requestor details
  */
 exports.submit = (req, res, next) => {
-  const data = req.body;
+  const data = { ...req.body };
   data.dateneeded = data.dateneeded;
   data.created = new Date();
   let purchaserequisition = new PurchaseRequisition(data);
@@ -67,38 +67,35 @@ exports.submit = (req, res, next) => {
       data.departmentslug,
       result.id
     );
-    PurchaseRequisition.updateOne(
+    PurchaseRequisition.findByIdAndUpdate(
       { _id: result.id },
-      { requisitionno: requisitionNo.toUpperCase() },
-      (err, r) => {
-        if (err) return next(err);
+      { $set: { requisitionno: requisitionNo.toUpperCase() } },
+      { new: true }
+    ).exec((err, r) => {
+      // if (err) return next(err);
+      Department.findById({ _id: r.department })
+        .populate("hod")
+        .exec((err, dept) => {
+          // if (err) return next(err);
 
-        Department.findOne({ deparment: result.deparment })
-          .populate("hod")
-          .exec((err, dept) => {
-            // if (err) return next(err);
-            User.findOne({ _id: result.requestor }).exec((err, doc) => {
-              if (err) {
-                return next(err);
-              }
-              let requestor = doc.email;
-              // console.log("Requestor:", requestor, "Department:", dept);
-              console.log(`RequisitionNo: ${requisitionNo}`);
-              send_new_requisition_email(
-                {
-                  id: result.id,
-                  dept,
-                  requisitionNo: requisitionNo.toUpperCase(),
-                  requestor
-                },
-                req,
-                res
-              );
-            });
+          User.findOne({ _id: r.requestor }).exec((err, doc) => {
+            let requestor = doc.email;
+            // console.log({ dept });
+
+            send_new_requisition_email(
+              {
+                id: r.id,
+                dept,
+                requisitionNo: requisitionNo.toUpperCase(),
+                requestor
+              },
+              req,
+              res
+            );
           });
-        res.send(result);
-      }
-    );
+        });
+      res.send(result);
+    });
   });
 };
 

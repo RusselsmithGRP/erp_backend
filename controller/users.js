@@ -33,8 +33,8 @@ module.exports.register = function(req, res, next) {
         });
         vendor.save(function(err, doc) {
           if (err) return next(err);
-          send_user_registration_email(confirmationId, req, res, next);
-          qhse_vendor_reg_mail(req, res, doc);
+          // send_user_registration_email(confirmationId, req, res, next);
+          // qhse_vendor_reg_mail(req, res, doc);
 
           res.status(200).json({
             token: token
@@ -42,7 +42,7 @@ module.exports.register = function(req, res, next) {
         });
       } else {
         // send_user_registration_email(confirmationId, req, res, next);
-        send_staff_reg_email(req, res);
+        // send_staff_reg_email(req, res);
       }
     }
   });
@@ -52,7 +52,7 @@ module.exports.importuser = function(req, res, next) {
   var user = new User();
   let confirmationId = generateToken();
   user.email = req.body.email;
-  user.email = req.body.email;
+  // user.email = req.body.email;
   user.role = req.body.role;
   user.created = new Date();
   user.confirmationId = confirmationId;
@@ -82,8 +82,8 @@ module.exports.importuser = function(req, res, next) {
       vendor.save(function(err, vendor) {
         if (err) return res.json({ success: false, message: err.message });
         // send_user_registration_email(confirmationId, req, res, next);
-        qhse_vendor_reg_mail(req, res, vendor);
-        vendor_success_reg_email(req, res);
+        // qhse_vendor_reg_mail(req, res, vendor);
+        // vendor_success_reg_email(req, res);
         res.json({ success: true, message: "New Vendor Created" });
       });
     } else {
@@ -296,6 +296,7 @@ module.exports.login = function(req, res) {
 module.exports.index = function(req, res) {
   User.find({}).exec((err, doc) => {
     if (err) return res.send(err);
+
     res.send(doc);
   });
 };
@@ -486,7 +487,7 @@ module.exports.confirmtoken = function(req, res) {
 };
 
 module.exports.confirmRegistration = function(req, res) {
-  console.log(req.params.token);
+  // console.log(req.params.token);
   User.findOne({ confirmationId: req.params.token })
     .select()
     .exec(function(err, user) {

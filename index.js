@@ -19,7 +19,11 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 // fileUpload for handling file upload
-app.use(fileUpload());
+app.use(
+  fileUpload({
+    useTempFiles: true
+  })
+);
 
 app.use(passport.initialize());
 var vendor = require("./route/vendor");
@@ -35,6 +39,7 @@ var vendorevaluation = require("./route/vendorevaluation");
 var receivingandinspection = require("./route/receivingandinspection");
 const inventory = require("./route/inventory");
 const warehouse = require("./route/warehouse");
+const inventoryrequisition = require("./route/inventoryrequisition");
 
 app.use(function(req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -71,6 +76,7 @@ app.use("/vendorevaluation", vendorevaluation);
 app.use("/receivingandinspection", receivingandinspection);
 app.use("/inventory", inventory);
 app.use("/warehouse", warehouse);
+app.use("/inventory/requisition", inventoryrequisition);
 
 app.use(function(err, req, res, next) {
   if (err.name === "UnauthorizedError") {

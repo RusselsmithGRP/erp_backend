@@ -8,7 +8,7 @@ var purchaseOrderSchema = Schema({
     },
     no: String,
     deliverydate: { type: Date},
-    creditterms: Number,
+    creditterms: String,
     currency: Number,
     shipto: String,
     status: String,

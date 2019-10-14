@@ -35,8 +35,10 @@ exports.submit = (req, res, next) => {
   data.created = new Date();
   data.purchaseOrder = data.doc.po._id;
   let receivingAndInspection = new receiving(data);
+  // console.log(data.doc.po.requestor);
   receivingAndInspection.save((err, result) => {
     if (err) return next(err);
+    send_receiving_and_notification_mail(req, res, result); // Email to STORE
     res.json({
       success: true,
       message: "new data has been saved!",
@@ -52,6 +54,7 @@ exports.submitWorkCompletion = (req, res, next) => {
   let workCompletion = new work(data);
   workCompletion.save((err, result) => {
     if (err) return next(err);
+    send_work_completion_mail(req, res, result);
     res.json({
       success: true,
       message: "new data has been saved!",
@@ -95,6 +98,7 @@ exports.update = (req, res, next) => {
     doc
   ) {
     if (err) return next(err);
+    send_mail_to_requestor(req, res, data.doc);
     res.json({ success: true, message: "data has been updated!", result: doc });
   });
 };
@@ -145,4 +149,57 @@ exports.getRejectionLog = (req, res, next) => {
         res.send({ result: "nothing" });
       }
     });
+};
+
+const send_mail_to_requestor = (req, res, doc) => {
+  const redirect_link = Utility.generateLink("/receiving/", doc.po._id);
+  const msg = {
+    to: doc.po.requestor.email,
+    from: process.env.EMAIL_FROM,
+    subject: "Notification of Item Delivery",
+    templateId: process.env.INVENTORY_ITEM_REQUESTOR_TEMPLATE_ID,
+    dynamic_template_data: {
+      redirect_link,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+  emailTemplate(req, res, msg);
+};
+
+const send_receiving_and_notification_mail = (req, res, doc) => {
+  const redirect_link = Utility.generateLink("/receiving/", doc.purchaseOrder);
+  const msg = {
+    to: process.env.PROCUREMENT_EMAIL,
+    from: process.env.EMAIL_FROM,
+    cc: process.env.ASSET_UNIT_GROUP_EMAIL,
+    subject: "New Item Received",
+    templateId: process.env.RECEIVING_AND_INSPECTION_NOTIFICATION_TEMPLATE_ID,
+    dynamic_template_data: {
+      redirect_link,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+  emailTemplate(req, res, msg);
+};
+
+const send_work_completion_mail = (req, res, doc) => {
+  const redirect_link = Utility.generateLink("/receiving/", doc.purchaseOrder);
+  const msg = {
+    to: process.env.PROCUREMENT_EMAIL,
+    from: process.env.EMAIL_FROM,
+    subject: "Work Completion Form",
+    templateId: process.env.WORK_COMPLETION_TEMPLATE_ID,
+    dynamic_template_data: {
+      redirect_link,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+  emailTemplate(req, res, msg);
+};
+
+const emailTemplate = (req, res, msg) => {
+  return mailer.sendMailer(msg, req, res);
 };

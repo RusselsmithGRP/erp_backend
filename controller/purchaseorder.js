@@ -391,7 +391,6 @@ exports.update = (req, res, next) => {
         data.status = "PO03";
         data.approvedBy = tokenz._id;
         data.approvedByDate = new Date();
-        console.log(data, "hello")
         break;
       case "manager":
         data.status = "PO01";
