@@ -52,9 +52,10 @@ exports.submit = (req, res, next) => {
   const data = { ...req.body };
   data.dateneeded = data.dateneeded;
   data.justification = data.justification;
-  data.vendor = mongoose.Types.ObjectId(data.vendor);
+  data.vendor = data.vendor;
 
   data.created = new Date();
+  console.log(data);
   let purchaserequisition = new PurchaseRequisition(data);
 
   purchaserequisition.save((err, result) => {
