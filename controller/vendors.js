@@ -395,23 +395,32 @@ exports.updateVendorContracts = (req, res) => {
   data.startDate = new Date(data.startDate);
   data.endDate = new Date(data.endDate);
   let contracts = [];
-  contracts = [...contracts, data];
+  let dataObj = {
+    duration: data.duration,
+    startDate: data.startDate,
+    endDate: data.endDate,
+    minTerminationLeadTime: data.minTerminationLeadTime,
+    signedBy: data.signedBy,
+    associatedDept: data.associatedDept
+  };
+  contracts.push(dataObj);
 
   Vendor.findByIdAndUpdate(
     { _id: data._id },
-    { $set: { contracts: contracts, isContracted: true } },
-    { new: true }
+    {
+      $push: { contracts },
+      $set: { isContracted: true, updated: new Date() }
+    },
+    { new: true, upsert: true }
   ).exec((err, doc) => {
     if (err)
       return res
         .status(500)
         .send({ success: false, message: "Failed to update vendor" });
-    return res
-      .status(200)
-      .send({
-        success: true,
-        doc,
-        message: "Vendor contract updated successfully"
-      });
+    return res.status(200).send({
+      success: true,
+      doc,
+      message: "Vendor contract updated successfully"
+    });
   });
 };

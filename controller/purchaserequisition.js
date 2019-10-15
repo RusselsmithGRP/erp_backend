@@ -55,7 +55,6 @@ exports.submit = (req, res, next) => {
   data.vendor = data.vendor;
 
   data.created = new Date();
-  console.log(data);
   let purchaserequisition = new PurchaseRequisition(data);
 
   purchaserequisition.save((err, result) => {
