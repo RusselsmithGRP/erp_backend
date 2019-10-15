@@ -389,3 +389,23 @@ exports.rejectVendor = (req, res) => {
     }
   });
 };
+
+exports.updateVendorContracts = (req, res) => {
+  const data = { ...req.body };
+  data.startDate = new Date(data.startDate);
+  data.endDate = new Date(data.endDate);
+  let contracts = [];
+  contracts = [...contracts, data];
+
+  Vendor.findByIdAndUpdate(
+    { _id: data._id },
+    { $set: { contracts: contracts, isContracted: true } },
+    { new: true }
+  ).exec((err, doc) => {
+    if (err)
+      return res
+        .status(500)
+        .send({ success: false, message: "Failed to update vendor" });
+    return res.status(200).send({ success: true, doc });
+  });
+};

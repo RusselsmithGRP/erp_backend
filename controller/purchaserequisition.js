@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 var PurchaseRequisition = mongoose.model("PurchaseRequisition");
 var Department = mongoose.model("Department");
+const Vendor = mongoose.model("Vendor");
 var Utility = require("../commons/utility");
 var User = mongoose.model("User");
 var mailer = require("../model/mailer");
@@ -50,8 +51,12 @@ exports.save = (req, res, next) => {
 exports.submit = (req, res, next) => {
   const data = { ...req.body };
   data.dateneeded = data.dateneeded;
+  data.justification = data.justification;
+  data.vendor = mongoose.Types.ObjectId(data.vendor);
+
   data.created = new Date();
   let purchaserequisition = new PurchaseRequisition(data);
+
   purchaserequisition.save((err, result) => {
     if (err) {
       res.status(500).json({
@@ -250,11 +255,16 @@ exports.resubmitted = (req, res, next) => {
             return next(err);
           }
           let requestor = doc.email;
-          // send_new_requisition_email(
-          //   { id: result.id, dept, requisitionNo, requestor },
-          //   req,
-          //   res
-          // );
+          send_new_requisition_email(
+            {
+              id: r.id,
+              dept,
+              requisitionNo: requisitionNo.toUpperCase(),
+              requestor
+            },
+            req,
+            res
+          );
         });
       });
   });

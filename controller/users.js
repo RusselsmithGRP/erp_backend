@@ -33,8 +33,8 @@ module.exports.register = function(req, res, next) {
         });
         vendor.save(function(err, doc) {
           if (err) return next(err);
-          // send_user_registration_email(confirmationId, req, res, next);
-          // qhse_vendor_reg_mail(req, res, doc);
+          send_user_registration_email(confirmationId, req, res, next);
+          qhse_vendor_reg_mail(req, res, doc);
 
           res.status(200).json({
             token: token
@@ -42,7 +42,7 @@ module.exports.register = function(req, res, next) {
         });
       } else {
         // send_user_registration_email(confirmationId, req, res, next);
-        // send_staff_reg_email(req, res);
+        send_staff_reg_email(req, res);
       }
     }
   });
@@ -81,9 +81,8 @@ module.exports.importuser = function(req, res, next) {
       });
       vendor.save(function(err, vendor) {
         if (err) return res.json({ success: false, message: err.message });
-        // send_user_registration_email(confirmationId, req, res, next);
-        // qhse_vendor_reg_mail(req, res, vendor);
-        // vendor_success_reg_email(req, res);
+        qhse_vendor_reg_mail(req, res, vendor);
+        vendor_success_reg_email(req, res);
         res.json({ success: true, message: "New Vendor Created" });
       });
     } else {
@@ -410,6 +409,9 @@ module.exports.resetThePassword = function(req, res) {
         }
         if (password === confirmPassword && confirmPassword !== "") {
           user.setPassword(confirmPassword);
+          if (user.role === "vendor" && user.emailVerified === false) {
+            user.emailVerified = true;
+          }
           user.save(function(err) {
             if (err) return next(err);
             return res.json({
@@ -528,7 +530,10 @@ module.exports.findOnlyStaff = function(req, res) {
 };
 
 module.exports.findManagers = (req, res) => {
-  User.find({ type: "manager" })
+  User.find({
+    type: { $ne: "staff" },
+    role: { $ne: "admin", $ne: "vendor" }
+  })
     .sort({ created: -1 })
     .exec(function(err, users) {
       if (err) {
@@ -536,7 +541,7 @@ module.exports.findManagers = (req, res) => {
         return;
       }
       // console.log(users);
-      res.status(200).json(users);
+      res.send(users);
     });
 };
 /* 
@@ -632,6 +637,7 @@ module.exports.findOnlyStaff = function(req, res) {
 module.exports.createNewUser = function(req, res) {
   let confirmationId = generateToken();
   const data = { ...req.body };
+  data.email = data.email.toLowerCase();
   const user = new User(data);
   user.confirmationId = confirmationId;
 
