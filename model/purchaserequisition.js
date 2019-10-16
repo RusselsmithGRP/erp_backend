@@ -30,6 +30,7 @@ var purchaseRequisitionSchema = Schema({
   justification: String,
   price: Number,
   closeoutmethod: String,
+  comment: String,
   updated: { type: Date, default: Date.now },
   created: { type: Date },
   reason: String
