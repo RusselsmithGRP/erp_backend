@@ -258,8 +258,8 @@ exports.updateStatus = (req, res, next) => {
     PurchaseRequisition.findOne({ _id: req.params.id })
       .populate("requestor")
       .exec((err, doc) => {
-        // sendApprovalEmail(doc, res);
-        // send_notification_to_procurement(doc, res);
+        sendApprovalEmail(doc, res);
+        send_notification_to_procurement(doc, res);
       });
     res.send(result);
   });
