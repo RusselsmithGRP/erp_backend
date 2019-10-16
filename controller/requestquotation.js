@@ -82,12 +82,13 @@ exports.submit = (req, res, next) => {
   let data = {};
   req.body.vendors.forEach((vendor, i) => {
     data.vendor = vendor.value;
+    data.quoteType = (req.body.type === 'contract')?"contract": "";
     data.requisition = req.body.pr;
     data.requester =
       req.body.pr.requestor.lastname + " " + req.body.pr.requestor.firstname;
     data.lineitems = req.body.items;
     data.created = new Date();
-    data.status = "RFQ01";
+    data.status =  (req.body.type === 'contract')?"RFQ02": "RFQ01"; 
     data.service_type = req.body.pr.type;
     let requestquotation = new RequestQuotation(data);
     requestquotation.save(function(err, result) {
@@ -107,12 +108,19 @@ exports.submit = (req, res, next) => {
         .populate("vendor")
         .exec((err, doc) => {
           if (err) return next(err);
-          send_request_for_quote(req, res, doc.vendor.general_info);
-          // console.log(doc.vendor.general_info.coy_email);
+        (req.body.type === 'contract')? "": send_request_for_quote(req, res, doc.vendor.general_info);
         });
+        RequestQuotation.find()
+        .sort({ _id: -1 })
+        .exec((err, data) => {
+          return res.send({ 
+            isOk: true,
+            data: data[0]
+            });
+        }); 
+
     });
   });
-  res.send({ isOk: true });
 };
 
 exports.submitVendorQuote = (req, res, next) => {

@@ -13,10 +13,10 @@ exports.index = (req, res, next) => {
   const tokenz = user.getUser(token);
   if (tokenz.role === "procurement") {
     PurchaseRequisition.find()
-      .populate("requestor department")
+      .populate("requestor department vendor")
       .sort({ created: -1 })
       .exec((err, docs) => {
-        if (err) return next(err);
+        if (err) return next(err.message);
         else res.send(docs);
       });
   } else {
@@ -24,7 +24,7 @@ exports.index = (req, res, next) => {
       ? { department: tokenz.department._id }
       : {};
     PurchaseRequisition.find(option)
-      .populate("requestor department")
+      .populate("requestor department vendor")
       .sort({ created: -1 })
       .exec((err, docs) => {
         if (err) return next(err);
@@ -52,16 +52,14 @@ exports.submit = (req, res, next) => {
   const data = { ...req.body };
   data.dateneeded = data.dateneeded;
   data.justification = data.justification;
-  data.vendor = mongoose.Types.ObjectId(data.vendor);
-
+  data.vendor = (data.vendor) ?  data.vendor: null;
   data.created = new Date();
   let purchaserequisition = new PurchaseRequisition(data);
-
   purchaserequisition.save((err, result) => {
     if (err) {
       res.status(500).json({
         success: false,
-        msg: `An error occured while trying to save data`
+        msg: err.message
       });
       return next(err);
     }
@@ -82,11 +80,9 @@ exports.submit = (req, res, next) => {
         .populate("hod")
         .exec((err, dept) => {
           // if (err) return next(err);
-
           User.findOne({ _id: r.requestor }).exec((err, doc) => {
             let requestor = doc.email;
             // console.log({ dept });
-
             send_new_requisition_email(
               {
                 id: r.id,
@@ -102,7 +98,7 @@ exports.submit = (req, res, next) => {
       res.send(result);
     });
   });
-};
+ };
 
 // let send_new_requisition_email = function(options, req, res, next) {
 //   const { id, dept } = options;
@@ -222,9 +218,31 @@ const sendApprovalEmail = (req, res) => {
   mailer.sendMailer(msg, req, res);
 };
 
+/**
+ * @author Idowu
+ * @summary PR notification to Procurement
+ */
+
+const send_notification_to_procurement = (req, res) => {
+  const request_link = Utility.generateLink("/requisition/view/", req.id);
+  const msg = {
+    to: process.env.PROCUREMENT_EMAIL,
+    from: process.env.EMAIL_FROM,
+    subject: "New Purchase Requisition",
+    templateId: process.env.PROCUREMENT_PR_NOTIFICATION_TEMPLATE_ID,
+    dynamic_template_data: {
+      requisitionNo: req.requisitionno,
+      request_link,
+      sender_phone: "+234 706 900 0900",
+      sender_address: "3, Swisstrade Drive, Ikota-Lekki, Lagos, Nigeria."
+    }
+  };
+  mailer.sendMailer(msg, req, res);
+};
+
 exports.view = (req, res, next) => {
   PurchaseRequisition.findOne({ _id: req.params.id })
-    .populate("requestor department")
+    .populate("requestor department vendor")
     .exec((err, doc) => {
       if (err) return next(err);
       res.send(doc);
@@ -237,6 +255,7 @@ exports.updateStatus = (req, res, next) => {
       .populate("requestor")
       .exec((err, doc) => {
         sendApprovalEmail(doc, res);
+        send_notification_to_procurement(doc, res);
       });
     res.send(result);
   });

@@ -25,7 +25,9 @@ var requestQuotationSchema = Schema({
   creditterms: Number,
   reason: String,
   accepted: Boolean,
-  rejection_reason: String
+  rejection_reason: String,
+  quoteType: String
+
 });
 
 mongoose.model("RequestQuotation", requestQuotationSchema);
