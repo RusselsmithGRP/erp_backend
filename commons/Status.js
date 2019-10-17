@@ -3,6 +3,8 @@ const STATUS = {
   "01": "AWAITING HOD APPROVAL",
   "010": "HOD DECLINE APPROVAL, MAKE CORRECTIONS",
   "011": "HOD APPROVED",
+  "012": "AWAITING CLOSE OUT",
+  "013": "CLOSED OUT",
   RFQ01: "Awaiting Vendor Response",
   RFQ02: "Vendor Responded",
   RFQ03: "Procurement Approved",

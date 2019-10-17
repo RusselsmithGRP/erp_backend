@@ -52,7 +52,7 @@ exports.submit = (req, res, next) => {
   const data = { ...req.body };
   data.dateneeded = data.dateneeded;
   data.justification = data.justification;
-  data.vendor = (data.vendor) ?  data.vendor: null;
+  data.vendor = data.vendor ? data.vendor : null;
   data.created = new Date();
   let purchaserequisition = new PurchaseRequisition(data);
   purchaserequisition.save((err, result) => {
@@ -98,7 +98,7 @@ exports.submit = (req, res, next) => {
       res.send(result);
     });
   });
- };
+};
 
 // let send_new_requisition_email = function(options, req, res, next) {
 //   const { id, dept } = options;
@@ -242,9 +242,11 @@ const send_notification_to_procurement = (req, res) => {
 
 exports.view = (req, res, next) => {
   PurchaseRequisition.findOne({ _id: req.params.id })
-    .populate("requestor department vendor")
+    .populate("requestor")
+    .populate("department")
     .exec((err, doc) => {
       if (err) return next(err);
+      // console.log(doc);
       res.send(doc);
     });
 };

@@ -394,7 +394,7 @@ exports.update = (req, res, next) => {
         break;
       case "manager":
         data.status = "PO01";
-        data.reviewedBy =  tokenz._id;
+        data.reviewedBy = tokenz._id;
         data.reviewedByDate = new Date();
         break;
     }
@@ -494,5 +494,23 @@ exports.findGeneralApprovedPO = (req, res) => {
         .status(500)
         .send({ success: false, message: "Something went wrong" });
     return res.send({ success: true, doc });
+  });
+};
+
+/**
+ * @author Idowu
+ * @summary Get only PurchaseOrder's that has been approved by the CEO
+ */
+exports.deletePO = (req, res) => {
+  PurchaseOrder.findByIdAndDelete({ _id: req.params.id }, (err, doc) => {
+    if (err)
+      return res.status(500).send({
+        success: false,
+        message:
+          "An Unexpected Error has occured, please reload or try again later."
+      });
+    return res
+      .status(200)
+      .send({ success: true, message: "Purchase Order deleted successfully." });
   });
 };
