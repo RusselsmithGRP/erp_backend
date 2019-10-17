@@ -28,7 +28,7 @@ let fetchVendorRespondedQuotes = callback => {
     });
 };
 
-exports.uniqueVendorListFromRespondedQuotes = (req, res, next) => {
+exports.uniqueVendorListFromRespondedQuotes = (req, res) => {
   let id = [];
   fetchVendorRespondedQuotes(docs => {
     const filteredDocs = docs.filter(doc => {

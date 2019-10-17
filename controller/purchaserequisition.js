@@ -13,7 +13,7 @@ exports.index = (req, res, next) => {
   const tokenz = user.getUser(token);
   if (tokenz.role === "procurement") {
     PurchaseRequisition.find()
-      .populate("requestor department vendor")
+      .populate("requestor department")
       .sort({ created: -1 })
       .exec((err, docs) => {
         if (err) return next(err.message);
@@ -24,7 +24,7 @@ exports.index = (req, res, next) => {
       ? { department: tokenz.department._id }
       : {};
     PurchaseRequisition.find(option)
-      .populate("requestor department vendor")
+      .populate("requestor department")
       .sort({ created: -1 })
       .exec((err, docs) => {
         if (err) return next(err);

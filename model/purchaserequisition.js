@@ -21,11 +21,7 @@ var purchaseRequisitionSchema = Schema({
   isextrabudget: Boolean,
   eid: String,
   deliverymode: String,
-  vendor: {
-    type: Schema.Types.ObjectId,
-    ref: "Vendor",
-    required: false
-  },
+  vendor: String,
   purchaseType: String,
   justification: String,
   price: Number,
