@@ -302,4 +302,27 @@ let update = (req, res, next, callback) => {
   );
 };
 
+exports.updateRequisition = (req, res) => {
+  let data = { ...req.body, updated: new Date() };
+  // data.status = data.status;
+
+  PurchaseRequisition.findOneAndUpdate(
+    { _id: req.params.id },
+    { $set: data },
+    { new: true },
+    (err, doc) => {
+      if (err) {
+        return res.send({ success: false, message: "Failed to save data" });
+      }
+
+      console.log(doc);
+      return res.send({
+        success: true,
+        message: "Purchase Requisition updated successfully",
+        doc
+      });
+    }
+  );
+};
+
 // const send_update_status_email = (req, res, next) => {};
