@@ -514,3 +514,13 @@ exports.deletePO = (req, res) => {
       .send({ success: true, message: "Purchase Order deleted successfully." });
   });
 };
+
+/**
+ * @author Idowu
+ * @summary Get Recent PO Information for Edit purposes
+ */
+exports.getPOInfo = (req, res) => {
+  let data = { ...req.body };
+
+  PurchaseOrder.findByIdAndUpdate({ _id: req.params.id });
+};
