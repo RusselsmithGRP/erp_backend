@@ -465,7 +465,7 @@ const send_mail_to_reviewer = (req, res) => {
       const reason = req.reason ? req.reason : "";
 
       const msg = {
-        to: "sgiwa-osagie@russelsmithgroup.com",
+        to: "mmazhar@russelsmithgroup.com",
         from: process.env.EMAIL_FROM,
         subject: `${status} ${req.requisitionno}`,
         templateId: process.env.FIRST_REVIEWER_TEMPLATE_ID,
@@ -520,7 +520,14 @@ exports.deletePO = (req, res) => {
  * @summary Get Recent PO Information for Edit purposes
  */
 exports.getPOInfo = (req, res) => {
-  let data = { ...req.body };
-
-  PurchaseOrder.findByIdAndUpdate({ _id: req.params.id });
+  PurchasingItem.findOne({ purchaseOrder: req.params.id })
+    .populate("category quote purchaseOrder")
+    .exec((err, doc) => {
+      if (err)
+        return res.status(500).send({
+          success: false,
+          message: "An Unexpected error has occured while trying to load data."
+        });
+      return res.status(200).send({ success: true, doc });
+    });
 };

@@ -4,6 +4,8 @@ var router = express.Router();
 var purchaseOrderController = require("../controller/purchaseorder");
 var jwt = require("../config/jwt");
 
+router.get("/info/:id", purchaseOrderController.getPOInfo);
+
 router.delete("/delete/:id", jwt, purchaseOrderController.deletePO);
 router.get("/", jwt, purchaseOrderController.index);
 router.post("/save", jwt, purchaseOrderController.save);
