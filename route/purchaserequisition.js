@@ -6,6 +6,7 @@ var jwt = require("../config/jwt");
 
 router.patch(
   "/resubmitreq/:id",
+  jwt,
   purchaseRequistionController.updateRequisition
 );
 

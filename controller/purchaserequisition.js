@@ -306,16 +306,39 @@ exports.updateRequisition = (req, res) => {
   let data = { ...req.body, updated: new Date() };
   // data.status = data.status;
 
-  PurchaseRequisition.findOneAndUpdate(
+  PurchaseRequisition.findByIdAndUpdate(
     { _id: req.params.id },
     { $set: data },
     { new: true },
     (err, doc) => {
       if (err) {
-        return res.send({ success: false, message: "Failed to save data" });
+        return res.json({
+          success: false,
+          message: "Failed to save data",
+          err
+        });
       }
 
       console.log(doc);
+      Department.findById({ _id: doc.department })
+        .populate("hod")
+        .exec((err, dept) => {
+          // if (err) return next(err);
+          User.findOne({ _id: doc.requestor }).exec((err, user) => {
+            let requestor = user.email;
+            // console.log({ dept });
+            send_new_requisition_email(
+              {
+                id: doc._id,
+                dept,
+                requisitionNo: doc.requisitionno,
+                requestor
+              },
+              req,
+              res
+            );
+          });
+        });
       return res.send({
         success: true,
         message: "Purchase Requisition updated successfully",
