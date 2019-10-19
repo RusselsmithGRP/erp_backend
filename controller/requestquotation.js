@@ -6,6 +6,7 @@ var Utility = require("../commons/utility");
 var User = mongoose.model("User");
 var PurchasingItem = mongoose.model("PurchasingItem");
 var VendorEvaluation = mongoose.model("VendorEvaluation");
+let Vendor = mongoose.model("Vendor");
 
 exports.index = (req, res, next) => {
   let param = {};
@@ -95,13 +96,13 @@ exports.submit = (req, res, next) => {
   let data = {};
   req.body.vendors.forEach((vendor, i) => {
     data.vendor = vendor.value;
-    data.quoteType = (req.body.type === 'contract')?"contract": "";
+    data.quoteType = req.body.type === "contract" ? "contract" : "";
     data.requisition = req.body.pr;
     data.requester =
       req.body.pr.requestor.lastname + " " + req.body.pr.requestor.firstname;
     data.lineitems = req.body.items;
     data.created = new Date();
-    data.status =  (req.body.type === 'contract')?"RFQ02": "RFQ01"; 
+    data.status = req.body.type === "contract" ? "RFQ02" : "RFQ01";
     data.service_type = req.body.pr.type;
     let requestquotation = new RequestQuotation(data);
     requestquotation.save(function(err, result) {
@@ -121,17 +122,18 @@ exports.submit = (req, res, next) => {
         .populate("vendor")
         .exec((err, doc) => {
           if (err) return next(err);
-        (req.body.type === 'contract')? "": send_request_for_quote(req, res, doc.vendor.general_info);
+          req.body.type === "contract"
+            ? ""
+            : send_request_for_quote(req, res, doc.vendor.general_info);
         });
-        RequestQuotation.find()
+      RequestQuotation.find()
         .sort({ _id: -1 })
         .exec((err, data) => {
-          return res.send({ 
+          return res.send({
             isOk: true,
             data: data[0]
-            });
-        }); 
-
+          });
+        });
     });
   });
 };
@@ -155,13 +157,16 @@ exports.submitVendorQuote = (req, res, next) => {
       { _id: data.id },
       { $set: result },
       { new: true }
-    )
-      .populate("vendor")
-      .exec((err, result) => {
-        if (err) return next(err);
-        send_request_for_quote(req, res, result.vendor.general_info);
+    ).exec((err, result) => {
+      if (err) return next(err);
+      let vendorId = mongoose.Types.ObjectId(result.vendor);
+      Vendor.findOne({ _id: vendorId }, (err, doc) => {
+        if (err) return err;
+        send_request_for_quote(req, res, doc.general_info);
+        // console.log(doc.general_info);
         res.send(result);
       });
+    });
   });
 };
 
