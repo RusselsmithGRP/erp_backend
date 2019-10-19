@@ -13,6 +13,7 @@ router.post('/submitvendorquote', jwt, requestQuotationController.submitVendorQu
 router.post('/accept_qoute', jwt, requestQuotationController.acceptQoute);
 router.get('/vendor/:vendorId', jwt, requestQuotationController.vendorsQuoteList);
 router.get('/unique_vendor', requestQuotationController.uniqueVendorListFromRespondedQuotes)
+router.get("/vendors/search/", requestQuotationController.search);
 router.get('/quotes_for_vendor/:vendorId', jwt, requestQuotationController.allRepliedQuoteFomVendor);
 /* router.delete('/delete', jwt, requestQuotationController.delete);
 router.get('/permission/:id', jwt, requestQuotationController.get_permission);

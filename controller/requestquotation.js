@@ -20,7 +20,7 @@ exports.index = (req, res, next) => {
 
 let fetchVendorRespondedQuotes = callback => {
   RequestQuotation.find({ status: "RFQ02" })
-    .populate("vendor")
+    // .populate("vendor")
     .sort({ created: -1 })
     .exec((err, docs) => {
       if (err) return next(err);
@@ -29,6 +29,19 @@ let fetchVendorRespondedQuotes = callback => {
 };
 
 exports.uniqueVendorListFromRespondedQuotes = (req, res) => {
+  let id = [];
+  fetchVendorRespondedQuotes(docs => {
+    const filteredDocs = docs.filter(doc => {
+      if (id.indexOf(doc.vendor.id) < 0) {
+        id.push(doc.vendor.id);
+        return doc;
+      }
+    });
+    res.send(filteredDocs);
+  });
+};
+
+exports.search = (req, res, next) => {
   let id = [];
   fetchVendorRespondedQuotes(docs => {
     const filteredDocs = docs.filter(doc => {
