@@ -11,26 +11,46 @@ exports.index = (req, res, next) => {
   const token = req.headers.authorization;
   var user = new User();
   const tokenz = user.getUser(token);
-  if (tokenz.role === "procurement") {
-    PurchaseRequisition.find()
-      .populate("requestor department")
-      .sort({ created: -1 })
-      .exec((err, docs) => {
-        if (err) return next(err.message);
-        else res.send(docs);
-      });
-  } else {
-    const option = tokenz.department
-      ? { department: tokenz.department._id }
-      : {};
-    PurchaseRequisition.find(option)
-      .populate("requestor department")
-      .sort({ created: -1 })
-      .exec((err, docs) => {
-        if (err) return next(err);
-        else res.send(docs);
-      });
-  }
+
+  // let getDept = tokenz.departments.filter(
+  //   (dept, i) => dept[i] === tokenz.department._id
+  // );
+
+  // console.log(getDept);
+  User.findById({ _id: tokenz._id })
+    .populate("department")
+    .exec((err, doc) => {
+      // console.log(doc);
+      if (tokenz.type === "hod") {
+        PurchaseRequisition.find({ department: { $in: doc.departments } })
+          .populate("requestor department")
+          .sort({ created: -1 })
+          .exec((err, docs) => {
+            if (err) return next(err.message);
+            else res.send(docs);
+          });
+      } else if (tokenz.role === "procurement") {
+        PurchaseRequisition.find()
+          .populate("requestor department")
+          .sort({ created: -1 })
+          .exec((err, docs) => {
+            if (err) return next(err.message);
+            else res.send(docs);
+          });
+      } else {
+        const option = tokenz.department
+          ? { department: tokenz.department._id }
+          : {};
+        PurchaseRequisition.find(option)
+          .populate("requestor department")
+          .sort({ created: -1 })
+          .exec((err, docs) => {
+            if (err) return next(err);
+            else res.send(docs);
+          });
+      }
+    });
+  // console.log(tokenz.departments);
 };
 
 exports.save = (req, res, next) => {
@@ -65,11 +85,7 @@ exports.submit = (req, res, next) => {
     }
     const prefix = "REQ";
     // saved!
-    const requisitionNo = Utility.generateReqNo(
-      prefix,
-      data.departmentslug,
-      result.id
-    );
+    const requisitionNo = Utility.generateReqNo(prefix, data.slug, result.id);
     PurchaseRequisition.findByIdAndUpdate(
       { _id: result.id },
       { $set: { requisitionno: requisitionNo.toUpperCase() } },

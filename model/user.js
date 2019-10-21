@@ -75,7 +75,8 @@ userSchema.methods.generateJwt = function() {
       fullname: this.firstname + " " + this.lastname,
       department: this.department,
       type: this.type,
-      exp: parseInt(expiry.getTime() / 1000)
+      exp: parseInt(expiry.getTime() / 1000),
+      departments: this.departments
     },
     auth_secret
   ); // DO NOT KEEP YOUR SECRET IN THE CODE!

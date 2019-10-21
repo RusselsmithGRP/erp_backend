@@ -329,14 +329,29 @@ module.exports.updateProfileData = function(req, res) {
     updated: Date.now()
   };
   let department = [];
-  let departmentId = data.department;
-
-  department = [...department, departmentId];
+  let departmentId;
+  if (data.department2 !== null) {
+    departmentId = data.department2;
+  }
+  if (data.type === "hod" || data.type === "ceo") {
+    department = [...department, departmentId];
+  }
+  const newData = {
+    email: data.email,
+    eid: data.eid,
+    firstname: data.firstname,
+    lastname: data.lastname,
+    role: data.role,
+    department: data.department,
+    type: data.type,
+    signature: data.signature,
+    line_manager: data.line_manager
+  };
   // console.log(department);
 
   User.findOneAndUpdate(
     { _id: req.body._id },
-    { $set: data, $addToSet: { departments: department } },
+    { $set: newData, $addToSet: { departments: department } },
     { new: true },
     function(err, profileData) {
       if (err) {
