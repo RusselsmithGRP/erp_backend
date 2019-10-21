@@ -330,10 +330,12 @@ module.exports.updateProfileData = function(req, res) {
   };
   let department = [];
   let departmentId;
-  if (data.department2 !== null) {
-    departmentId = data.department2;
-  }
-  if (data.type === "hod" || data.type === "ceo") {
+
+  departmentId = data.department2;
+
+  if (data.department2 === null) {
+    department = [];
+  } else {
     department = [...department, departmentId];
   }
   const newData = {
