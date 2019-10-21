@@ -328,9 +328,15 @@ module.exports.updateProfileData = function(req, res) {
     ...req.body,
     updated: Date.now()
   };
+  let department = [];
+  let departmentId = data.department;
+
+  department = [...department, departmentId];
+  // console.log(department);
+
   User.findOneAndUpdate(
     { _id: req.body._id },
-    { $set: data },
+    { $set: data, $addToSet: { departments: department } },
     { new: true },
     function(err, profileData) {
       if (err) {
@@ -338,16 +344,17 @@ module.exports.updateProfileData = function(req, res) {
         res.send(err);
       } else {
         if (req.body.type === "hod") {
-          Department.findOneAndUpdate(
-            { slug: profileData.role },
+          Department.updateMany(
+            { _id: { $in: profileData.departments } },
             { $set: { hod: req.body._id } },
-            { new: true },
+            { new: true, multi: true },
             (err, doc) => {
-              console.log(doc);
               if (err) throw err;
+              // console.log(doc);
             }
           );
         }
+
         return res.send({
           success: true,
           message: "profile has been updated",

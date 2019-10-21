@@ -29,6 +29,13 @@ var userSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: "Department"
   },
+  departments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Department",
+      unique: true
+    }
+  ],
   line_manager: {
     type: Schema.Types.ObjectId,
     ref: "User"
