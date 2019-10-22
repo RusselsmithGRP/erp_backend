@@ -29,6 +29,14 @@ exports.index = (req, res, next) => {
             if (err) return next(err.message);
             else res.send(docs);
           });
+      } else if (tokenz.type === "ceo") {
+        PurchaseRequisition.find({ deparment: { $in: doc.departments } })
+          .populate("requestor department")
+          .sort({ created: -1 })
+          .exec((err, docs) => {
+            if (err) return next(err.message);
+            else res.send(docs);
+          });
       } else if (tokenz.role === "procurement") {
         PurchaseRequisition.find()
           .populate("requestor department")
