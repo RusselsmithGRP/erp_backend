@@ -386,17 +386,19 @@ exports.update = (req, res, next) => {
         data.status = "PO02";
         data.authorizedBy = tokenz._id;
         data.authorizedByDate = new Date();
+        data.reviewedBy = tokenz._id;
+        data.reviewedByDate = new Date();
         break;
       case "ceo":
         data.status = "PO03";
         data.approvedBy = tokenz._id;
         data.approvedByDate = new Date();
         break;
-      case "manager":
-        data.status = "PO01";
-        data.reviewedBy = tokenz._id;
-        data.reviewedByDate = new Date();
-        break;
+      // case "manager":
+      //   data.status = "PO01";
+      //   data.reviewedBy = tokenz._id;
+      //   data.reviewedByDate = new Date();
+      //   break;
     }
   } else {
     switch (tokenz.type) {
