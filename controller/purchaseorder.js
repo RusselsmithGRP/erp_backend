@@ -26,6 +26,7 @@ exports.submit = (req, res, next) => {
   data.created = new Date();
   data.requestor = tokenz._id;
   data.status = "POX0";
+  // data.discount = data.discount / 100;
   let requestquotation = new PurchaseOrder(data);
   requestquotation.save(function(err, r) {
     if (err) return next(err);
@@ -33,6 +34,7 @@ exports.submit = (req, res, next) => {
     const prefix = "PO";
     const ref = Utility.generateReqNo(prefix, "PROC", r.id);
     r.no = ref.toUpperCase();
+    // console.log(r);
     PurchaseOrder.findOneAndUpdate({ _id: r.id }, { $set: r }, { new: true })
       .populate("requestor")
       .exec((err, response) => {
