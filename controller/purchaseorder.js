@@ -47,6 +47,7 @@ exports.submit = (req, res, next) => {
           );
         });
         sendPOEmail(r, res, response);
+        // console.log(r);
         res.send({ isOk: true });
       });
   });
@@ -457,7 +458,7 @@ exports.terms = (req, res, next) => {
  * @summary First Email to be fired once a requestor requests a PO
  */
 const send_mail_to_reviewer = (req, res) => {
-  User.findOne({ _id: req.requestor })
+  User.findById({ _id: req.requestor })
     .populate("line_manager")
     .exec((err, doc) => {
       const request_link = Utility.generateLink("/order/view/", req.id);
