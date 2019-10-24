@@ -42,18 +42,38 @@ exports.uniqueVendorListFromRespondedQuotes = (req, res) => {
   });
 };
 
+// exports.search = (req, res, next) => {
+//   let id = [];
+//   fetchVendorRespondedQuotes(docs => {
+//     const filteredDocs = docs.filter(doc => {
+//       if (id.indexOf(doc.vendor.id) < 0) {
+//         id.push(doc.vendor.id);
+//         return doc;
+//       }
+//     });
+//    // console.log("docs",filteredDocs)
+//     res.send(filteredDocs);
+//   });
+// };
+
 exports.search = (req, res, next) => {
-  let id = [];
-  fetchVendorRespondedQuotes(docs => {
-    const filteredDocs = docs.filter(doc => {
-      if (id.indexOf(doc.vendor.id) < 0) {
-        id.push(doc.vendor.id);
-        return doc;
+  RequestQuotation.find({ status: "RFQ02" })
+  .sort({ _id: -1 })
+  .exec((err, data) => {
+    if (err) return next(err);
+    const newData = [... new Set(data.map(x => x.vendor))].map(id => {
+        return {
+          vendor: id
+          // lineitems: data.find(s => s.vendor ===id).lineitems
+        };
       }
-    });
-    res.send(filteredDocs);
+    );
+
+      //console.log(newData, "new Data")
+    return res.json(newData);
   });
 };
+
 
 exports.allRepliedQuoteFomVendor = (req, res, next) => {
   let ids = [];
@@ -144,9 +164,13 @@ exports.submitVendorQuote = (req, res, next) => {
     if (err) return next(err);
     const mappedItems = data.items.map((e, i) => {
       let purchasingItem = new PurchasingItem(e);
+      //console.log("wik",data )
+     // console.log("wik2",result )
+
       purchasingItem.quote = data.id;
       purchasingItem.service_type = result.service_type;
       purchasingItem.requester = result.requester;
+      // purchasingItem.description = data.itemdescription;
       purchasingItem.save();
       return e;
     });
