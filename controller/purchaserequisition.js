@@ -30,7 +30,7 @@ exports.index = (req, res, next) => {
             else res.send(docs);
           });
       } else if (tokenz.type === "ceo") {
-        PurchaseRequisition.find({ deparment: { $in: doc.departments } })
+        PurchaseRequisition.find({ department: { $in: doc.departments } })
           .populate("requestor department")
           .sort({ created: -1 })
           .exec((err, docs) => {
