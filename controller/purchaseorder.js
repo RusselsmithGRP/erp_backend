@@ -26,6 +26,7 @@ exports.submit = (req, res, next) => {
   data.created = new Date();
   data.requestor = tokenz._id;
   data.status = "POX0";
+  // data.discount = data.discount / 100;
   let requestquotation = new PurchaseOrder(data);
   requestquotation.save(function(err, r) {
     if (err) return next(err);
@@ -33,6 +34,7 @@ exports.submit = (req, res, next) => {
     const prefix = "PO";
     const ref = Utility.generateReqNo(prefix, "PROC", r.id);
     r.no = ref.toUpperCase();
+    // console.log(r);
     PurchaseOrder.findOneAndUpdate({ _id: r.id }, { $set: r }, { new: true })
       .populate("requestor")
       .exec((err, response) => {
@@ -47,6 +49,7 @@ exports.submit = (req, res, next) => {
           );
         });
         sendPOEmail(r, res, response);
+        // console.log(r);
         res.send({ isOk: true });
       });
   });
@@ -459,7 +462,7 @@ exports.terms = (req, res, next) => {
  * @summary First Email to be fired once a requestor requests a PO
  */
 const send_mail_to_reviewer = (req, res) => {
-  User.findOne({ _id: req.requestor })
+  User.findById({ _id: req.requestor })
     .populate("line_manager")
     .exec((err, doc) => {
       const request_link = Utility.generateLink("/order/view/", req.id);
