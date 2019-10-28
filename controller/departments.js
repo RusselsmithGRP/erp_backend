@@ -142,3 +142,40 @@ module.exports.update = function(req, res) {
     }
   );
 };
+
+module.exports.removeDepartmentFromList = (req, res) => {
+  // console.log(req.body.id);
+  User.findOneAndUpdate(
+    { _id: req.body.hod },
+    { $pull: { departments: req.body.id } },
+    (err, doc) => {
+      if (err) return res.send(err);
+      return res.send({
+        success: true,
+        message: "Department removed from list",
+        doc
+      });
+    }
+  );
+};
+
+module.exports.updateMultipleDepartments = (req, res) => {
+  let departments = [];
+
+  if (req.body.showList) {
+    departments = [...departments, req.body.department];
+  }
+  // console.log(departments);
+  User.findOneAndUpdate(
+    { _id: req.body.hod },
+    { $addToSet: { departments: departments } },
+    (err, doc) => {
+      if (err) return res.send(err);
+      return res.send({
+        success: true,
+        message: "Department added to list",
+        doc
+      });
+    }
+  );
+};
