@@ -35,7 +35,7 @@ exports.submit = (req, res, next) => {
     const ref = Utility.generateReqNo(prefix, "PROC", r.id);
     r.no = ref.toUpperCase();
     // console.log(r);
-    PurchaseOrder.findOneAndUpdate({ _id: r.id }, { $set: r }, { new: true })
+    PurchaseOrder.findByIdAndUpdate({ _id: r.id }, { $set: r }, { new: true })
       .populate("requestor")
       .exec((err, response) => {
         if (err) return next(err);
@@ -423,7 +423,7 @@ exports.update = (req, res, next) => {
     .populate("requestor")
     .exec((err, result) => {
       if (err) return next(err);
-      sendPOEmail(result, res, next);
+      sendPOEmail(data, res, result);
       res.send(result);
     });
 };
