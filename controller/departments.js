@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 const Department = mongoose.model("Department");
-// const Department = require("../model/department");
+const User = mongoose.model("User");
 
 exports.index = (req, res, next) => {
   //   Department.find({}, (err, docs) => {
@@ -42,6 +42,7 @@ exports.edit = (req, res, next) => {
 exports.view = (req, res, next) => {
   Department.findOne({ _id: req.params.id }).exec((err, doc) => {
     if (err) return next(err);
+
     res.send(doc);
   });
 };
@@ -78,8 +79,9 @@ exports.viewOne = (req, res, next) => {
 };
 
 exports.findDeparmentDetails = (id, callback) => {
-  Department.find({ _id: id }).exec((err, doc) => {
+  Department.findById({ _id: id }).exec((err, doc) => {
     if (err) return next(err);
+
     callback(doc);
   });
 };
@@ -93,12 +95,29 @@ exports.delete = (req, res, next) => {
 };
 
 module.exports.getDepartmentDetails = function(req, res) {
-  Department.find({ _id: req.params.id }).exec(function(err, department) {
+  Department.findById({ _id: req.params.id }).exec(function(err, department) {
     if (err) {
       res.json({ message: err });
       return;
     }
-    res.status(200).json(department);
+    let isArray = false;
+    if (department.hod) {
+      User.findById({ _id: department.hod }).exec((err, result) => {
+        if (result.departments === []) {
+          isArray = false;
+        } else if (result.departments.length > 0) {
+          isArray = true;
+        }
+        Department.find({ _id: { $in: result.departments } }).exec(
+          (err, doc) => {
+            if (err) throw err;
+            res.status(200).json({ department, isArray, departments: doc });
+          }
+        );
+      });
+    } else {
+      res.status(200).json({ department, isArray, departments: [] });
+    }
   });
 };
 
@@ -108,12 +127,18 @@ module.exports.update = function(req, res) {
     slug: req.body.slug,
     code: req.body.code
   };
-  Department.findByIdAndUpdate(req.body._id, data, function(err, data) {
-    if (err) return res.send(err);
-    return res.json({
-      success: true,
-      message: "department details has been updated!",
-      data: data
-    });
-  });
+  Department.findByIdAndUpdate(
+    { _id: req.body._id },
+    { $set: data },
+    { new: true },
+    function(err, data) {
+      if (err) return res.send(err);
+
+      return res.json({
+        success: true,
+        message: "department details has been updated!",
+        data: data
+      });
+    }
+  );
 };
