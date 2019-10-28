@@ -360,7 +360,7 @@ module.exports.updateProfileData = function(req, res) {
         // next(err);
         res.send(err);
       } else {
-        if (req.body.type === "hod") {
+        if (req.body.type === "hod" || req.body.type === "ceo") {
           Department.updateMany(
             { _id: { $in: profileData.departments } },
             { $set: { hod: req.body._id } },
