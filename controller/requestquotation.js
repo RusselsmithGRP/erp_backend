@@ -58,22 +58,20 @@ exports.uniqueVendorListFromRespondedQuotes = (req, res) => {
 
 exports.search = (req, res, next) => {
   RequestQuotation.find({ status: "RFQ02" })
-  .sort({ _id: -1 })
-  .exec((err, data) => {
-    if (err) return next(err);
-    const newData = [... new Set(data.map(x => x.vendor))].map(id => {
+    .sort({ _id: -1 })
+    .exec((err, data) => {
+      if (err) return next(err);
+      const newData = [...new Set(data.map(x => x.vendor))].map(id => {
         return {
           vendor: id
           // lineitems: data.find(s => s.vendor ===id).lineitems
         };
-      }
-    );
+      });
 
       //console.log(newData, "new Data")
-    return res.json(newData);
-  });
+      return res.json(newData);
+    });
 };
-
 
 exports.allRepliedQuoteFomVendor = (req, res, next) => {
   let ids = [];
@@ -114,6 +112,7 @@ exports.vendorsQuoteList = (req, res, next) => {
 
 exports.submit = (req, res, next) => {
   let data = {};
+  console.log(req.body.vendors);
   req.body.vendors.forEach((vendor, i) => {
     data.vendor = vendor.value;
     data.quoteType = req.body.type === "contract" ? "contract" : "";
@@ -165,7 +164,7 @@ exports.submitVendorQuote = (req, res, next) => {
     const mappedItems = data.items.map((e, i) => {
       let purchasingItem = new PurchasingItem(e);
       //console.log("wik",data )
-     // console.log("wik2",result )
+      // console.log("wik2",result )
 
       purchasingItem.quote = data.id;
       purchasingItem.service_type = result.service_type;
