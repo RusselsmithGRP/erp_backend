@@ -58,22 +58,20 @@ exports.uniqueVendorListFromRespondedQuotes = (req, res) => {
 
 exports.search = (req, res, next) => {
   RequestQuotation.find({ status: "RFQ02" })
-  .sort({ _id: -1 })
-  .exec((err, data) => {
-    if (err) return next(err);
-    const newData = [... new Set(data.map(x => x.vendor))].map(id => {
+    .sort({ _id: -1 })
+    .exec((err, data) => {
+      if (err) return next(err);
+      const newData = [...new Set(data.map(x => x.vendor))].map(id => {
         return {
           vendor: id
           // lineitems: data.find(s => s.vendor ===id).lineitems
         };
-      }
-    );
+      });
 
       //console.log(newData, "new Data")
-    return res.json(newData);
-  });
+      return res.json(newData);
+    });
 };
-
 
 exports.allRepliedQuoteFomVendor = (req, res, next) => {
   let ids = [];
@@ -134,6 +132,7 @@ exports.submit = (req, res, next) => {
         req.body.pr.department.slug,
         result.id
       );
+
       RequestQuotation.findOneAndUpdate(
         { _id: result.id },
         { $set: { no: no.toUpperCase() } },
@@ -142,9 +141,14 @@ exports.submit = (req, res, next) => {
         .populate("vendor")
         .exec((err, doc) => {
           if (err) return next(err);
-          req.body.type === "contract"
-            ? ""
-            : send_request_for_quote(req, res, doc.vendor.general_info);
+
+          Vendor.findOne({ _id: data.vendor }).exec((err, vendor) => {
+            if (err) return res.status(500).send(err.message);
+            console.log(vendor);
+            req.body.type === "contract"
+              ? ""
+              : send_request_for_quote(req, res, vendor.general_info);
+          });
         });
       RequestQuotation.find()
         .sort({ _id: -1 })
@@ -165,7 +169,7 @@ exports.submitVendorQuote = (req, res, next) => {
     const mappedItems = data.items.map((e, i) => {
       let purchasingItem = new PurchasingItem(e);
       //console.log("wik",data )
-     // console.log("wik2",result )
+      // console.log("wik2",result )
 
       purchasingItem.quote = data.id;
       purchasingItem.service_type = result.service_type;
