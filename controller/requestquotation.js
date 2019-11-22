@@ -112,6 +112,7 @@ exports.vendorsQuoteList = (req, res, next) => {
 
 exports.submit = (req, res, next) => {
   let data = {};
+  console.log(req.body.vendors);
   req.body.vendors.forEach((vendor, i) => {
     data.vendor = vendor.value;
     data.quoteType = req.body.type === "contract" ? "contract" : "";
