@@ -9,6 +9,7 @@ var purchaseOrderSchema = Schema({
     no: String,
     deliverydate: { type: Date},
     creditterms: Number,
+    currency: Number,
     shipto: String,
     status: String,
     discount: {type: Number, get: getPrice, set: setPrice },
@@ -19,10 +20,12 @@ var purchaseOrderSchema = Schema({
     updated: { type: Date, default: Date.now },
     created: { type: Date},
     reason: String,
+    additional_terms: String,
     requestor:{
         type: Schema.Types.ObjectId,
         ref: 'User'
     },
+    types: Array
 });
 
 function getPrice(num){

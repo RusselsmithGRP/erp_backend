@@ -8,3 +8,5 @@ es
 coverage
 backup
 package-lock.json
+config/secret.js
+model/mailer.js

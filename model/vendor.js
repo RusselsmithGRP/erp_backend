@@ -25,7 +25,7 @@ var vendorSchema = Schema({
         type:String
     },
     classes:{
-        type:Number
+        type: Number
     },
     updated: { type: Date, default: Date.now },
     created: { type: Date}
